@@ -1,4 +1,5 @@
 === Cyclos ===
+Contributors: Cyclos, luisfpg
 Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
 Donate link: http://www.cyclos.org/contributors
 Requires at least: 4.0
@@ -25,8 +26,8 @@ How do I install the plug-in:
 - Please follow the instructions given in the wordpress setting menu of the plug-in.
 
 == Screenshots ==
-1. Login form.
-2. Configuration page
+1. Login form (in a page).
+2. Login form (closeup).
 
 == Changelog ==
 This is the first version we published of the plugin.
