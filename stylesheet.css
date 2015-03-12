@@ -1,0 +1,81 @@
+#cyclosLoginContainer .cyclosFormTitle {
+	background: url("login.png") no-repeat 0px 0px;
+}
+
+#cyclosForgotContainer .cyclosFormTitle {
+	background: url("password_recover.png") no-repeat 0px 0px;
+}
+
+.cyclosFormBox  form {
+	width: 200px;
+	padding: 20px 20px 20px 20px;
+	border: 1px solid #CCCCCC;
+	background-color: #F4F5F9;
+	margin-top:20px;
+	border-radius: 3px;
+	box-shadow: inset 1px 1px 1px 0px #FFFFFF;
+}
+
+.cyclosFormBox  input {
+	width: 100%;
+	margin-top: 10px;
+	font-size: 14px;
+    padding: 4px 0px;
+}
+
+.cyclosFormBox  .cyclosFormTitle {
+	font-weight: bold;
+	margin: 10px 0px 4px 0px;
+	padding: 0px 0px 0px 20px;
+}
+
+.cyclosFormBox  .cyclosFormActions {
+	background: none;
+}
+
+.cyclosFormBox  a {
+    display: block;
+	text-align: center;
+	padding: 5px 0px 5px 0px;
+	font-weight: normal;
+	font-style: italic;
+	font-size: 12px;
+}
+
+.cyclosFormBox  input[type=button], .cyclosFormBox  input[type=submit] {
+	background: #84b3df; /* Old browsers */
+	background: -moz-linear-gradient(top,  #84b3df 0%, #609dd6 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#84b3df), color-stop(100%,#609dd6)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #84b3df 0%,#609dd6 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #84b3df 0%,#609dd6 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #84b3df 0%,#609dd6 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #84b3df 0%,#609dd6 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#84b3df', endColorstr='#609dd6',GradientType=0 ); /* IE6-9 */
+
+    border-color: #5c9bd5 #3077ba #3077ba #5c9bd5;
+    border-radius: 2px;
+    border-style: solid;
+    border-width: 1px;
+    box-shadow: 1px 1px 0 rgba(255, 255, 255, 0.15) inset;
+    color: #fff;
+    padding: 10px 6px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.15);
+    white-space: nowrap;
+}
+
+#cyclosNewCaptcha {
+    display: block;
+    float: right;	
+	line-height: 12px;
+    margin-top: 18px;
+	
+}
+
+.cyclosFormField > div:first-of-type {
+    overflow: hidden;
+}
+
+.cyclosFormField > div:last-of-type {
+    margin: 7px 0 -5px;
+}
