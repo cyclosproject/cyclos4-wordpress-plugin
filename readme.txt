@@ -28,6 +28,8 @@ How do I install the plug-in:
 == Screenshots ==
 1. Login form (in a page).
 2. Login form (closeup).
+3. Cyclos plugin settings.
+4. Customizing labels of the form.
 
 == Changelog ==
 This is the first version we published of the plugin.
