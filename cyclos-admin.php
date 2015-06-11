@@ -85,10 +85,11 @@ function cyclosNormalAdminPage() {
         $errorMessage = "Cyclos plugin is not correctly configured";
     }
      
-     if (empty($errorMessage)) { ?>
+     if (empty($errorMessage)) {
+        $display = $user->display ? $user->display : $user->name; ?>
         <p>Congratulations! Cyclos is corretly configured for: <a href="<?= $rootUrl ?>"><?= $rootUrl ?></a>.<br>
-        The administrator used for access is <?= $user->name ?> (<?= $user->username ?>).</p> 
-        <p>You can show the login form in any page, by inserting the code: &#91;cycloslogin&#93;</p>
+        The administrator used for access is <b><?= $display ?></b>.</p> 
+        <p>You can show the login form in any page, by inserting the code: <b><code>&#91;cycloslogin&#93;</code></b></p>
 
         <?php
     } else { ?>
