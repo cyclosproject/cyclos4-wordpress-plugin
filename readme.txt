@@ -1,11 +1,12 @@
 === Cyclos ===
-Contributors: Cyclos, luisfpg
+Contributors: Cyclos, luisfpg, rleon.uy
 Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
 Donate link: http://www.cyclos.org/contributors
-Requires at least: 4.0
-Tested up to: 4.1.1
-Stable tag: 1.0
+Requires at least: 4.3
+Tested up to: 4.3
+Stable tag: 1.1
 License: GPLv2
+Minimum PHP: 5.3
 
 This plugin enables you to easily add a Cyclos login form to your wordpress website.
 
@@ -33,4 +34,5 @@ Please follow the instructions given in the wordpress setting menu of the plug-i
 4. Customizing labels of the form.
 
 == Changelog ==
-This is the first version we published of the plugin.
+We updated the PHP4 style constructors in WordPress (see https://make.wordpress.org/core/2015/07/02/deprecating-php4-style-constructors-in-wordpress-4-3/)
+and therefore Wordpress version 4.3 (or higher) is required. If you wish to run the plugin on an older version of wordpress or a php version 5.2 or below please use version 1.0 of our plugin.

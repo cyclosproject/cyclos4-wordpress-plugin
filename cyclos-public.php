@@ -35,7 +35,7 @@ class CyclosPlugin extends WP_Widget {
 
 	// constructor
     function CyclosPlugin() {
-        parent::WP_Widget(false, $name = __('Cyclos', 'wp_widget_plugin') );
+         parent::__construct(false, $name = __('Cyclos', 'wp_widget_plugin') );
     }
 
 	// widget display

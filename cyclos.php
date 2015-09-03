@@ -31,6 +31,10 @@ Author URI: http://www.cyclos.org
 // Block people to access the script directly (against malicious attempts)
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+if(version_compare(PHP_VERSION, '5.3.0') < 0) {
+	exit('You need PHP version at least <strong> 5.3.0 </strong> to run this plugin. You are currently using PHP version <strong>' . PHP_VERSION . '.</strong>');	
+}
+
 include_once 'cyclos-common.php';
 include_once 'cyclos-admin.php';
 include_once 'cyclos-public.php';
