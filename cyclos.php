@@ -32,7 +32,7 @@ Author URI: http://www.cyclos.org
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 if(version_compare(PHP_VERSION, '5.3.0') < 0) {
-	exit('You need PHP version at least <strong> 5.3.0 </strong> to run this plugin. You are currently using PHP version <strong>' . PHP_VERSION . '.</strong>');	
+	exit('You are currently using PHP version <strong>' . PHP_VERSION . '</strong>. For this plugin to run you need at least PHP version <strong> 5.3.0</strong> or higher.');	
 }
 
 include_once 'cyclos-common.php';

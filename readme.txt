@@ -6,7 +6,6 @@ Requires at least: 4.3
 Tested up to: 4.3
 Stable tag: 1.1
 License: GPLv2
-Minimum PHP: 5.3
 
 This plugin enables you to easily add a Cyclos login form to your wordpress website.
 
