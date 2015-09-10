@@ -75,42 +75,42 @@ function cyclosLoginForm($atts) {
     
     // Returns the html to show when shortcode is used.
     return '
-        <div id="cyclosForgotContainer" class="cyclosFormBox" style="display:none">
-            <form id="cyclosForgotPasswordForm" action="#" method="post">
+        <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
+            <form class="cyclosForgotPasswordForm" action="#" method="post">
                 <div class="cyclosFormTitle">' . $t->forgotTitle . '</div>
                 <div class="cyclosFormField">
-                    <input placeholder="' . $t->forgotEmail . '" id="cyclosEmail" tabindex="3" type="email" required>
+                    <input placeholder="' . $t->forgotEmail . '" name="cyclosEmail" type="email" required>
                 </div>
                 <div class="cyclosFormField">
                     <div>
-                        <input placeholder="' . $t->forgotCaptcha . '" id="cyclosCaptcha" tabindex="4" type="text" style="float: left; width: 60%" required>
-                        <a id="cyclosNewCaptcha" href="#">' . $t->forgotNewCaptcha . '</a>
+                        <input placeholder="' . $t->forgotCaptcha . '" class="cyclosCaptcha" type="text" style="float: left; width: 60%" required>
+                        <a class="cyclosNewCaptcha" href="#">' . $t->forgotNewCaptcha . '</a>
                     </div>
                     <div>
-                        <img alt="captcha" id="cyclosCaptchaImage" style="display:none">
+                        <img alt="captcha" class="cyclosCaptchaImage" style="display:none">
                     </div>
                 </div>
                 <div class="cyclosFormActions">
-                    <input id="cyclosForgotSubmit" type="submit" tabindex="5" value="' . $t->forgotSubmit . '">
+                    <input class="cyclosForgotSubmit" type="submit" value="' . $t->forgotSubmit . '">
                     <div class="cyclosForgotPasswordBox">
-                        <a id="cyclosForgotCancel" href="#">' . $t->forgotCancel . '</a>
+                        <a class="cyclosForgotCancel" href="#">' . $t->forgotCancel . '</a>
                     </div>
                 </div>
             </form>
         </div>
-        <div id="cyclosLoginContainer" class="cyclosFormBox">
-            <form id="cyclosLoginForm" action="#" method="post">
+        <div class="cyclosFormBox cyclosLoginContainer">
+            <form class="cyclosLoginForm" action="#" method="post">
                 <div class="cyclosFormTitle">' . $t->loginTitle . '</div>
                 <div class="cyclosFormField">
-                    <input placeholder="' . $t->loginName . '" id="cyclosPrincipal" tabindex="3" type="text" required>
+                    <input placeholder="' . $t->loginName . '" name="cyclosPrincipal" type="text" required>
                 </div>
                 <div class="cyclosFormField">
-                    <input placeholder="' . $t->loginPassword . '" id="cyclosPassword" tabindex="4" type="password" required>
+                    <input placeholder="' . $t->loginPassword . '" name="cyclosPassword" type="password" required>
                 </div>
                 <div class="cyclosFormActions">
-                    <input type="submit" id="cyclosLoginSubmit" tabindex="5" value="' . $t->loginSubmit . '">
+                    <input type="submit" class="cyclosLoginSubmit" value="' . $t->loginSubmit . '">
                     <div class="cyclosForgotPasswordBox">
-                        <a id="cyclosForgotLink" href="#">' . $t->forgotLink . '</a>
+                        <a class="cyclosForgotLink" href="#">' . $t->forgotLink . '</a>
                     </div>
                 </div>
             </form>
@@ -127,19 +127,19 @@ function cyclosLoginForm($atts) {
                 
                 function showLogin() {
                     if (submitEnabled) {
-                        $("#cyclosLoginForm").trigger("reset");
-                        $("#cyclosLoginContainer").show();
-                        $("#cyclosForgotContainer").hide();
-                        $("#cyclosPrincipal").focus();
+                        $(".cyclosLoginForm").trigger("reset");
+                        $(".cyclosLoginContainer").show();
+                        $(".cyclosForgotContainer").hide();
+                        $(".cyclosPrincipal").focus();
                     }
                 }
                 
                 function showForgotPassword() {
                     if (submitEnabled) {
-                        $("#cyclosForgotPasswordForm").trigger("reset");
-                        $("#cyclosLoginContainer").hide();
-                        $("#cyclosForgotContainer").show();
-                        $("#cyclosEmail").focus();
+                        $(".cyclosForgotPasswordForm").trigger("reset");
+                        $(".cyclosLoginContainer").hide();
+                        $(".cyclosForgotContainer").show();
+                        $(".cyclosEmail").focus();
                         if (captchaId == null) {
                             newCaptcha();
                         }
@@ -147,7 +147,7 @@ function cyclosLoginForm($atts) {
                 }
                 
                 function newCaptcha() {
-                    var img = $("#cyclosCaptchaImage");
+                    var img = $(".cyclosCaptchaImage");
                     img.css("opacity", 0.2);
                     $.post("' . admin_url('admin-ajax.php?action=cyclos_captcha') . '")
                         .done(function(response) {
@@ -162,10 +162,10 @@ function cyclosLoginForm($atts) {
                         });
                 }
                 
-                $("#cyclosLoginForm").submit(function(event) {
+                $(".cyclosLoginForm").submit(function(event) {
                     if (submitEnabled) {
-                        var principal = ($("#cyclosPrincipal").val() || "").trim();
-                        var password = ($("#cyclosPassword").val() || "").trim();
+                        var principal = this.cyclosPrincipal.value.trim();
+                        var password = this.cyclosPassword.value.trim();
                         
                         if (principal != "" && password != "") {
                             var data = {
@@ -196,10 +196,10 @@ function cyclosLoginForm($atts) {
                     return false;
                 });
                 
-                $("#cyclosForgotPasswordForm").submit(function(event) {
+                $(".cyclosForgotPasswordForm").submit(function(event) {
                     if (submitEnabled) {
-                        var email = ($("#cyclosEmail").val() || "").trim();
-                        var captchaText = ($("#cyclosCaptcha").val() || "").trim();
+                        var email = this.cyclosEmail.trim();
+                        var captchaText = this.cyclosCaptcha.trim();
                         
                         if (email != "" && captchaText != "") {
                             var data = {
@@ -232,11 +232,11 @@ function cyclosLoginForm($atts) {
                     return false;
                 });
                 
-                $("#cyclosForgotLink").click(showForgotPassword).click(stopEvent);
-                $("#cyclosForgotCancel").click(showLogin).click(stopEvent);
-                $("#cyclosNewCaptcha").click(function() {
+                $(".cyclosForgotLink").click(showForgotPassword).click(stopEvent);
+                $(".cyclosForgotCancel").click(showLogin).click(stopEvent);
+                $(".cyclosNewCaptcha").click(function() {
                     newCaptcha();
-                    var cyclosCaptcha = $("#cyclosCaptcha");
+                    var cyclosCaptcha = $(".cyclosCaptcha");
                     cyclosCaptcha.val("");
                     cyclosCaptcha.focus();
                 }).click(stopEvent);

@@ -1,8 +1,8 @@
-#cyclosLoginContainer .cyclosFormTitle {
+.cyclosLoginContainer .cyclosFormTitle {
 	background: url("login.png") no-repeat 0px 0px;
 }
 
-#cyclosForgotContainer .cyclosFormTitle {
+.cyclosForgotContainer .cyclosFormTitle {
 	background: url("password_recover.png") no-repeat 0px 0px;
 }
 
@@ -64,7 +64,7 @@
     white-space: nowrap;
 }
 
-#cyclosNewCaptcha {
+.cyclosNewCaptcha {
     display: block;
     float: right;	
 	line-height: 12px;
