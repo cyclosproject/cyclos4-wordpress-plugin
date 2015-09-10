@@ -33,8 +33,8 @@ add_action( 'wp_enqueue_scripts', 'registerCyclosStyles' );
 add_action('widgets_init', create_function('', 'return register_widget("CyclosPlugin");'));
 class CyclosPlugin extends WP_Widget {
 
-	// constructor
-    function CyclosPlugin() {
+    // constructor
+    public function __construct() {
          parent::__construct(false, $name = __('Cyclos', 'wp_widget_plugin') );
     }
 
