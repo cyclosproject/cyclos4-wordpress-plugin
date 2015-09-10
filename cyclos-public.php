@@ -38,10 +38,10 @@ class CyclosPlugin extends WP_Widget {
          parent::__construct(false, $name = __('Cyclos', 'wp_widget_plugin') );
     }
 
-	// widget display
-	function widget($args, $instance) {
-		echo ('<div class="widget">' . cyclosLoginForm(NULL) . '</div>');
-	}
+    // widget display
+    public function widget($args, $instance) {
+        echo ($args['before_widget'] . cyclosLoginForm(NULL) . $args['after_widget']);
+    }
 }
 
 function registerCyclosStyles() {
