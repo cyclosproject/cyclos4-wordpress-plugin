@@ -28,7 +28,6 @@ add_shortcode( 'cycloslogin', 'cyclosLoginForm' );
 // Register style sheet
 add_action( 'wp_enqueue_scripts', 'registerCyclosStyles' );
 
-
 // Create the widget to display the login form
 add_action('widgets_init', create_function('', 'return register_widget("CyclosPlugin");'));
 class CyclosPlugin extends WP_Widget {
@@ -74,7 +73,7 @@ function cyclosLoginForm($atts) {
     $t = cyclosGetTranslations();
     
     // Returns the html to show when shortcode is used.
-    return '
+    $out = '
         <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
             <form class="cyclosForgotPasswordForm" action="#" method="post">
                 <div class="cyclosFormTitle">' . $t->forgotTitle . '</div>
@@ -114,7 +113,10 @@ function cyclosLoginForm($atts) {
                     </div>
                 </div>
             </form>
-        </div>
+        </div>';
+    if (!array_key_exists('cyclos_behavior_applied', $GLOBALS)) {
+        $GLOBALS['cyclos_behavior_applied'] = true;
+        $out = $out . '
         <script>
             jQuery(document).ready(function($) {
                 var submitEnabled = true;
@@ -242,7 +244,9 @@ function cyclosLoginForm($atts) {
                 }).click(stopEvent);
             });
         </script>
-    ';
+        ';
+    }
+    return $out;
 }
 
 /*#################### Ajax action handler to perform the Cyclos login ####################*/
