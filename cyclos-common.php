@@ -86,4 +86,24 @@ function configureCyclos($rootUrl = NULL, $token = NULL) {
     Cyclos\Configuration::setAccessClientToken($token);
 }
 
+
+// Function which returns an appropriate error message for a validation exception
+function validationExceptionMessage($e) {
+    $val = $e->error->validation;
+    $errors = array();
+    if (!empty($val->generalErrors)) {
+        $errors = array_merge($errors, $val->generalErrors);
+    }
+    if (!empty($val->propertyErrors)) {
+        foreach ($val->propertyErrors as $key => $value) {
+            $errors = array_merge($errors, $value);
+        }
+    }
+    if (empty($errors)) {
+        return "Validation error";
+    } else {
+        return implode("\n", $errors);
+    }
+}
+
 ?>

@@ -101,11 +101,11 @@ function cyclosNormalAdminPage() {
     
         <form name="cyclos_edit" method="post" action="#">
             <input type="hidden" name="goto_cyclos_settings" value="yes">
-            <input type="submit" name="Submit" value="Edit Cyclos plugin settings"/></div>
+            <input type="submit" name="Submit" value="Edit Cyclos plugin settings"/>
         </form>
         <form name="cyclos_translate" method="post" action="#">
             <input type="hidden" name="goto_cyclos_translate" value="yes">
-            <input type="submit" name="Submit" value="Change or translate labels of login form"/></div>
+            <input type="submit" name="Submit" value="Change or translate labels of login form"/>
         </form>
     </div>
     <?php
@@ -211,18 +211,48 @@ function cyclosSaveAdminSettings() {
     
     // Activate the access client
     $accessClientService = new Cyclos\AccessClientService();
-    $result = $accessClientService->activate($actcode, null);
-    $token = $result->token;
+    $errorMessage = NULL;
+    try {
+        $result = $accessClientService->activate($actcode, null);
+        $token = $result->token;
+    } catch (Cyclos\ConnectionException $e) {
+        $errorMessage = "The Cyclos server couldn't be contacted";
+    } catch (Cyclos\ServiceException $e) {
+        switch ($e->errorCode) {
+            case 'CREDENTIALS_NOT_SUPPLIED':
+                $errorMessage = "Please, supply both login name and password for the Cyclos administrator";
+                break;
+            case 'REMOTE_ADDRESS_BLOCKED':
+                $errorMessage = "The wordpress IP address has been temporarily blocked by exceeding login attempts";
+                break;
+            case 'ENTITY_NOT_FOUND':
+                $errorMessage = "The given activation code didn't match an access client pending activation";
+                break;
+            case 'VALIDATION':
+                $errorMessage = validationExceptionMessage($e);
+                break;
+            default:
+                $errorMessage = "Error activating the access client: {$e->errorCode}";
+        }
+    }
     
-    // Save the options
-    update_option('cyclos_url', $url);
-    update_option('cyclos_adminuser', $adminuser);
-    update_option('cyclos_token', $token);
-    
-    ?>
-    <div class="updated"><p><strong>Options saved</strong></p></div>
-    <?php
-    
+    if (empty($errorMessage)) {
+        // Save the options
+        update_option('cyclos_url', $url);
+        update_option('cyclos_adminuser', $adminuser);
+        update_option('cyclos_token', $token);
+        ?>
+        <div class="updated">
+            <p>Options saved</p>
+        </div>
+        <?php
+    } else {
+        ?>
+        <div class="error">
+            <p><?= $errorMessage ?></p>
+        </div>
+        <?php
+    }
     cyclosNormalAdminPage();
 }
 
@@ -260,7 +290,7 @@ function cyclosSaveTranslate() {
     }
     
     ?>
-    <div class="updated"><p><strong>Options saved</strong></p></div>
+    <div class="cyclosMsgInfo">Options saved</div>
     <?php
     
     cyclosNormalAdminPage();
