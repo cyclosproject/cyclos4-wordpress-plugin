@@ -222,6 +222,9 @@ function cyclosSaveAdminSettings() {
             case 'CREDENTIALS_NOT_SUPPLIED':
                 $errorMessage = "Please, supply both login name and password for the Cyclos administrator";
                 break;
+            case 'LOGIN':
+                $errorMessage = "Invalid login name and password for the Cyclos administrator";
+                break;
             case 'REMOTE_ADDRESS_BLOCKED':
                 $errorMessage = "The wordpress IP address has been temporarily blocked by exceeding login attempts";
                 break;
