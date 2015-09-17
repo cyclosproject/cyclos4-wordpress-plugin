@@ -77,7 +77,7 @@ function cyclosLoginForm($atts) {
                     </div>
                     <div class="cyclosFormField">
                         <div>
-                            <input placeholder="' . $t->forgotCaptcha . '" class="cyclosCaptcha" type="text" style="float: left; width: 60%" required>
+                            <input placeholder="' . $t->forgotCaptcha . '" name="cyclosCaptcha" type="text" style="float: left; width: 60%" required>
                             <a class="cyclosNewCaptcha" href="#">' . $t->forgotNewCaptcha . '</a>
                         </div>
                         <div>
@@ -208,8 +208,8 @@ function cyclosLoginForm($atts) {
                 
                 $(".cyclosForgotPasswordForm").submit(function(event) {
                     if (submitEnabled) {
-                        var email = this.cyclosEmail.trim();
-                        var captchaText = this.cyclosCaptcha.trim();
+                        var email = this.cyclosEmail.value.trim();
+                        var captchaText = this.cyclosCaptcha.value.trim();
                         
                         if (email != "" && captchaText != "") {
                             var data = {
@@ -246,7 +246,7 @@ function cyclosLoginForm($atts) {
                 $(".cyclosForgotCancel").click(showLogin).click(stopEvent);
                 $(".cyclosNewCaptcha").click(function() {
                     newCaptcha();
-                    var cyclosCaptcha = $(".cyclosCaptcha");
+                    var cyclosCaptcha = $("input[name=cyclosCaptcha]");
                     cyclosCaptcha.val("");
                     cyclosCaptcha.focus();
                 }).click(stopEvent);
