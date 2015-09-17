@@ -29,12 +29,12 @@ class ConnectedUserService extends Service {
     }
     
     /**
-     * @param query Java type: org.cyclos.model.users.users.ConnectedUserQuery
+
      * @return Java type: org.cyclos.model.users.users.ConnectedUserSearchData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/ConnectedUserService.html#getSearchData(org.cyclos.model.users.users.ConnectedUserQuery)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/ConnectedUserService.html#getSearchData()
      */
-    public function getSearchData($query) {
-        return $this->run('getSearchData', array($query));
+    public function getSearchData() {
+        return $this->run('getSearchData', array());
     }
     
     /**

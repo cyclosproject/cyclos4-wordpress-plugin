@@ -20,11 +20,11 @@ class PasswordService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#allowActivation(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#allowActivation(org.cyclos.model.access.passwords.PasswordActionDTO)
      */
-    public function allowActivation($locator, $passwordTypeId) {
-        $this->run('allowActivation', array($locator, $passwordTypeId));
+    public function allowActivation($params) {
+        $this->run('allowActivation', array($params));
     }
     
     /**
@@ -44,19 +44,19 @@ class PasswordService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#disable(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#disable(org.cyclos.model.access.passwords.PasswordActionDTO)
      */
-    public function disable($locator, $passwordTypeId) {
-        $this->run('disable', array($locator, $passwordTypeId));
+    public function disable($params) {
+        $this->run('disable', array($params));
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#enable(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#enable(org.cyclos.model.access.passwords.PasswordActionDTO)
      */
-    public function enable($locator, $passwordTypeId) {
-        $this->run('enable', array($locator, $passwordTypeId));
+    public function enable($params) {
+        $this->run('enable', array($params));
     }
     
     /**
@@ -68,12 +68,12 @@ class PasswordService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
+     * @param params Java type: org.cyclos.model.access.passwords.ChangeGeneratedPasswordDTO
      * @return Java type: java.lang.String
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#generateNew(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#generateNew(org.cyclos.model.access.passwords.ChangeGeneratedPasswordDTO)
      */
-    public function generateNew($locator, $passwordTypeId) {
-        return $this->run('generateNew', array($locator, $passwordTypeId));
+    public function generateNew($params) {
+        return $this->run('generateNew', array($params));
     }
     
     /**
@@ -104,19 +104,28 @@ class PasswordService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#reset(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param medium Java type: org.cyclos.model.access.passwordtypes.OTPSendMedium
+     * @return Java type: java.util.List
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#requestNewOTP(org.cyclos.model.access.passwordtypes.OTPSendMedium)
      */
-    public function reset($locator, $passwordTypeId) {
-        $this->run('reset', array($locator, $passwordTypeId));
+    public function requestNewOTP($medium) {
+        return $this->run('requestNewOTP', array($medium));
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#resetAndSend(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#reset(org.cyclos.model.access.passwords.PasswordActionDTO)
      */
-    public function resetAndSend($locator, $passwordTypeId) {
-        $this->run('resetAndSend', array($locator, $passwordTypeId));
+    public function reset($params) {
+        $this->run('reset', array($params));
+    }
+    
+    /**
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#resetAndSend(org.cyclos.model.access.passwords.PasswordActionDTO)
+     */
+    public function resetAndSend($params) {
+        $this->run('resetAndSend', array($params));
     }
     
     /**
@@ -136,11 +145,11 @@ class PasswordService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param passwordTypeId Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#unblock(org.cyclos.model.users.users.UserLocatorVO,%20java.lang.Long)
+     * @param params Java type: org.cyclos.model.access.passwords.PasswordActionDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/PasswordService.html#unblock(org.cyclos.model.access.passwords.PasswordActionDTO)
      */
-    public function unblock($locator, $passwordTypeId) {
-        $this->run('unblock', array($locator, $passwordTypeId));
+    public function unblock($params) {
+        $this->run('unblock', array($params));
     }
     
 }

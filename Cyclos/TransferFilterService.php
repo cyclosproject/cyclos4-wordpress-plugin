@@ -29,6 +29,15 @@ class TransferFilterService extends Service {
     }
     
     /**
+     * @param fromAccountTypeId Java type: java.lang.Long     * @param toAccountTypeId Java type: java.lang.Long
+     * @return Java type: java.util.List
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#list(java.lang.Long,%20java.lang.Long)
+     */
+    public function _list($fromAccountTypeId, $toAccountTypeId) {
+        return $this->run('list', array($fromAccountTypeId, $toAccountTypeId));
+    }
+    
+    /**
      * @param id Java type: java.lang.Long
      * @return Java type: DTO
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#load(java.lang.Long)

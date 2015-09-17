@@ -11,6 +11,15 @@ class AccountService extends Service {
     }
     
     /**
+     * @param params Java type: org.cyclos.model.banking.accounts.AccountHistoryQuery
+     * @return Java type: org.cyclos.server.utils.SerializableInputStream
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountService.html#exportToCSV(org.cyclos.model.banking.accounts.AccountHistoryQuery)
+     */
+    public function exportToCSV($params) {
+        return $this->run('exportToCSV', array($params));
+    }
+    
+    /**
 
      * @return Java type: org.cyclos.model.banking.accounts.AccountBalanceLimitsOverviewData
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountService.html#getAccountBalanceLimitsOverviewData()
@@ -56,9 +65,9 @@ class AccountService extends Service {
     }
     
     /**
-     * @param owner Java type: org.cyclos.model.banking.accounts.AccountOwner     * @param dateTime Java type: org.cyclos.model.utils.DateTime
+     * @param owner Java type: org.cyclos.model.banking.accounts.InternalAccountOwner     * @param dateTime Java type: org.cyclos.model.utils.DateTime
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountService.html#getAccountsSummary(org.cyclos.model.banking.accounts.AccountOwner,%20org.cyclos.model.utils.DateTime)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountService.html#getAccountsSummary(org.cyclos.model.banking.accounts.InternalAccountOwner,%20org.cyclos.model.utils.DateTime)
      */
     public function getAccountsSummary($owner, $dateTime) {
         return $this->run('getAccountsSummary', array($owner, $dateTime));
@@ -98,15 +107,6 @@ class AccountService extends Service {
      */
     public function hasAccessibleAccounts() {
         return $this->run('hasAccessibleAccounts', array());
-    }
-    
-    /**
-     * @param fromAccountTypeId Java type: java.lang.Long     * @param toAccountTypeId Java type: java.lang.Long
-     * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountService.html#listTransferFiltersForAccountHistoriesOverview(java.lang.Long,%20java.lang.Long)
-     */
-    public function listTransferFiltersForAccountHistoriesOverview($fromAccountTypeId, $toAccountTypeId) {
-        return $this->run('listTransferFiltersForAccountHistoriesOverview', array($fromAccountTypeId, $toAccountTypeId));
     }
     
     /**

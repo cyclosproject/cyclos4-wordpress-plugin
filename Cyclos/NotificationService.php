@@ -11,12 +11,11 @@ class NotificationService extends Service {
     }
     
     /**
-     * @param id Java type: java.lang.Long
-     * @return Java type: java.lang.String
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/messaging/NotificationService.html#getContent(java.lang.Long)
+     * @param userId Java type: java.lang.Long
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/messaging/NotificationService.html#markAllRead(java.lang.Long)
      */
-    public function getContent($id) {
-        return $this->run('getContent', array($id));
+    public function markAllRead($userId) {
+        $this->run('markAllRead', array($userId));
     }
     
     /**

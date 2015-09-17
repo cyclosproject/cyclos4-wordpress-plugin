@@ -44,9 +44,9 @@ class TransactionAuthorizationService extends Service {
     }
     
     /**
-     * @param owner Java type: org.cyclos.model.banking.accounts.AccountOwner
+     * @param owner Java type: org.cyclos.model.banking.accounts.InternalAccountOwner
      * @return Java type: org.cyclos.model.banking.transactions.TransactionSearchData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransactionAuthorizationService.html#getTransactionSearchData(org.cyclos.model.banking.accounts.AccountOwner)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransactionAuthorizationService.html#getTransactionSearchData(org.cyclos.model.banking.accounts.InternalAccountOwner)
      */
     public function getTransactionSearchData($owner) {
         return $this->run('getTransactionSearchData', array($owner));

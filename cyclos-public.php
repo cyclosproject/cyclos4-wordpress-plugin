@@ -50,34 +50,51 @@ function registerCyclosStyles() {
 
 // Function that is called when the shortcode is used
 function cyclosLoginForm($atts) {
+    configureCyclos();
+    $loginService = new Cyclos\LoginService();
+
+    $out = '';
+
+    // See if the forgot password should be shown
+    try {
+        $loginData = $loginService->getLoginData('main');
+        $showForgotPassword = $loginData->showForgotPassword;
+    } catch (Exception $e) {
+        $showForgotPassword = true;
+    }
 
     $t = cyclosGetTranslations();
     
     // Returns the html to show when shortcode is used.
-    $out = '
-        <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
-            <form class="cyclosForgotPasswordForm" action="#" method="post">
-                <div class="cyclosFormTitle">' . $t->forgotTitle . '</div>
-                <div class="cyclosFormField">
-                    <input placeholder="' . $t->forgotEmail . '" name="cyclosEmail" type="email" required>
-                </div>
-                <div class="cyclosFormField">
-                    <div>
-                        <input placeholder="' . $t->forgotCaptcha . '" class="cyclosCaptcha" type="text" style="float: left; width: 60%" required>
-                        <a class="cyclosNewCaptcha" href="#">' . $t->forgotNewCaptcha . '</a>
+
+    if ($showForgotPassword) {
+        $out = $out . '
+            <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
+                <form class="cyclosForgotPasswordForm" action="#" method="post">
+                    <div class="cyclosFormTitle">' . $t->forgotTitle . '</div>
+                    <div class="cyclosFormField">
+                        <input placeholder="' . $t->forgotEmail . '" name="cyclosEmail" type="email" required>
                     </div>
-                    <div>
-                        <img alt="captcha" class="cyclosCaptchaImage" style="display:none">
+                    <div class="cyclosFormField">
+                        <div>
+                            <input placeholder="' . $t->forgotCaptcha . '" class="cyclosCaptcha" type="text" style="float: left; width: 60%" required>
+                            <a class="cyclosNewCaptcha" href="#">' . $t->forgotNewCaptcha . '</a>
+                        </div>
+                        <div>
+                            <img alt="captcha" class="cyclosCaptchaImage" style="display:none">
+                        </div>
                     </div>
-                </div>
-                <div class="cyclosFormActions">
-                    <input class="cyclosForgotSubmit" type="submit" value="' . $t->forgotSubmit . '">
-                    <div class="cyclosForgotPasswordBox">
-                        <a class="cyclosForgotCancel" href="#">' . $t->forgotCancel . '</a>
+                    <div class="cyclosFormActions">
+                        <input class="cyclosForgotSubmit" type="submit" value="' . $t->forgotSubmit . '">
+                        <div class="cyclosForgotPasswordBox">
+                            <a class="cyclosForgotCancel" href="#">' . $t->forgotCancel . '</a>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
+        ';
+    }
+    $out = $out . '
         <div class="cyclosFormBox cyclosLoginContainer">
             <form class="cyclosLoginForm" action="#" method="post">
                 <div class="cyclosFormTitle">' . $t->loginTitle . '</div>
@@ -89,9 +106,15 @@ function cyclosLoginForm($atts) {
                 </div>
                 <div class="cyclosFormActions">
                     <input type="submit" class="cyclosLoginSubmit" value="' . $t->loginSubmit . '">
+    ';
+    if ($showForgotPassword) {
+        $out = $out . '
                     <div class="cyclosForgotPasswordBox">
                         <a class="cyclosForgotLink" href="#">' . $t->forgotLink . '</a>
                     </div>
+        ';
+    }
+    $out = $out . '
                 </div>
             </form>
         </div>';
@@ -100,6 +123,44 @@ function cyclosLoginForm($atts) {
         $out = $out . '
         <script>
             jQuery(document).ready(function($) {
+        ';
+        $out = $out . '
+                $(".cyclosLoginForm").submit(function(event) {
+                    if (submitEnabled) {
+                        var principal = this.cyclosPrincipal.value.trim();
+                        var password = this.cyclosPassword.value.trim();
+                        
+                        if (principal != "" && password != "") {
+                            var data = {
+                                "principal": principal,
+                                "password": password
+                            }
+
+                            submitEnabled = false;
+                            
+                            $.post("' . admin_url('admin-ajax.php?action=cyclos_login') . '", data)
+                                .done(function(response) {
+                                    response = response || {};
+                                    if (response.redirectUrl) {
+                                        location.href = response.redirectUrl;
+                                    } else {
+                                        alert(response.errorMessage || "Invalid data received from server");
+                                        submitEnabled = true;
+                                    }
+                                })
+                                .fail(function() {
+                                    submitEnabled = true;
+                                });
+                        }
+                    }
+                    
+                    // Don\'t actually submit
+                    event.preventDefault();
+                    return false;
+                });
+        ';
+        if ($showForgotPassword) {
+            $out = $out . '
                 var submitEnabled = true;
                 var captchaId = null;
                 
@@ -144,40 +205,6 @@ function cyclosLoginForm($atts) {
                             }
                         });
                 }
-                
-                $(".cyclosLoginForm").submit(function(event) {
-                    if (submitEnabled) {
-                        var principal = this.cyclosPrincipal.value.trim();
-                        var password = this.cyclosPassword.value.trim();
-                        
-                        if (principal != "" && password != "") {
-                            var data = {
-                                "principal": principal,
-                                "password": password
-                            }
-
-                            submitEnabled = false;
-                            
-                            $.post("' . admin_url('admin-ajax.php?action=cyclos_login') . '", data)
-                                .done(function(response) {
-                                    response = response || {};
-                                    if (response.redirectUrl) {
-                                        location.href = response.redirectUrl;
-                                    } else {
-                                        alert(response.errorMessage || "Invalid data received from server");
-                                        submitEnabled = true;
-                                    }
-                                })
-                                .fail(function() {
-                                    submitEnabled = true;
-                                });
-                        }
-                    }
-                    
-                    // Don\'t actually submit
-                    event.preventDefault();
-                    return false;
-                });
                 
                 $(".cyclosForgotPasswordForm").submit(function(event) {
                     if (submitEnabled) {
@@ -224,6 +251,9 @@ function cyclosLoginForm($atts) {
                     cyclosCaptcha.focus();
                 }).click(stopEvent);
             });
+            ';
+        }
+        $out = $out . '
         </script>
         ';
     }

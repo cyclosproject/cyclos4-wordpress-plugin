@@ -45,30 +45,39 @@ class PaymentRequestService extends Service {
     }
     
     /**
-     * @param payee Java type: org.cyclos.model.banking.accounts.AccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.AccountOwner
+     * @param payee Java type: org.cyclos.model.banking.accounts.InternalAccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.InternalAccountOwner
      * @return Java type: org.cyclos.model.banking.transactions.RequestPaymentData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestData(org.cyclos.model.banking.accounts.AccountOwner,%20org.cyclos.model.banking.accounts.AccountOwner)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestData(org.cyclos.model.banking.accounts.InternalAccountOwner,%20org.cyclos.model.banking.accounts.InternalAccountOwner)
      */
     public function getRequestData($payee, $payer) {
         return $this->run('getRequestData', array($payee, $payer));
     }
     
     /**
-     * @param payee Java type: org.cyclos.model.banking.accounts.AccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.AccountOwner
+     * @param payee Java type: org.cyclos.model.banking.accounts.InternalAccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.InternalAccountOwner
      * @return Java type: org.cyclos.model.banking.transactions.RequestPaymentPayerData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestPaymentPayerData(org.cyclos.model.banking.accounts.AccountOwner,%20org.cyclos.model.banking.accounts.AccountOwner)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestPaymentPayerData(org.cyclos.model.banking.accounts.InternalAccountOwner,%20org.cyclos.model.banking.accounts.InternalAccountOwner)
      */
     public function getRequestPaymentPayerData($payee, $payer) {
         return $this->run('getRequestPaymentPayerData', array($payee, $payer));
     }
     
     /**
-     * @param payee Java type: org.cyclos.model.banking.accounts.AccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.AccountOwner     * @param paymentTypeId Java type: java.lang.Long
+     * @param payee Java type: org.cyclos.model.banking.accounts.InternalAccountOwner     * @param payer Java type: org.cyclos.model.banking.accounts.InternalAccountOwner     * @param paymentTypeId Java type: java.lang.Long
      * @return Java type: org.cyclos.model.banking.transactions.RequestPaymentTypeData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestPaymentTypeData(org.cyclos.model.banking.accounts.AccountOwner,%20org.cyclos.model.banking.accounts.AccountOwner,%20java.lang.Long)
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getRequestPaymentTypeData(org.cyclos.model.banking.accounts.InternalAccountOwner,%20org.cyclos.model.banking.accounts.InternalAccountOwner,%20java.lang.Long)
      */
     public function getRequestPaymentTypeData($payee, $payer, $paymentTypeId) {
         return $this->run('getRequestPaymentTypeData', array($payee, $payer, $paymentTypeId));
+    }
+    
+    /**
+
+     * @return Java type: org.cyclos.model.banking.accounts.PaymentRequestSearchOverviewData
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#getSearchOverviewData()
+     */
+    public function getSearchOverviewData() {
+        return $this->run('getSearchOverviewData', array());
     }
     
     /**
@@ -96,6 +105,15 @@ class PaymentRequestService extends Service {
      */
     public function search($query) {
         return $this->run('search', array($query));
+    }
+    
+    /**
+     * @param params Java type: org.cyclos.model.banking.transactions.PaymentRequestOverviewQuery
+     * @return Java type: org.cyclos.utils.Page
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/PaymentRequestService.html#searchOverview(org.cyclos.model.banking.transactions.PaymentRequestOverviewQuery)
+     */
+    public function searchOverview($params) {
+        return $this->run('searchOverview', array($params));
     }
     
     /**

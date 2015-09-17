@@ -38,6 +38,15 @@ class UserService extends Service {
     }
     
     /**
+     * @param id Java type: java.lang.Long
+     * @return Java type: org.cyclos.model.access.passwords.PasswordInputDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#getConfirmationPasswordInputForRemove(java.lang.Long)
+     */
+    public function getConfirmationPasswordInputForRemove($id) {
+        return $this->run('getConfirmationPasswordInputForRemove', array($id));
+    }
+    
+    /**
 
      * @return Java type: org.cyclos.model.users.users.UserWithRolesVO
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#getCurrentUser()
@@ -110,14 +119,6 @@ class UserService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#markEmailAsValidated(org.cyclos.model.users.users.UserLocatorVO)
-     */
-    public function markEmailAsValidated($locator) {
-        $this->run('markEmailAsValidated', array($locator));
-    }
-    
-    /**
      * @param query Java type: org.cyclos.model.users.users.UserQuery
      * @return Java type: org.cyclos.server.utils.SerializableInputStream
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#printUsers(org.cyclos.model.users.users.UserQuery)
@@ -161,6 +162,14 @@ class UserService extends Service {
     }
     
     /**
+     * @param ids Java type: java.util.Collection     * @param confirmationPassword Java type: java.lang.String
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#removeAllWithConfirmationPassword(java.util.Collection,%20java.lang.String)
+     */
+    public function removeAllWithConfirmationPassword($ids, $confirmationPassword) {
+        $this->run('removeAllWithConfirmationPassword', array($ids, $confirmationPassword));
+    }
+    
+    /**
      * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
      * @return Java type: boolean
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#removeContact(org.cyclos.model.users.users.UserLocatorVO)
@@ -170,19 +179,11 @@ class UserService extends Service {
     }
     
     /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#resendEmailChangeMail(org.cyclos.model.users.users.UserLocatorVO)
+     * @param id Java type: java.lang.Long     * @param confirmationPassword Java type: java.lang.String
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#removeWithConfirmationPassword(java.lang.Long,%20java.lang.String)
      */
-    public function resendEmailChangeMail($locator) {
-        $this->run('resendEmailChangeMail', array($locator));
-    }
-    
-    /**
-     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#resendValidationMail(org.cyclos.model.users.users.UserLocatorVO)
-     */
-    public function resendValidationMail($locator) {
-        $this->run('resendValidationMail', array($locator));
+    public function removeWithConfirmationPassword($id, $confirmationPassword) {
+        $this->run('removeWithConfirmationPassword', array($id, $confirmationPassword));
     }
     
     /**
@@ -192,6 +193,15 @@ class UserService extends Service {
      */
     public function save($object) {
         return $this->run('save', array($object));
+    }
+    
+    /**
+     * @param object Java type: DTO     * @param confirmationPassword Java type: java.lang.String
+     * @return Java type: java.lang.Long
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#saveWithConfirmationPassword(DTO,%20java.lang.String)
+     */
+    public function saveWithConfirmationPassword($object, $confirmationPassword) {
+        return $this->run('saveWithConfirmationPassword', array($object, $confirmationPassword));
     }
     
     /**
@@ -209,24 +219,6 @@ class UserService extends Service {
      */
     public function updateUserActivity($type) {
         $this->run('updateUserActivity', array($type));
-    }
-    
-    /**
-     * @param validationKey Java type: java.lang.String
-     * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#validateEmailChange(java.lang.String)
-     */
-    public function validateEmailChange($validationKey) {
-        return $this->run('validateEmailChange', array($validationKey));
-    }
-    
-    /**
-     * @param validationKey Java type: java.lang.String
-     * @return Java type: org.cyclos.model.users.users.UserValidationData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/UserService.html#validateRegistration(java.lang.String)
-     */
-    public function validateRegistration($validationKey) {
-        return $this->run('validateRegistration', array($validationKey));
     }
     
 }

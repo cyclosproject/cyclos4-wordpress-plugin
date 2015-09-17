@@ -165,6 +165,14 @@ class TokenService extends Service {
     }
     
     /**
+     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO     * @param tokenType Java type: org.cyclos.model.access.principaltypes.TokenPrincipalTypeVO     * @param medium Java type: org.cyclos.model.access.passwordtypes.OTPSendMedium
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/TokenService.html#requestNewOTPForActivateNFCTag(org.cyclos.model.users.users.UserLocatorVO,%20org.cyclos.model.access.principaltypes.TokenPrincipalTypeVO,%20org.cyclos.model.access.passwordtypes.OTPSendMedium)
+     */
+    public function requestNewOTPForActivateNFCTag($locator, $tokenType, $medium) {
+        $this->run('requestNewOTPForActivateNFCTag', array($locator, $tokenType, $medium));
+    }
+    
+    /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/TokenService.html#save(DTO)

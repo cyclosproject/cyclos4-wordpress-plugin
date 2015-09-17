@@ -21,6 +21,15 @@ class AddressService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
+     * @return Java type: org.cyclos.model.access.passwords.PasswordInputDTO
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#getConfirmationPasswordInputForRemove(java.lang.Long)
+     */
+    public function getConfirmationPasswordInputForRemove($id) {
+        return $this->run('getConfirmationPasswordInputForRemove', array($id));
+    }
+    
+    /**
+     * @param id Java type: java.lang.Long
      * @return Java type: D
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#getData(java.lang.Long)
      */
@@ -71,12 +80,37 @@ class AddressService extends Service {
     }
     
     /**
+     * @param ids Java type: java.util.Collection     * @param confirmationPassword Java type: java.lang.String
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#removeAllWithConfirmationPassword(java.util.Collection,%20java.lang.String)
+     */
+    public function removeAllWithConfirmationPassword($ids, $confirmationPassword) {
+        $this->run('removeAllWithConfirmationPassword', array($ids, $confirmationPassword));
+    }
+    
+    /**
+     * @param id Java type: java.lang.Long     * @param confirmationPassword Java type: java.lang.String
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#removeWithConfirmationPassword(java.lang.Long,%20java.lang.String)
+     */
+    public function removeWithConfirmationPassword($id, $confirmationPassword) {
+        $this->run('removeWithConfirmationPassword', array($id, $confirmationPassword));
+    }
+    
+    /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#save(DTO)
      */
     public function save($object) {
         return $this->run('save', array($object));
+    }
+    
+    /**
+     * @param object Java type: DTO     * @param confirmationPassword Java type: java.lang.String
+     * @return Java type: java.lang.Long
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/AddressService.html#saveWithConfirmationPassword(DTO,%20java.lang.String)
+     */
+    public function saveWithConfirmationPassword($object, $confirmationPassword) {
+        return $this->run('saveWithConfirmationPassword', array($object, $confirmationPassword));
     }
     
 }

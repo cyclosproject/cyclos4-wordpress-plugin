@@ -48,6 +48,15 @@ class TransactionCustomFieldService extends Service {
     /**
      * @param transferTypeId Java type: java.lang.Long
      * @return Java type: java.util.List
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransactionCustomFieldService.html#listAllRelated(java.lang.Long)
+     */
+    public function listAllRelated($transferTypeId) {
+        return $this->run('listAllRelated', array($transferTypeId));
+    }
+    
+    /**
+     * @param transferTypeId Java type: java.lang.Long
+     * @return Java type: java.util.List
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransactionCustomFieldService.html#listRelated(java.lang.Long)
      */
     public function listRelated($transferTypeId) {

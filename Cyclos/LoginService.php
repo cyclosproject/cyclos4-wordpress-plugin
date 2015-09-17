@@ -11,6 +11,15 @@ class LoginService extends Service {
     }
     
     /**
+     * @param channelName Java type: java.lang.String
+     * @return Java type: org.cyclos.model.access.LoginData
+     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/LoginService.html#getLoginData(java.lang.String)
+     */
+    public function getLoginData($channelName) {
+        return $this->run('getLoginData', array($channelName));
+    }
+    
+    /**
 
      * @return Java type: org.cyclos.model.users.users.UserLoginResult
      * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/access/LoginService.html#login()
