@@ -280,7 +280,7 @@ function cyclosLogin() {
         $params->remoteAddress = $_SERVER['REMOTE_ADDR'];
         $result = $loginService->loginUser($params);
     } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = "Cyclos server couldn't be contacted";
+        $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {
         switch ($e->errorCode) {
             case 'VALIDATION':
@@ -294,7 +294,7 @@ function cyclosLogin() {
                 $errorMessage = $t->errorAddressBlocked;
                 break;
             default:
-                $errorMessage = "Error while performing login: {$e->errorCode}";
+                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
                 break;
         }
     }
@@ -330,9 +330,9 @@ function cyclosCaptcha() {
         $id = $captchaService->generate();
         $content = $captchaService->readImage($id, null);
     } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = "Cyclos server couldn't be contacted";
+        $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {
-        $errorMessage = "Error while retrieving the image: {$e->errorCode}";
+        $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
     }
     
     // Send the JSON response
@@ -362,7 +362,7 @@ function forgotPassword() {
         $params->captchaText = sanitize_text_field($_POST["captchaText"]);
         $passwordService->forgotPasswordRequest($params);
     } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = "Cyclos server couldn't be contacted";
+        $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {
         switch ($e->errorCode) {
             case 'ENTITY_NOT_FOUND':
@@ -372,7 +372,7 @@ function forgotPassword() {
                 $errorMessage = validationExceptionMessage($e);
                 break;
             default:
-                $errorMessage = "Error while processing the request: {$e->errorCode}";
+                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
                 break;
         }
     }

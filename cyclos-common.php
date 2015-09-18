@@ -52,6 +52,8 @@ class CyclosKey {
         CyclosKey::add($result, "errorLogin", "Error message: invalid login", "Invalid username / password");
         CyclosKey::add($result, "errorAddressBlocked", "Error message: address blocked", "Your access is blocked by exceeding invalid login attempts");
         CyclosKey::add($result, "errorEmailNotFound", "Error message: invalid e-mail", "The given e-mail address didn't match any valid user");
+        CyclosKey::add($result, "errorConnection", "Error message: the Cyclos server couldn't be contacted", "The Cyclos server couldn't be contacted");
+        CyclosKey::add($result, "errorGeneral", "Error message: unknown error", "Error performing the request: {code}");
         return $result;
 	}
 }

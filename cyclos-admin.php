@@ -77,7 +77,7 @@ function cyclosNormalAdminPage() {
         try {
             $user = $userService->getCurrentUser();
         } catch (Cyclos\ConnectionException $e) {
-            $errorMessage = "The Cyclos server couldn't be contacted";
+            $errorMessage = $t->errorConnection;
         } catch (Cyclos\ServiceException $e) {
             $errorMessage = "The current Cyclos plugin settings are not correct.<br>Make sure the administrator user and access client used in Cyclos are active.";
         }
@@ -216,14 +216,14 @@ function cyclosSaveAdminSettings() {
         $result = $accessClientService->activate($actcode, null);
         $token = $result->token;
     } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = "The Cyclos server couldn't be contacted";
+        $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {
         switch ($e->errorCode) {
             case 'CREDENTIALS_NOT_SUPPLIED':
-                $errorMessage = "Please, supply both login name and password for the Cyclos administrator";
+                $errorMessage = "Please, supply both login name and password";
                 break;
             case 'LOGIN':
-                $errorMessage = "Invalid login name and password for the Cyclos administrator";
+                $errorMessage = $t->errorLogin;
                 break;
             case 'REMOTE_ADDRESS_BLOCKED':
                 $errorMessage = "The wordpress IP address has been temporarily blocked by exceeding login attempts";
@@ -235,7 +235,7 @@ function cyclosSaveAdminSettings() {
                 $errorMessage = validationExceptionMessage($e);
                 break;
             default:
-                $errorMessage = "Error activating the access client: {$e->errorCode}";
+                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
         }
     }
     
