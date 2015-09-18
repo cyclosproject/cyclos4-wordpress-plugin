@@ -31,18 +31,15 @@ Author URI: http://www.cyclos.org
 // Block people to access the script directly (against malicious attempts)
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-$phpVersionOkForCyclos = version_compare(PHP_VERSION, '5.3.0', '>=');
-
 function cyclos_plugin_activate() {
-    global $phpVersionOkForCyclos;
-    if (!$phpVersionOkForCyclos) {
+    if (version_compare(PHP_VERSION, '5.3.0', '<')) {
         wp_die('The Cyclos plugin requires at least PHP version 5.3. You have ' . PHP_VERSION);
         deactivate_plugins( basename( __FILE__ ) );
     }
 }
 register_activation_hook( __FILE__, 'cyclos_plugin_activate' );
 
-if ($phpVersionOkForCyclos) {
+if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
     include_once 'cyclos-common.php';
     include_once 'cyclos-admin.php';
     include_once 'cyclos-public.php';
