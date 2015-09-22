@@ -35,3 +35,4 @@ Please follow the instructions given in the wordpress setting menu of the plug-i
 == Changelog ==
 We updated the PHP4 style constructors in WordPress (see https://make.wordpress.org/core/2015/07/02/deprecating-php4-style-constructors-in-wordpress-4-3/)
 and therefore Wordpress version 4.3 (or higher) is required. If you wish to run the plugin on an older version of wordpress or a php version 5.2 or below please use version 1.0 of our plugin.
+
