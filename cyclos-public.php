@@ -126,6 +126,7 @@ function cyclosLoginForm($atts) {
         ';
         $out = $out . '
                 $(".cyclosLoginForm").submit(function(event) {
+        			var submitEnabled = true;
                     if (submitEnabled) {
                         var principal = this.cyclosPrincipal.value.trim();
                         var password = this.cyclosPassword.value.trim();
@@ -249,11 +250,11 @@ function cyclosLoginForm($atts) {
                     var cyclosCaptcha = $("input[name=cyclosCaptcha]");
                     cyclosCaptcha.val("");
                     cyclosCaptcha.focus();
-                }).click(stopEvent);
-            });
+                }).click(stopEvent);            
             ';
         }
         $out = $out . '
+        		});
         </script>
         ';
     }
