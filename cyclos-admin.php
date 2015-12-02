@@ -163,9 +163,9 @@ function cyclosConfigureAccessClient() {
         <li>Make sure this admin group cannot manage any other admins.</li>
         <li>Make sure this admin group can manage all user groups that should login through the wordpress plugin.</li>
         <li>Save the group.</li>
-        <li>Go the the permissions tab (of the group wp_admin_group) and make sure this group has no permissions at all.</li>
-        <li>In: My access clients, enable wp_client and save.</li>
-        <li>In: User management > Login users via web services, make sure this option is enabled.</li>
+        <li>Go to the permissions tab (of the group wp_admin_group) and make sure this group has no permissions at all.</li>
+        <li>Still in the permssion tab > My access clients > enable wp_client.</li>
+        <li>Still in the permssion tab > User management > Login users via web services, make sure this option is enabled. </li>
         <li>Save the permissions.</li>
     </ol>
     <h3>Step 3 (give permissions to manage the access client):</h3>
