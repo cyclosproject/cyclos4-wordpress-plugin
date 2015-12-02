@@ -167,6 +167,7 @@ function cyclosConfigureAccessClient() {
         <li>Still in the permssion tab > My access clients > enable wp_client.</li>
         <li>Still in the permssion tab > User management > Login users via web services, make sure this option is enabled. </li>
         <li>Save the permissions.</li>
+        <li>Go to the default configuration (of the network): System > System configuration > default configuration > Channels > Web services > User identification methods > And select the access client "wp_client" (if you are connecting to a specific url use the configuration of that specific url).</li>
     </ol>
     <h3>Step 3 (give permissions to manage the access client):</h3>
     <ol>
@@ -175,7 +176,7 @@ function cyclosConfigureAccessClient() {
     </ol>
     <h3>Step 4 (configure logout redirect):</h3>
     <ol>
-        <li>Go to the system default configuration: System > System configuration > default configuration.</li>
+        <li>Go to the default configuration (of the network): System > System configuration > default configuration.</li>
         <li>In the configuration set the logout redirect url to your wordpress site: Display > URL to redirect after logout.</li>
         <li>Save the configuration.</li>
     </ol>
