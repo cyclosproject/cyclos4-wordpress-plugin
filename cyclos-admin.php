@@ -86,9 +86,9 @@ function cyclosNormalAdminPage() {
     }
      
      if (empty($errorMessage)) {
-        $display = $user->display ? $user->display : $user->name; ?>
-        <p>Congratulations! Cyclos is corretly configured for: <a href="<?= $rootUrl ?>"><?= $rootUrl ?></a>.<br>
-        The administrator used for access is <b><?= $display ?></b>.</p> 
+        $shortDisplay = $user->shortDisplay ? $user->shortDisplay : $user->username; ?>
+        <p>Congratulations! Cyclos is correctly configured for: <a href="<?= $rootUrl ?>"><?= $rootUrl ?></a>.<br>
+        The administrator used for access is <b><?= $shortDisplay ?></b>.</p> 
         <p>You can show the login form in any page, by inserting the code: <b><code>&#91;cycloslogin&#93;</code></b></p>
 
         <?php
@@ -154,25 +154,27 @@ function cyclosConfigureAccessClient() {
         <li>Create an acces client: System > System configuration > User identification methods > New > Access client.</li>
         <li>Give the access client the name <i>wp_client</i>.
         <li>Under <i>Permission level</i> make sure to select <i>All permissions</i> and it would be a good practice to enable "Allow IP whitelist".</li>
-        <li>Save the access client.</li>            
+        <li>Save the access client.</li>
     </ol>
     <h3>Step 2 (create admin and admin group for wordpress plugin):</h3>
     <ol>
         <li>Create an admin group: System > User configuration > Group > New > Administrators group.</li>
-        <li>Give the group the name <i>wp_admin_group</i>.</li>
-        <li>Make sure this admin group cannot manage any other admins.</li>
-        <li>Make sure this admin group can manage all user groups that should login through the wordpress plugin.</li>
-        <li>Save the group.</li>
-        <li>Go to the permissions tab (of the group wp_admin_group) and make sure this group has no permissions at all.</li>
-        <li>Still in the permssion tab > My access clients > enable wp_client.</li>
-        <li>Still in the permssion tab > User management > Login users via web services, make sure this option is enabled. </li>
+        <li>Give the group the name <i>wp_admin_group</i> and save.</li>
+        <li>Go to the permissions tab (of the group wp_admin_group) and make sure this group has no permissions at all, except for:</li>
+        <li>General: My profile fields > Login name > select "Enable" and "At registration".</li>
+        <li>General: Passwords > Login password > select "Enable" and "At registration".</li>
+        <li>General: My access clients > wp_client > select "Enable".</li>
+        <li>User management: Accessible user groups > select "All groups".</li>
+        <li>User management: Profile fields of other users > make sure for the Login name to select "Visible" and "User keywords".</li>
+        <li>User management: Login users via web services, make sure this option is enabled. </li>
         <li>Save the permissions.</li>
         <li>Go to the default configuration (of the network): System > System configuration > default configuration > Channels > Web services > User identification methods > And select the access client "wp_client" (if you are connecting to a specific url use the configuration of that specific url).</li>
     </ol>
     <h3>Step 3 (give permissions to manage the access client):</h3>
     <ol>
-        <li>Make sure the admin you are logged in with can manage the group <i>wp_admin_group</i>: System > User configuration > Group > <i>Your group</i> > Managed admins.</li>
-        <li>Make sure the admin you are logged in with can manage the access client: System > Groups > <i>Your group</i> > Permissions (tab) > User management > Access clients, select here all options for wp_client (View, Manage, Activate, etc.).</li>
+        <li>Now go to the permission (tab) of the admin you are loged in with: System > User configuration > Group > <i>Your group</i> > Permission (tab), and do the following:</li>
+		<li>Make sure the admin you are logged in with can manage the group <i>wp_admin_group</i>: User management > Make sure "Accessible administrator groups" is set to "All groups" or "wp_admin_group" is selected under "Specific accessible administrator groups".</li>
+        <li>Make sure the admin you are logged in with can manage the access client: User management > Access clients > Select here all options for wp_client (View, Manage, Activate, etc.).</li>
     </ol>
     <h3>Step 4 (configure logout redirect):</h3>
     <ol>
@@ -204,6 +206,7 @@ function cyclosSaveAdminSettings() {
     // Don't sanitize the password, as it can contain any characters and is sent directly via WS
     $adminpwd = $_POST['cyclos_adminpwd'];
     $actcode = sanitize_text_field($_POST['cyclos_actcode']);
+    $token = NULL;
     
     // Configure Cyclos with POST variables
     spl_autoload_register('autoload_cyclos'); 
@@ -217,8 +220,10 @@ function cyclosSaveAdminSettings() {
         $result = $accessClientService->activate($actcode, null);
         $token = $result->token;
     } catch (Cyclos\ConnectionException $e) {
+        $t = cyclosGetTranslations();
         $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {
+        $t = cyclosGetTranslations();
         switch ($e->errorCode) {
             case 'CREDENTIALS_NOT_SUPPLIED':
                 $errorMessage = "Please, supply both login name and password";
