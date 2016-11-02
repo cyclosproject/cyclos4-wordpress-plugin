@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class TransferService extends Service {
 
@@ -11,18 +15,18 @@ class TransferService extends Service {
     }
     
     /**
-     * @param id Java type: java.lang.Long
+     * @param vo Java type: org.cyclos.model.banking.transfers.TransferVO
      * @return Java type: org.cyclos.model.banking.transfers.TransferData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferService.html#getData(org.cyclos.model.banking.transfers.TransferVO)
      */
-    public function getData($id) {
-        return $this->run('getData', array($id));
+    public function getData($vo) {
+        return $this->run('getData', array($vo));
     }
     
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: org.cyclos.model.banking.transfers.TransferVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferService.html#load(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferService.html#load(java.lang.Long)
      */
     public function load($id) {
         return $this->run('load', array($id));
@@ -31,7 +35,7 @@ class TransferService extends Service {
     /**
      * @param transactionNumber Java type: java.lang.String
      * @return Java type: org.cyclos.model.banking.transfers.TransferVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferService.html#loadByTransactionNumber(java.lang.String)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferService.html#loadByTransactionNumber(java.lang.String)
      */
     public function loadByTransactionNumber($transactionNumber) {
         return $this->run('loadByTransactionNumber', array($transactionNumber));
@@ -40,7 +44,7 @@ class TransferService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: org.cyclos.server.utils.SerializableInputStream
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferService.html#printTransfer(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferService.html#printTransfer(java.lang.Long)
      */
     public function printTransfer($id) {
         return $this->run('printTransfer', array($id));

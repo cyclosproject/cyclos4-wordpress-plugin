@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class RecordTypeService extends Service {
 
@@ -13,7 +17,7 @@ class RecordTypeService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#getData(java.lang.Long)
      */
     public function getData($id) {
         return $this->run('getData', array($id));
@@ -22,7 +26,7 @@ class RecordTypeService extends Service {
     /**
      * @param params Java type: DP
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#getDataForNew(DP)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#getDataForNew(DP)
      */
     public function getDataForNew($params) {
         return $this->run('getDataForNew', array($params));
@@ -31,16 +35,25 @@ class RecordTypeService extends Service {
     /**
 
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#list()
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#list()
      */
     public function _list() {
         return $this->run('list', array());
     }
     
     /**
+
+     * @return Java type: java.util.List
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#listRecordTypesForGeneralSearch()
+     */
+    public function listRecordTypesForGeneralSearch() {
+        return $this->run('listRecordTypesForGeneralSearch', array());
+    }
+    
+    /**
      * @param id Java type: java.lang.Long
      * @return Java type: DTO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#load(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#load(java.lang.Long)
      */
     public function load($id) {
         return $this->run('load', array($id));
@@ -48,7 +61,7 @@ class RecordTypeService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#remove(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#remove(java.lang.Long)
      */
     public function remove($id) {
         $this->run('remove', array($id));
@@ -56,7 +69,7 @@ class RecordTypeService extends Service {
     
     /**
      * @param ids Java type: java.util.Collection
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#removeAll(java.util.Collection)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#removeAll(java.util.Collection)
      */
     public function removeAll($ids) {
         $this->run('removeAll', array($ids));
@@ -65,7 +78,7 @@ class RecordTypeService extends Service {
     /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#save(DTO)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordTypeService.html#save(DTO)
      */
     public function save($object) {
         return $this->run('save', array($object));

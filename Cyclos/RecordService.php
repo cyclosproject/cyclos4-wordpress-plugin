@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class RecordService extends Service {
 
@@ -11,9 +15,18 @@ class RecordService extends Service {
     }
     
     /**
+     * @param query Java type: org.cyclos.model.users.records.RecordQuery
+     * @return Java type: org.cyclos.server.utils.SerializableInputStream
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#exportToCSV(org.cyclos.model.users.records.RecordQuery)
+     */
+    public function exportToCSV($query) {
+        return $this->run('exportToCSV', array($query));
+    }
+    
+    /**
      * @param id Java type: java.lang.Long
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getData(java.lang.Long)
      */
     public function getData($id) {
         return $this->run('getData', array($id));
@@ -22,43 +35,52 @@ class RecordService extends Service {
     /**
      * @param params Java type: DP
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#getDataForNew(DP)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getDataForNew(DP)
      */
     public function getDataForNew($params) {
         return $this->run('getDataForNew', array($params));
     }
     
     /**
-     * @param recordTypeId Java type: java.lang.Long     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
-     * @return Java type: org.cyclos.model.users.records.RecordSearchData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#getSearchData(java.lang.Long,%20org.cyclos.model.users.users.UserLocatorVO)
+     * @param locator Java type: org.cyclos.model.banking.accounts.AccountOwnerLocator
+     * @return Java type: java.util.List
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getRecordTypeCount(org.cyclos.model.banking.accounts.AccountOwnerLocator)
      */
-    public function getSearchData($recordTypeId, $locator) {
-        return $this->run('getSearchData', array($recordTypeId, $locator));
+    public function getRecordTypeCount($locator) {
+        return $this->run('getRecordTypeCount', array($locator));
+    }
+    
+    /**
+     * @param recordType Java type: org.cyclos.model.users.recordtypes.RecordTypeVO     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
+     * @return Java type: org.cyclos.model.users.records.RecordSearchData
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getSearchData(org.cyclos.model.users.recordtypes.RecordTypeVO,%20org.cyclos.model.users.users.UserLocatorVO)
+     */
+    public function getSearchData($recordType, $locator) {
+        return $this->run('getSearchData', array($recordType, $locator));
     }
     
     /**
 
-     * @return Java type: org.cyclos.model.users.records.RecordSearchData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#getSharedFieldsSearchData()
+     * @return Java type: org.cyclos.model.users.records.SharedRecordFieldsSearchData
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getSharedFieldsSearchData()
      */
     public function getSharedFieldsSearchData() {
         return $this->run('getSharedFieldsSearchData', array());
     }
     
     /**
-     * @param recordTypeId Java type: java.lang.Long     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
+     * @param recordType Java type: org.cyclos.model.users.recordtypes.RecordTypeVO     * @param locator Java type: org.cyclos.model.users.users.UserLocatorVO
      * @return Java type: org.cyclos.model.users.records.TiledRecordsData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#getTiledRecordsData(java.lang.Long,%20org.cyclos.model.users.users.UserLocatorVO)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#getTiledRecordsData(org.cyclos.model.users.recordtypes.RecordTypeVO,%20org.cyclos.model.users.users.UserLocatorVO)
      */
-    public function getTiledRecordsData($recordTypeId, $locator) {
-        return $this->run('getTiledRecordsData', array($recordTypeId, $locator));
+    public function getTiledRecordsData($recordType, $locator) {
+        return $this->run('getTiledRecordsData', array($recordType, $locator));
     }
     
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: DTO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#load(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#load(java.lang.Long)
      */
     public function load($id) {
         return $this->run('load', array($id));
@@ -67,7 +89,7 @@ class RecordService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: org.cyclos.model.users.records.RecordVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#loadVO(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#loadVO(java.lang.Long)
      */
     public function loadVO($id) {
         return $this->run('loadVO', array($id));
@@ -75,7 +97,7 @@ class RecordService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#remove(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#remove(java.lang.Long)
      */
     public function remove($id) {
         $this->run('remove', array($id));
@@ -83,7 +105,7 @@ class RecordService extends Service {
     
     /**
      * @param ids Java type: java.util.Collection
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#removeAll(java.util.Collection)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#removeAll(java.util.Collection)
      */
     public function removeAll($ids) {
         $this->run('removeAll', array($ids));
@@ -92,7 +114,7 @@ class RecordService extends Service {
     /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#save(DTO)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#save(DTO)
      */
     public function save($object) {
         return $this->run('save', array($object));
@@ -101,7 +123,7 @@ class RecordService extends Service {
     /**
      * @param query Java type: org.cyclos.model.users.records.RecordQuery
      * @return Java type: org.cyclos.utils.Page
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/users/RecordService.html#search(org.cyclos.model.users.records.RecordQuery)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/users/RecordService.html#search(org.cyclos.model.users.records.RecordQuery)
      */
     public function search($query) {
         return $this->run('search', array($query));

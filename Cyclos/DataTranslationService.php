@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class DataTranslationService extends Service {
 
@@ -11,29 +15,29 @@ class DataTranslationService extends Service {
     }
     
     /**
-     * @param languageId Java type: java.lang.Long     * @param type Java type: org.cyclos.model.contentmanagement.translations.DataTranslationType
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO     * @param type Java type: org.cyclos.model.contentmanagement.translations.DataTranslationType
      * @return Java type: org.cyclos.model.contentmanagement.translations.DataTranslationData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#getData(java.lang.Long,%20org.cyclos.model.contentmanagement.translations.DataTranslationType)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#getData(org.cyclos.model.system.languages.LanguageVO,%20org.cyclos.model.contentmanagement.translations.DataTranslationType)
      */
-    public function getData($languageId, $type) {
-        return $this->run('getData', array($languageId, $type));
+    public function getData($language, $type) {
+        return $this->run('getData', array($language, $type));
     }
     
     /**
-     * @param languageId Java type: java.lang.Long
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO
      * @return Java type: org.cyclos.model.contentmanagement.translations.DataTranslationTypeData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#getTypeData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#getTypeData(org.cyclos.model.system.languages.LanguageVO)
      */
-    public function getTypeData($languageId) {
-        return $this->run('getTypeData', array($languageId));
+    public function getTypeData($language) {
+        return $this->run('getTypeData', array($language));
     }
     
     /**
-     * @param languageId Java type: java.lang.Long     * @param translations Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#translate(java.lang.Long,%20java.util.List)
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO     * @param translations Java type: java.util.List
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/DataTranslationService.html#translate(org.cyclos.model.system.languages.LanguageVO,%20java.util.List)
      */
-    public function translate($languageId, $translations) {
-        $this->run('translate', array($languageId, $translations));
+    public function translate($language, $translations) {
+        $this->run('translate', array($language, $translations));
     }
     
 }

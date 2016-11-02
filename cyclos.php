@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Cyclos
-Plugin URI: http://www.cyclos.org/wordpress_plugin
+Plugin URI: http://www.cyclos.org/worpressplugin/
 Description: Integrates the Cyclos login form into your WordPress blog.
-Version: 1.1.2
+Version: 1.1.3
 Author: The Cyclos team
 Author URI: http://www.cyclos.org
 */

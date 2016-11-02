@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class ConfigurationService extends Service {
 
@@ -11,18 +15,18 @@ class ConfigurationService extends Service {
     }
     
     /**
-     * @param id Java type: java.lang.Long
+     * @param configuration Java type: org.cyclos.model.system.configurations.ConfigurationVO
      * @return Java type: org.cyclos.model.system.configurations.ActiveConfigurationData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getActiveConfiguration(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getActiveConfiguration(org.cyclos.model.system.configurations.ConfigurationVO)
      */
-    public function getActiveConfiguration($id) {
-        return $this->run('getActiveConfiguration', array($id));
+    public function getActiveConfiguration($configuration) {
+        return $this->run('getActiveConfiguration', array($configuration));
     }
     
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getData(java.lang.Long)
      */
     public function getData($id) {
         return $this->run('getData', array($id));
@@ -31,7 +35,7 @@ class ConfigurationService extends Service {
     /**
      * @param params Java type: DP
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getDataForNew(DP)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getDataForNew(DP)
      */
     public function getDataForNew($params) {
         return $this->run('getDataForNew', array($params));
@@ -40,7 +44,7 @@ class ConfigurationService extends Service {
     /**
 
      * @return Java type: org.cyclos.model.system.configurations.ConfigurationVO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getDefault()
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#getDefault()
      */
     public function getDefault() {
         return $this->run('getDefault', array());
@@ -49,7 +53,7 @@ class ConfigurationService extends Service {
     /**
 
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#list()
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#list()
      */
     public function _list() {
         return $this->run('list', array());
@@ -58,7 +62,7 @@ class ConfigurationService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: DTO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#load(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#load(java.lang.Long)
      */
     public function load($id) {
         return $this->run('load', array($id));
@@ -66,7 +70,7 @@ class ConfigurationService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#remove(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#remove(java.lang.Long)
      */
     public function remove($id) {
         $this->run('remove', array($id));
@@ -74,7 +78,7 @@ class ConfigurationService extends Service {
     
     /**
      * @param ids Java type: java.util.Collection
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#removeAll(java.util.Collection)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#removeAll(java.util.Collection)
      */
     public function removeAll($ids) {
         $this->run('removeAll', array($ids));
@@ -83,7 +87,7 @@ class ConfigurationService extends Service {
     /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#save(DTO)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/system/ConfigurationService.html#save(DTO)
      */
     public function save($object) {
         return $this->run('save', array($object));

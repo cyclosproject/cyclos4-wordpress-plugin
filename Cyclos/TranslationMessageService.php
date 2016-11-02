@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class TranslationMessageService extends Service {
 
@@ -11,72 +15,72 @@ class TranslationMessageService extends Service {
     }
     
     /**
-     * @param languageId Java type: java.lang.Long
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO
      * @return Java type: org.cyclos.model.contentmanagement.translations.ApplicationTranslationData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getApplicationTranslationData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getApplicationTranslationData(org.cyclos.model.system.languages.LanguageVO)
      */
-    public function getApplicationTranslationData($languageId) {
-        return $this->run('getApplicationTranslationData', array($languageId));
+    public function getApplicationTranslationData($language) {
+        return $this->run('getApplicationTranslationData', array($language));
     }
     
     /**
-     * @param languageId Java type: java.lang.Long
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO
      * @return Java type: java.util.Properties
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getCustomizedKeysPerLanguage(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getCustomizedKeysPerLanguage(org.cyclos.model.system.languages.LanguageVO)
      */
-    public function getCustomizedKeysPerLanguage($languageId) {
-        return $this->run('getCustomizedKeysPerLanguage', array($languageId));
+    public function getCustomizedKeysPerLanguage($language) {
+        return $this->run('getCustomizedKeysPerLanguage', array($language));
     }
     
     /**
-     * @param languageId Java type: java.lang.Long     * @param key Java type: java.lang.String
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO     * @param key Java type: java.lang.String
      * @return Java type: org.cyclos.model.contentmanagement.translations.TranslationKeyData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getTranslationKeyData(java.lang.Long,%20java.lang.String)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#getTranslationKeyData(org.cyclos.model.system.languages.LanguageVO,%20java.lang.String)
      */
-    public function getTranslationKeyData($languageId, $key) {
-        return $this->run('getTranslationKeyData', array($languageId, $key));
+    public function getTranslationKeyData($language, $key) {
+        return $this->run('getTranslationKeyData', array($language, $key));
     }
     
     /**
 
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#listTranslatableLanguages()
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#listTranslatableLanguages()
      */
     public function listTranslatableLanguages() {
         return $this->run('listTranslatableLanguages', array());
     }
     
     /**
-     * @param languageId Java type: java.lang.Long     * @param key Java type: java.lang.String
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#restoreOriginalTranslation(java.lang.Long,%20java.lang.String)
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO     * @param key Java type: java.lang.String
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#restoreOriginalTranslation(org.cyclos.model.system.languages.LanguageVO,%20java.lang.String)
      */
-    public function restoreOriginalTranslation($languageId, $key) {
-        $this->run('restoreOriginalTranslation', array($languageId, $key));
+    public function restoreOriginalTranslation($language, $key) {
+        $this->run('restoreOriginalTranslation', array($language, $key));
     }
     
     /**
-     * @param languageId Java type: java.lang.Long     * @param key Java type: java.lang.String     * @param value Java type: java.lang.String
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#saveKey(java.lang.Long,%20java.lang.String,%20java.lang.String)
+     * @param language Java type: org.cyclos.model.system.languages.LanguageVO     * @param key Java type: java.lang.String     * @param value Java type: java.lang.String
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#saveKey(org.cyclos.model.system.languages.LanguageVO,%20java.lang.String,%20java.lang.String)
      */
-    public function saveKey($languageId, $key, $value) {
-        $this->run('saveKey', array($languageId, $key, $value));
+    public function saveKey($language, $key, $value) {
+        $this->run('saveKey', array($language, $key, $value));
     }
     
     /**
      * @param params Java type: org.cyclos.model.contentmanagement.translations.TranslationQuery
      * @return Java type: org.cyclos.utils.Page
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#searchKeys(org.cyclos.model.contentmanagement.translations.TranslationQuery)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#searchKeys(org.cyclos.model.contentmanagement.translations.TranslationQuery)
      */
     public function searchKeys($params) {
         return $this->run('searchKeys', array($params));
     }
     
     /**
-     * @param keys Java type: java.util.Properties     * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#setCustomizedKeysPerLanguage(java.util.Properties,%20java.lang.Long)
+     * @param keys Java type: java.util.Properties     * @param language Java type: org.cyclos.model.system.languages.LanguageVO
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/contentmanagement/TranslationMessageService.html#setCustomizedKeysPerLanguage(java.util.Properties,%20org.cyclos.model.system.languages.LanguageVO)
      */
-    public function setCustomizedKeysPerLanguage($keys, $id) {
-        $this->run('setCustomizedKeysPerLanguage', array($keys, $id));
+    public function setCustomizedKeysPerLanguage($keys, $language) {
+        $this->run('setCustomizedKeysPerLanguage', array($keys, $language));
     }
     
 }

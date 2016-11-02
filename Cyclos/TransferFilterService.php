@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class TransferFilterService extends Service {
 
@@ -13,7 +17,7 @@ class TransferFilterService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#getData(java.lang.Long)
      */
     public function getData($id) {
         return $this->run('getData', array($id));
@@ -22,25 +26,25 @@ class TransferFilterService extends Service {
     /**
      * @param params Java type: DP
      * @return Java type: D
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#getDataForNew(DP)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#getDataForNew(DP)
      */
     public function getDataForNew($params) {
         return $this->run('getDataForNew', array($params));
     }
     
     /**
-     * @param fromAccountTypeId Java type: java.lang.Long     * @param toAccountTypeId Java type: java.lang.Long
+     * @param fromAccountTypeVO Java type: org.cyclos.model.banking.accounttypes.AccountTypeVO     * @param toAccountTypeVO Java type: org.cyclos.model.banking.accounttypes.AccountTypeVO
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#list(java.lang.Long,%20java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#list(org.cyclos.model.banking.accounttypes.AccountTypeVO,%20org.cyclos.model.banking.accounttypes.AccountTypeVO)
      */
-    public function _list($fromAccountTypeId, $toAccountTypeId) {
-        return $this->run('list', array($fromAccountTypeId, $toAccountTypeId));
+    public function _list($fromAccountTypeVO, $toAccountTypeVO) {
+        return $this->run('list', array($fromAccountTypeVO, $toAccountTypeVO));
     }
     
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: DTO
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#load(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#load(java.lang.Long)
      */
     public function load($id) {
         return $this->run('load', array($id));
@@ -48,7 +52,7 @@ class TransferFilterService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#remove(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#remove(java.lang.Long)
      */
     public function remove($id) {
         $this->run('remove', array($id));
@@ -56,7 +60,7 @@ class TransferFilterService extends Service {
     
     /**
      * @param ids Java type: java.util.Collection
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#removeAll(java.util.Collection)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#removeAll(java.util.Collection)
      */
     public function removeAll($ids) {
         $this->run('removeAll', array($ids));
@@ -65,7 +69,7 @@ class TransferFilterService extends Service {
     /**
      * @param object Java type: DTO
      * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#save(DTO)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#save(DTO)
      */
     public function save($object) {
         return $this->run('save', array($object));
@@ -74,7 +78,7 @@ class TransferFilterService extends Service {
     /**
      * @param query Java type: org.cyclos.model.banking.transferfilters.TransferFilterQuery
      * @return Java type: org.cyclos.utils.Page
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#search(org.cyclos.model.banking.transferfilters.TransferFilterQuery)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/TransferFilterService.html#search(org.cyclos.model.banking.transferfilters.TransferFilterQuery)
      */
     public function search($query) {
         return $this->run('search', array($query));

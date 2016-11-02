@@ -1,8 +1,12 @@
 <?php namespace Cyclos;
 
 /**
- * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html 
- * WARNING: The API is still experimental, and is subject to change.
+ * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html
+ * 
+ * Generated with Cyclos 4.7
+ * 
+ * WARNING: The API is subject to change between revision versions
+ * (for example, 4.5 to 4.6).
  */
 class AccountFeeLogService extends Service {
 
@@ -13,25 +17,25 @@ class AccountFeeLogService extends Service {
     /**
      * @param id Java type: java.lang.Long
      * @return Java type: org.cyclos.model.banking.accountfees.AccountFeeLogData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#getData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#getData(java.lang.Long)
      */
     public function getData($id) {
         return $this->run('getData', array($id));
     }
     
     /**
-     * @param accountFeeId Java type: java.lang.Long
+     * @param accountFee Java type: org.cyclos.model.banking.accountfees.AccountFeeVO
      * @return Java type: org.cyclos.model.banking.accountfees.AccountFeeLogsSearchData
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#getSearchData(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#getSearchData(org.cyclos.model.banking.accountfees.AccountFeeVO)
      */
-    public function getSearchData($accountFeeId) {
-        return $this->run('getSearchData', array($accountFeeId));
+    public function getSearchData($accountFee) {
+        return $this->run('getSearchData', array($accountFee));
     }
     
     /**
 
      * @return Java type: java.util.List
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#listFeeExecutions()
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#listFeeExecutions()
      */
     public function listFeeExecutions() {
         return $this->run('listFeeExecutions', array());
@@ -39,25 +43,25 @@ class AccountFeeLogService extends Service {
     
     /**
      * @param id Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#rechargeFailed(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#rechargeFailed(java.lang.Long)
      */
     public function rechargeFailed($id) {
         $this->run('rechargeFailed', array($id));
     }
     
     /**
-     * @param accountFeeId Java type: java.lang.Long
+     * @param accountFee Java type: org.cyclos.model.banking.accountfees.AccountFeeVO
      * @return Java type: java.lang.Long
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#runNow(java.lang.Long)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#runNow(org.cyclos.model.banking.accountfees.AccountFeeVO)
      */
-    public function runNow($accountFeeId) {
-        return $this->run('runNow', array($accountFeeId));
+    public function runNow($accountFee) {
+        return $this->run('runNow', array($accountFee));
     }
     
     /**
      * @param query Java type: org.cyclos.model.banking.accountfees.AccountFeeLogQuery
      * @return Java type: org.cyclos.utils.Page
-     * @see http://www.cyclos.org/dev/current/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#search(org.cyclos.model.banking.accountfees.AccountFeeLogQuery)
+     * @see http://documentation.cyclos.org/4.7/ws-api-docs/org/cyclos/services/banking/AccountFeeLogService.html#search(org.cyclos.model.banking.accountfees.AccountFeeLogQuery)
      */
     public function search($query) {
         return $this->run('search', array($query));
