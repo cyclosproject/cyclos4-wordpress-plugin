@@ -3,7 +3,7 @@
 Plugin Name: Cyclos
 Plugin URI: http://www.cyclos.org/worpressplugin/
 Description: Integrates the Cyclos login form into your WordPress blog.
-Version: 1.1.3
+Version: 1.1.4
 Author: The Cyclos team
 Author URI: http://www.cyclos.org
 */
