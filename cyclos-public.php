@@ -29,7 +29,7 @@ add_shortcode( 'cycloslogin', 'cyclosLoginForm' );
 add_action( 'wp_enqueue_scripts', 'registerCyclosStyles' );
 
 // Create the widget to display the login form
-add_action('widgets_init', create_function('', 'return register_widget("CyclosPlugin");'));
+add_action('widgets_init',  function(){return register_widget("CyclosPlugin");});
 class CyclosPlugin extends WP_Widget {
 
     // constructor
@@ -329,7 +329,7 @@ function cyclosCaptcha() {
     // Generate a captcha
     try {
         $id = $captchaService->generate();
-        $content = $captchaService->readImage($id, null);
+        $content = $captchaService->readImage($id, null, null);
     } catch (Cyclos\ConnectionException $e) {
         $errorMessage = $t->errorConnection;
     } catch (Cyclos\ServiceException $e) {

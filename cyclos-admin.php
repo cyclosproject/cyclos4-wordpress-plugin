@@ -275,14 +275,14 @@ function cyclosTranslate() {
             <input type="hidden" name="edit_cyclos_translation" value="Y">
             <h2>Cyclos Plugin Settings</h2>
             <hr>
-            <table> <?
+            <table> <?php
             foreach (CyclosKey::getAll() as $k => $key) { ?>
                 <tr>
                     <td><?= $key->title ?></td>
                     <td>&nbsp;<input type="text" name="<?= $key->option ?>" value="<?= $t->$k ?>" size="50"></td>
                     <td>&nbsp; <i>e.g. <?= $key->defaultValue ?></i></td>
                 </tr>
-        <?  } ?>
+        <?php  } ?>
             </table>
             <hr/>
             <div><input type="submit" name="Submit" value="Save settings"/></div>
