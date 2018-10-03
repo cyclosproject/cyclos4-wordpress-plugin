@@ -4,7 +4,7 @@ Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance
 Donate link: http://www.cyclos.org/contributors
 Requires at least: 4.3
 Tested up to: 4.9.2
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2
 
 This plugin enables you to easily add a Cyclos login form to your wordpress website.
@@ -33,6 +33,9 @@ Please follow the instructions given in the wordpress setting menu of the plug-i
 4. Customizing labels of the form.
 
 == Changelog ==
+= 1.1.6 - 2018-10-03 =
+We added support to go to a specific page in Cyclos instead of the home after a successfully login.
+
 = 1.1.5 - 2018-01-25 =
 We updated the plugin to be compatible with PHP 7.2.
 

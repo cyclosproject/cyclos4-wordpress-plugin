@@ -68,6 +68,10 @@ function cyclosLoginForm($atts) {
     // Returns the html to show when shortcode is used.
 
     if ($showForgotPassword) {
+        $returnToValue = "";
+        if(isset($_GET["returnTo"])){
+            $returnToValue = $_GET["returnTo"];
+        }
         $out = $out . '
             <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
                 <form class="cyclosForgotPasswordForm" action="#" method="post">
@@ -98,6 +102,9 @@ function cyclosLoginForm($atts) {
         <div class="cyclosFormBox cyclosLoginContainer">
             <form class="cyclosLoginForm" action="#" method="post">
                 <div class="cyclosFormTitle">' . $t->loginTitle . '</div>
+                <div>
+                    <input name="cyclosReturn" value="'. $returnToValue .'" type="hidden">
+                </div>
                 <div class="cyclosFormField">
                     <input placeholder="' . $t->loginName . '" name="cyclosPrincipal" type="text" required>
                 </div>
@@ -130,11 +137,13 @@ function cyclosLoginForm($atts) {
                     if (submitEnabled) {
                         var principal = this.cyclosPrincipal.value.trim();
                         var password = this.cyclosPassword.value.trim();
+                        var returnTo = this.cyclosReturn.value.trim();
                         
                         if (principal != "" && password != "") {
                             var data = {
                                 "principal": principal,
-                                "password": password
+                                "password": password,
+                                "returnTo": returnTo
                             }
 
                             submitEnabled = false;
@@ -143,7 +152,11 @@ function cyclosLoginForm($atts) {
                                 .done(function(response) {
                                     response = response || {};
                                     if (response.redirectUrl) {
-                                        location.href = response.redirectUrl;
+                                        var redirect = response.redirectUrl;
+                                        if(response.returnTo && response.returnTo !== ""){
+                                            redirect += "&returnTo=" + encodeURIComponent(response.returnTo);
+                                        }
+                                        location.href = redirect;
                                     } else {
                                         alert(response.errorMessage || "Invalid data received from server");
                                         submitEnabled = true;
@@ -278,6 +291,7 @@ function cyclosLogin() {
         $params = new stdclass();
         $params->user = array("principal" => sanitize_text_field($_POST["principal"]));
         $params->password = sanitize_text_field($_POST["password"]);
+        $returnTo = $_POST["returnTo"];
         $params->remoteAddress = $_SERVER['REMOTE_ADDR'];
         $result = $loginService->loginUser($params);
     } catch (Cyclos\ConnectionException $e) {
@@ -299,7 +313,6 @@ function cyclosLogin() {
                 break;
         }
     }
-    
     // Get the redirect url if there were no errors
     if (!empty($result)) {
         $redirectUrl = Cyclos\Configuration::getRootUrl() . "?sessionToken=" . $result->sessionToken;
@@ -308,6 +321,7 @@ function cyclosLogin() {
     // Send the JSON response
     $response = array(
         "redirectUrl" => $redirectUrl,
+        "returnTo" => $returnTo,
         "errorMessage" => $errorMessage
     );
     wp_send_json($response);
