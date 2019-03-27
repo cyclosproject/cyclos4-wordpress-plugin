@@ -24,6 +24,7 @@ defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
 /*#################### Creates admin settings page ####################*/
 add_action('admin_menu', 'cyclosAdminMenu');
+
 function cyclosAdminMenu() {
     add_options_page('Cyclos', 'Cyclos','manage_options', 'Cyclos', 'cyclosAdminSettingsPage');
 }
@@ -71,22 +72,20 @@ function cyclosNormalAdminPage() {
     $token = get_option('cyclos_token');
     if (!empty($rootUrl) && !empty($token)) {
         configureCyclos();
-        $userService = new Cyclos\UserService();
+        $authService = new Cyclos\AuthService();
         
         // Get the logged user
         try {
-            $user = $userService->getCurrentUser();
-        } catch (Cyclos\ConnectionException $e) {
-            $errorMessage = $t->errorConnection;
-        } catch (Cyclos\ServiceException $e) {
-            $errorMessage = "The current Cyclos plugin settings are not correct.<br>Make sure the administrator user and access client used in Cyclos are active.";
+            $auth = $authService->getCurrentAuth();
+        } catch (\Exception $e) {
+            $errorMessage = handleError($e);
         }
     } else {
         $errorMessage = "Cyclos plugin is not correctly configured";
     }
      
      if (empty($errorMessage)) {
-        $shortDisplay = $user->shortDisplay ? $user->shortDisplay : $user->username; ?>
+        $shortDisplay = !empty($auth->user->shortDisplay) ? $auth->user->shortDisplay : $auth->user->display; ?>
         <p>Congratulations! Cyclos is correctly configured for: <a href="<?= $rootUrl ?>"><?= $rootUrl ?></a>.<br>
         The administrator used for access is <b><?= $shortDisplay ?></b>.</p> 
         <p>You can show the login form in any page, by inserting the code: <b><code>&#91;cycloslogin&#93;</code></b></p>
@@ -116,6 +115,7 @@ function cyclosConfigureAccessClient() {
     $url = get_option('cyclos_url');
     $adminuser = get_option('cyclos_adminuser');
     $token = get_option('cyclos_token');
+    $redirectUrl = get_option('cyclos_redirectUrl');
 ?>
 <div class="wrap">
     <form name="cyclos_form" method="post" action="#">
@@ -127,6 +127,10 @@ function cyclosConfigureAccessClient() {
                 <td>Cyclos URL:</td>
                 <td>&nbsp;<input type="text" name="cyclos_url" value="<?= $url ?>" size="50"></td>
                 <td>&nbsp; <i>e.g. https://demo.cyclos.org</i></td></tr>
+            <tr>
+                <td>Redirect URL:</td>
+                <td>&nbsp;<input type="text" name="redirect_url" value="<?= $redirectUrl ?>" size="50"></td>
+                <td>&nbsp; <i>e.g. https://myfrontendsite.com</i></td></tr>
             <tr>
                 <td>Cyclos admin username:</td>
                 <td>&nbsp;<input type="text" name="cyclos_adminuser" value="<?= $adminuser ?>" size="50"></td>
@@ -202,6 +206,7 @@ function cyclosConfigureAccessClient() {
 function cyclosSaveAdminSettings() {
     // first retreive the posted data
     $url = esc_url($_POST['cyclos_url']);
+    $redirectUrl = esc_url($_POST['redirect_url']);
     $adminuser = sanitize_text_field($_POST['cyclos_adminuser']);
     // Don't sanitize the password, as it can contain any characters and is sent directly via WS
     $adminpwd = $_POST['cyclos_adminpwd'];
@@ -212,6 +217,7 @@ function cyclosSaveAdminSettings() {
     spl_autoload_register('autoload_cyclos'); 
     Cyclos\Configuration::setRootUrl($url);
     Cyclos\Configuration::setAuthentication($adminuser, $adminpwd);
+    Cyclos\Configuration::setRedirectUrl($redirectUrl);
     
     // Activate the access client
     $accessClientService = new Cyclos\AccessClientService();
@@ -219,35 +225,14 @@ function cyclosSaveAdminSettings() {
     try {
         $result = $accessClientService->activate($actcode, null);
         $token = $result->token;
-    } catch (Cyclos\ConnectionException $e) {
-        $t = cyclosGetTranslations();
-        $errorMessage = $t->errorConnection;
-    } catch (Cyclos\ServiceException $e) {
-        $t = cyclosGetTranslations();
-        switch ($e->errorCode) {
-            case 'CREDENTIALS_NOT_SUPPLIED':
-                $errorMessage = "Please, supply both login name and password";
-                break;
-            case 'LOGIN':
-                $errorMessage = $t->errorLogin;
-                break;
-            case 'REMOTE_ADDRESS_BLOCKED':
-                $errorMessage = "The wordpress IP address has been temporarily blocked by exceeding login attempts";
-                break;
-            case 'ENTITY_NOT_FOUND':
-                $errorMessage = "The given activation code didn't match an access client pending activation";
-                break;
-            case 'VALIDATION':
-                $errorMessage = validationExceptionMessage($e);
-                break;
-            default:
-                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
-        }
+    } catch(\Exception $e) {
+    	$errorMessage = handleError($e);
     }
     
     if (empty($errorMessage)) {
         // Save the options
         update_option('cyclos_url', $url);
+        update_option('cyclos_redirectUrl', $redirectUrl);
         update_option('cyclos_adminuser', $adminuser);
         update_option('cyclos_token', $token);
         ?>

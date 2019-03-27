@@ -22,14 +22,16 @@
 // Block people to access the script directly (against malicious attempts)
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
+// Register style sheet
+add_action('wp_print_styles', 'registerCyclosStyles', 99);
+add_action('wp_enqueue_scripts', 'registerJQuery');
+
 /*#################### Creates shortcode and inserts login form ####################*/
 add_shortcode( 'cycloslogin', 'cyclosLoginForm' );
 
-// Register style sheet
-add_action( 'wp_enqueue_scripts', 'registerCyclosStyles' );
-
 // Create the widget to display the login form
 add_action('widgets_init',  function(){return register_widget("CyclosPlugin");});
+
 class CyclosPlugin extends WP_Widget {
 
     // constructor
@@ -44,40 +46,55 @@ class CyclosPlugin extends WP_Widget {
 }
 
 function registerCyclosStyles() {
-    wp_register_style( 'cyclosWordpressStylesheet', plugin_dir_url( __FILE__) . 'stylesheet.css');
-    wp_enqueue_style( 'cyclosWordpressStylesheet' );
+    wp_register_style('cyclosWordpressStylesheet', plugin_dir_url( __FILE__) . 'stylesheet.css');
+    wp_enqueue_style('cyclosWordpressStylesheet' );
+    wp_enqueue_style('google-fonts','//fonts.googleapis.com/css?family=Open+Sans', array(), NULL);
 }    
+
+function registerJQuery() {
+	wp_enqueue_script('jquery');
+}
 
 // Function that is called when the shortcode is used
 function cyclosLoginForm($atts) {
     configureCyclos();
-    $loginService = new Cyclos\LoginService();
+    $authService = new Cyclos\AuthService();
 
     $out = '';
+    $returnToValue = '';
 
+    // Execute this request as guest, otherwise it would return 204 (no content)
+    Cyclos\Configuration::setGuest(true);
+    // Request login data for main channel
+    Cyclos\Configuration::setChannel('main');
+    
     // See if the forgot password should be shown
     try {
-        $loginData = $loginService->getLoginData('main');
-        $showForgotPassword = $loginData->showForgotPassword;
-    } catch (Exception $e) {
+        $loginData = $authService->getDataForLogin();          
+        $showForgotPassword = !empty($loginData) && 
+        						!empty($loginData->forgotPasswordMediums) && 
+        						in_array('email', $loginData->forgotPasswordMediums, TRUE);	
+    } catch (Exception $e) {    	
         $showForgotPassword = true;
     }
+    
+    // Revert guest request and headers
+    Cyclos\Configuration::setGuest(false);
+    Cyclos\Configuration::setChannel(NULL);
 
     $t = cyclosGetTranslations();
     
     // Returns the html to show when shortcode is used.
 
     if ($showForgotPassword) {
-        $returnToValue = "";
         if(isset($_GET["returnTo"])){
             $returnToValue = $_GET["returnTo"];
         }
         $out = $out . '
             <div class="cyclosFormBox cyclosForgotContainer" style="display:none">
-                <form class="cyclosForgotPasswordForm" action="#" method="post">
-                    <div class="cyclosFormTitle">' . $t->forgotTitle . '</div>
+                <form class="cyclosForgotPasswordForm" action="#" method="post">                    
                     <div class="cyclosFormField">
-                        <input placeholder="' . $t->forgotEmail . '" name="cyclosEmail" type="email" required>
+                        <input placeholder="' . $t->forgotEmail . '" name="cyclosEmail" type="text" required>
                     </div>
                     <div class="cyclosFormField">
                         <div>
@@ -100,8 +117,7 @@ function cyclosLoginForm($atts) {
     }
     $out = $out . '
         <div class="cyclosFormBox cyclosLoginContainer">
-            <form class="cyclosLoginForm" action="#" method="post">
-                <div class="cyclosFormTitle">' . $t->loginTitle . '</div>
+            <form class="cyclosLoginForm" action="#" method="post">                
                 <div>
                     <input name="cyclosReturn" value="'. $returnToValue .'" type="hidden">
                 </div>
@@ -150,13 +166,9 @@ function cyclosLoginForm($atts) {
                             
                             $.post("' . admin_url('admin-ajax.php?action=cyclos_login') . '", data)
                                 .done(function(response) {
-                                    response = response || {};
+                                    response = response || {};                            		
                                     if (response.redirectUrl) {
-                                        var redirect = response.redirectUrl;
-                                        if(response.returnTo && response.returnTo !== ""){
-                                            redirect += "&returnTo=" + encodeURIComponent(response.returnTo);
-                                        }
-                                        location.href = redirect;
+                                        location.href = response.redirectUrl;                                        
                                     } else {
                                         alert(response.errorMessage || "Invalid data received from server");
                                         submitEnabled = true;
@@ -241,6 +253,7 @@ function cyclosLoginForm($atts) {
                                     if (response.errorMessage) {
                                         alert(response.errorMessage || "Invalid data received from server");
                                     } else {
+                            			captchaId = null;
                                         showLogin();
                                         alert("' . $t->forgotDone . '".replace("{email}", email));
                                     }
@@ -279,50 +292,57 @@ add_action( 'wp_ajax_cyclos_login', 'cyclosLogin' );
 add_action( 'wp_ajax_nopriv_cyclos_login', 'cyclosLogin' );
 function cyclosLogin() {
     configureCyclos();
-    $loginService = new Cyclos\LoginService();
+    $sessionsService = new Cyclos\SessionsService();
     
     $t = cyclosGetTranslations();
 
     $redirectUrl = NULL;
     $errorMessage = NULL;
     
+    $returnTo = $_POST['returnTo'];        
+
     // Perform the login
-    try {
-        $params = new stdclass();
-        $params->user = array("principal" => sanitize_text_field($_POST["principal"]));
-        $params->password = sanitize_text_field($_POST["password"]);
-        $returnTo = $_POST["returnTo"];
-        $params->remoteAddress = $_SERVER['REMOTE_ADDR'];
-        $result = $loginService->loginUser($params);
-    } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = $t->errorConnection;
-    } catch (Cyclos\ServiceException $e) {
-        switch ($e->errorCode) {
-            case 'VALIDATION':
-                $errorMessage = validationExceptionMessage($e);
-                break;
-            case 'LOGIN':
-            case 'ENTITY_NOT_FOUND':
-                $errorMessage = $t->errorLogin;
-                break;
-            case 'REMOTE_ADDRESS_BLOCKED':
-                $errorMessage = $t->errorAddressBlocked;
-                break;
-            default:
-                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
-                break;
-        }
+    try {        
+        $result = $sessionsService->loginUser(
+        			sanitize_text_field($_POST['principal']), 
+        			sanitize_text_field($_POST['password']),
+        			$_SERVER['REMOTE_ADDR']);       
+    } catch (\Exception $e) {    	
+        $errorMessage = handleError($e);
     }
     // Get the redirect url if there were no errors
     if (!empty($result)) {
-        $redirectUrl = Cyclos\Configuration::getRootUrl() . "?sessionToken=" . $result->sessionToken;
+    	// Check if there is a redirect URL defined otherwise go to classic frontend
+    	$redirectUrl = Cyclos\Configuration::getRedirectUrl();    	
+    	if(empty($redirectUrl)) {
+    		$redirectUrl = Cyclos\Configuration::getRootUrl();    		
+    	}    	
+    
+    	// Replace with the relative path of the external site (may apply when the
+    	// session expires so we can redirect the user to the last visited page)    	    	
+    	if(strpos($redirectUrl, '%p') !== false) {	    		
+			// Append path at the specified position
+	    	$redirectUrl = str_replace('%p', (empty($returnTo) ? '/' : $returnTo), $redirectUrl);
+		} else {	    		
+	    	// Append path at the end
+	    	$separator = strripos($redirectUrl, '/') !== false ? '' : '/';
+	    	$redirectUrl .= $separator . (empty($returnTo) ? '' : $returnTo);		    	    	
+    	}    	
+    	// Replace with session token
+    	if(strpos($redirectUrl, '%s') !== false) {
+    		// Append session token at the specified position
+    		$redirectUrl = str_replace('%s', $result->sessionToken, $redirectUrl);
+    	} else {
+    		// Append session token at the end    		
+    		$separator = strripos($redirectUrl, '?') !== false ? '&' : '?';
+    		$redirectUrl .= $separator . 'sessionToken='.$result->sessionToken;    		
+    	}
     }
 
     // Send the JSON response
     $response = array(
-        "redirectUrl" => $redirectUrl,
-        "returnTo" => $returnTo,
-        "errorMessage" => $errorMessage
+        'redirectUrl' => $redirectUrl,        
+        'errorMessage' => $errorMessage
     );
     wp_send_json($response);
 }
@@ -342,12 +362,10 @@ function cyclosCaptcha() {
     
     // Generate a captcha
     try {
-        $id = $captchaService->generate();
-        $content = $captchaService->readImage($id, null, null);
-    } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = $t->errorConnection;
-    } catch (Cyclos\ServiceException $e) {
-        $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
+        $id = $captchaService->newCaptcha();
+        $content = base64_encode($captchaService->getCaptchaContent($id));
+    } catch (\Exception $e) {
+        $errorMessage = handleError($e);
     }
     
     // Send the JSON response
@@ -363,33 +381,24 @@ function cyclosCaptcha() {
 add_action( 'wp_ajax_cyclos_forgot_password', 'forgotPassword' );
 add_action( 'wp_ajax_nopriv_cyclos_forgot_password', 'forgotPassword' );
 function forgotPassword() {
+	
     configureCyclos();
-    $passwordService = new Cyclos\PasswordService();
+    $authService = new Cyclos\AuthService();
 
     $t = cyclosGetTranslations();
     
     // Send the request
     $errorMessage = NULL;
+        
     try {
-        $params = new stdclass();
-        $params->email = sanitize_text_field($_POST["email"]);
-        $params->captchaId = sanitize_text_field($_POST["captchaId"]);
-        $params->captchaText = sanitize_text_field($_POST["captchaText"]);
-        $passwordService->forgotPasswordRequest($params);
-    } catch (Cyclos\ConnectionException $e) {
-        $errorMessage = $t->errorConnection;
-    } catch (Cyclos\ServiceException $e) {
-        switch ($e->errorCode) {
-            case 'ENTITY_NOT_FOUND':
-                $errorMessage = $t->errorEmailNotFound;
-                break;
-            case 'VALIDATION':
-                $errorMessage = validationExceptionMessage($e);
-                break;
-            default:
-                $errorMessage = str_replace($t->errorGeneral, "{code}", $e->errorCode);
-                break;
-        }
+        $captchaResponse = new stdclass();       
+        $captchaResponse->challenge = sanitize_text_field($_POST["captchaId"]);
+        $captchaResponse->response = sanitize_text_field($_POST["captchaText"]);       
+        $authService->forgottenPasswordRequest(
+        		sanitize_text_field($_POST["email"]),
+        		$captchaResponse);
+    } catch (\Exception $e) {    	
+        $errorMessage = handleError($e);
     }
     
     // Send the JSON response

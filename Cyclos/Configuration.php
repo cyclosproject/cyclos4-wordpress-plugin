@@ -5,8 +5,10 @@
  * Basically, needs a root url to be used (up to the network path) and an username / password to access services
  */
 class Configuration {
-    private static $rootUrl;
+   
+	private static $rootUrl;
     private static $accessType;
+    private static $lastAccessType;
     
     private static $channel;
     
@@ -17,6 +19,10 @@ class Configuration {
     private static $forwardRemoteAddress;
     
     private static $accessClientToken;
+    
+    private static $redirectUrl;
+    
+    private static $debug = false;
     
     /**
      * Sets the Cyclos root url
@@ -31,7 +37,50 @@ class Configuration {
     public static function getRootUrl() {
         return Configuration::$rootUrl;
     }
+   
+    /**
+   	 * Returns if the plugin is in debug mode
+     */
+    public static function isDebug() {
+    	return Configuration::$debug;
+    }
     
+    /**
+     * Sets if the plugin is in debug mode, useful for
+     * debugging CURL requests and other important stuff
+     */
+    public static function setDebug($debug) {
+    	Configuration::$debug = $debug;
+    }
+    
+    /**
+     * Configure the request options to be performed as guest 
+     */
+   public static function setGuest($guest) {
+   		if($guest) {
+	   		Configuration::$lastAccessType = Configuration::$accessType;
+   			Configuration::$accessType = 'GUEST';
+   		} else {
+   			Configuration::$accessType = Configuration::$lastAccessType;
+   		}
+   }
+
+    /**
+     * Sets the redirect URL after a succesful login.
+     * If empty it will redirect to root URL
+     */
+    public static function setRedirectUrl($redirectUrl) {
+    	Configuration::$redirectUrl = $redirectUrl;
+    }
+    
+    /**
+     * Returns the redirect URL after a succesful login.
+     * If empty it will redirect to root URL
+     */
+    public static function getRedirectUrl() {
+    	return Configuration::$redirectUrl;
+    }
+           
     /**
      * Sets the Cyclos channel
      */
@@ -81,24 +130,54 @@ class Configuration {
     /**
      * Returns the full url to access the service with the given url part 
      */
-    public static function url($serviceUrlPart) {
-        return Configuration::$rootUrl . '/web-rpc/' . $serviceUrlPart;
+    public static function url($serviceUrlPart, $pathVariables, $queryParameters) {    	
+        $url = Configuration::$rootUrl . '/api/' . $serviceUrlPart;
+                
+        // Append path variables
+       	if(!empty($pathVariables)) {   
+       		if(is_array($pathVariables)) {
+	       		foreach($pathVariables as $variable) {       			
+    	   			if(!empty($variable)) {
+	    	   			$url .= '/' .$variable;
+       				} 
+	       		}
+       		} else {
+       			$url .= '/' .$pathVariables;
+       		}
+       	}
+       	
+       	
+       	
+       	// Append query parameters
+       	if(!empty($queryParameters)) {
+       		$keys = array_keys($queryParameters);
+       		foreach($keys as $key) {
+       			$value = $queryParameters[$key];
+       			if(!empty($value)) {
+	       			if(is_array($value)) { // handle array
+	       				$value = implode(',', $value);
+	       			} elseif(!is_string($value)) { // handle object
+	       				$value = \json_encode($value);
+	       			}
+	       			$url .= strpos($url, '?') !== false ? '&' : '?';
+	       			$url .= urlencode($key) . '=' . urlencode($value);
+       			}
+       		}
+       	}       	       	     
+       	
+        return $url; 
     }
     
     /**
      * Returns the curl options to execute a call of the given operation, with the given parameters
      */
-    public static function curlOptions($operation, $params) {
-        // Set the request operation and parameters
-        $request = new \stdclass();
-        $request->operation = $operation;
-        $request->params = $params;
-        
+    public static function curlOptions() {
+                
         // Set the CURL options
         $opts = array(
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_HTTPHEADER => array('Content-type: application/json', 'Accept: application/json'),
-                CURLOPT_POSTFIELDS => \json_encode($request)
+        		CURLOPT_TIMEOUT => 30
         );
 
         // Set the channel header
@@ -118,7 +197,7 @@ class Configuration {
                 }
                 break;
             case 'ACCESS_CLIENT':
-                $opts[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . Configuration::$accessClientToken;
+                $opts[CURLOPT_HTTPHEADER][] = 'Access-Client-Token: ' . Configuration::$accessClientToken;
                 break;
         }
         

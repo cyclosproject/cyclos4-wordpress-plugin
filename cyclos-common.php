@@ -22,7 +22,9 @@
 // Block people to access the script directly (against malicious attempts)
 defined( 'ABSPATH' ) or die( 'No script kiddies please!' );
 
-// Class to hold info about a translation key
+/**
+ * Class to hold info about a translation key
+ */ 
 class CyclosKey {
     public function __construct($key, $title, $defaultValue) {
 		$this->key = $key;
@@ -36,29 +38,40 @@ class CyclosKey {
 	}
 	
 	public static function getAll() {
-        $result = new stdclass();
-        CyclosKey::add($result, "loginTitle", "Login form title", "Member login:");
-        CyclosKey::add($result, "loginName", "Login name placeholder", "User");
-        CyclosKey::add($result, "loginPassword", "Password placeholder", "Password");
-        CyclosKey::add($result, "loginSubmit", "Login button text", "Login");
-        CyclosKey::add($result, "forgotLink", "Forgot password link", "Forgot your password?");
-        CyclosKey::add($result, "forgotTitle", "Forgot password title", "Password recovery");
-        CyclosKey::add($result, "forgotEmail", "E-mail placeholde", "E-mail");
-        CyclosKey::add($result, "forgotCaptcha", "Captcha placeholder", "Visual validation");
-        CyclosKey::add($result, "forgotNewCaptcha", "New captcha link", "New code");
-        CyclosKey::add($result, "forgotCancel", "Cancel forgot password request", "Cancel");
-        CyclosKey::add($result, "forgotSubmit", "Submit forgot password request", "Submit");
-        CyclosKey::add($result, "forgotDone", "Forgot password done", "A link to reset your password has been submitted to {email}");
-        CyclosKey::add($result, "errorLogin", "Error message: invalid login", "Invalid username / password");
-        CyclosKey::add($result, "errorAddressBlocked", "Error message: address blocked", "Your access is blocked by exceeding invalid login attempts");
-        CyclosKey::add($result, "errorEmailNotFound", "Error message: invalid e-mail", "The given e-mail address didn't match any valid user");
-        CyclosKey::add($result, "errorConnection", "Error message: the Cyclos server couldn't be contacted", "The Cyclos server couldn't be contacted");
-        CyclosKey::add($result, "errorGeneral", "Error message: unknown error", "Error performing the request: {code}");
+        $result = new stdclass();        
+        CyclosKey::add($result, 'loginName', 'Login name placeholder', 'User');
+        CyclosKey::add($result, 'loginPassword', 'Password placeholder', 'Password');
+        CyclosKey::add($result, 'loginSubmit', 'Login button text', 'Login');
+        CyclosKey::add($result, 'forgotLink', 'Forgot password link', 'Forgot your password?');        
+        CyclosKey::add($result, 'forgotEmail', 'Forgot password user placeholder', 'User');
+        CyclosKey::add($result, 'forgotCaptcha', 'Captcha placeholder', 'Visual validation');
+        CyclosKey::add($result, 'forgotNewCaptcha', 'New captcha link', 'New code');
+        CyclosKey::add($result, 'forgotCancel', 'Cancel forgot password request', 'Cancel');
+        CyclosKey::add($result, 'forgotSubmit', 'Submit forgot password request', 'Submit');
+        CyclosKey::add($result, 'forgotDone', 'Forgot password done', 'A link to reset your password has been submitted to {email}');
+             
+        // Errors        
+        CyclosKey::add($result, 'errorConnection', 'Error message: the Cyclos server could not be contacted', 'The Cyclos server could not be contacted');        
+        CyclosKey::add($result, 'errorGeneral', 'Error message: unknown error', 'Error performing the request: {code}');
+        CyclosKey::add($result, 'errorInaccessibleChannel', 'Error message: inaccessible channel', 'Access denied. The channel used to connect to the server is not allowed or misconfigured');
+        CyclosKey::add($result, 'errorInaccessiblePrincipal', 'Error message: inaccessible principal', 'You cannot use your {principal} in this channel');
+        CyclosKey::add($result, 'errorIndefinitelyBlocked', 'Error message: password indefinitely blocked', 'Your password has been disabled by exceeding the maximum of tries.\nPlease, contact the administration');
+        CyclosKey::add($result, 'errorTemporarilyBlocked', 'Error message: password temporarily blocked', 'Your password has been blocked by exceeding the maximum of tries');
+        CyclosKey::add($result, "errorLogin", 'Error message: invalid login', 'Invalid username / password');
+        CyclosKey::add($result, 'errorInvalidPassword', 'Error message: password invalid', 'The given user / password are incorrect. Please, try again');
+        CyclosKey::add($result, "errorInvalidAccessClient", "Error message: invalid access client", "The current access client is not correctly configured");
+        CyclosKey::add($result, 'errorOperatorWithPendingAgreements', 'Error message: operator pending agreements', 'A required agreement needs to be accepted by your manager before you can login');        
+        CyclosKey::add($result, 'errorEntityNotFound', 'Error message: information not found', 'The required information was not found');
+        CyclosKey::add($result, 'errorEntityNotFoundUser', 'Error message: user not found', 'The user was not found');
+        CyclosKey::add($result, 'errorEntityNotFoundAccessClient', 'Error message: access client not found', 'The access client was not found or the activation code is not valid');
+      
         return $result;
 	}
 }
 
-// Returns the translated values
+/**
+ * Returns the translated values
+ */
 function cyclosGetTranslations() {
     $t = new stdclass();
     foreach (CyclosKey::getAll() as $k => $key) {
@@ -71,27 +84,33 @@ function cyclosGetTranslations() {
     return $t;
 }
 
-// Function that autoloads Cyclos classes
+/**
+ * Autoloads Cyclos classes
+ */
 function autoload_cyclos($c) {
     if (strpos($c, "Cyclos\\") >= 0) {
         include plugin_dir_path( __FILE__ ) . str_replace("\\", "/", $c) . ".php";
     }
 }
 
-// Sets up the Cyclos services to use the given access token, or load the stored settings if nothing is passed in
+/**
+ * Sets up the Cyclos services to use the given access token, or load the stored settings if nothing is passed in
+ */
 function configureCyclos($rootUrl = NULL, $token = NULL) {
     if (empty($rootUrl)) $rootUrl = get_option('cyclos_url');
     if (empty($token)) $token = get_option('cyclos_token');
 
     spl_autoload_register('autoload_cyclos'); 
     Cyclos\Configuration::setRootUrl($rootUrl);
-    Cyclos\Configuration::setAccessClientToken($token);
+    Cyclos\Configuration::setAccessClientToken($token);    
+    Cyclos\Configuration::setRedirectUrl(get_option('cyclos_redirectUrl'));
 }
 
-
-// Function which returns an appropriate error message for a validation exception
+/**
+ * Returns an appropriate error message for a validation exception
+ */
 function validationExceptionMessage($e) {
-    $val = $e->error->validation;
+    $val = $e->error;
     $errors = array();
     if (!empty($val->generalErrors)) {
         $errors = array_merge($errors, $val->generalErrors);
@@ -102,10 +121,95 @@ function validationExceptionMessage($e) {
         }
     }
     if (empty($errors)) {
-        return "Validation error";
+        return 'Validation error';
     } else {
-        return implode("\n", $errors);
+        return implode('\n', $errors);
     }
+}
+
+/**
+ * Handles the given exception and returns an error message
+ */
+function handleError($e) {
+		
+	$class = get_class($e);
+	$t = cyclosGetTranslations();
+	
+	$property = NULL;
+	$errorMessage = NULL;
+	
+	if ($class == 'Cyclos\ServiceException') {	
+		$status = $e->statusCode;		
+		if($status == 0 || $status == 1 || $status == 503) {
+			// Connection error
+			$property = 'errorConnection';
+		} elseif ($status == 422) {
+			// Unprocessable entity error
+			if(property_path_exists($e, 'error->code') && $e->error->code == 'validation') {
+				$errorMessage = validationExceptionMessage($e);
+			}
+		} elseif ($status == 404) {
+			if(property_path_exists($e, 'error->entityType')) {
+				// Not found error
+				$path = 'errorEntityNotFound'.ucwords($e->error->entityType);
+				$property = property_exists($t, $path) ? $path : 'errorEntityNotFound';				
+			} else {
+				// Likely a connection error (no REST API found)
+				$property = 'errorConnection';
+			}					
+		} elseif (property_path_exists($e, 'error->code')) {		
+			// Conflict, forbidden or other errors which contains a 'code' attribute			
+			$property = 'error'.ucwords($e->error->code);			
+		} 
+	}
+	
+	// Show a generic error if there is not a translated message
+	if(empty($property) || !property_exists($t, $property)) {		
+		$property = 'errorGeneral';						
+	}	
+
+	// Replace message parameters
+	if(empty($errorMessage) && !empty($property)) {
+		
+		$errorMessage = $t->{$property};
+		
+		switch($property) {
+			case 'errorGeneral':
+				$errorMessage = str_replace('{code}', $status, $errorMessage);				
+				break;
+			case 'errorInaccessiblePrincipal':
+				// TODO NO API YET
+				//$errorMessage = str_replace('{principal}', $e->code, $errorMessage);
+				break;
+		}
+	}
+	 			
+	return $errorMessage;
+}
+
+/**
+ * Extension of property_exists() function. Searches 
+ * if the he given path exists in the given object
+ */
+function property_path_exists($object, $property_path) {
+	
+	if(empty($object)) {
+		return false;
+	}
+	
+	$path_components = explode('->', $property_path);
+
+	if (count($path_components) == 1) {
+		return property_exists($object, $property_path);
+	} else {
+		return (
+			property_exists($object, $path_components[0]) &&
+			property_path_exists(
+				$object->{array_shift($path_components)},
+					implode('->', $path_components)
+						)
+				);
+	}
 }
 
 ?>
