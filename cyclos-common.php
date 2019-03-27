@@ -55,10 +55,13 @@ class CyclosKey {
         CyclosKey::add($result, 'errorGeneral', 'Error message: unknown error', 'Error performing the request: {code}');
         CyclosKey::add($result, 'errorInaccessibleChannel', 'Error message: inaccessible channel', 'Access denied. The channel used to connect to the server is not allowed or misconfigured');
         CyclosKey::add($result, 'errorInaccessiblePrincipal', 'Error message: inaccessible principal', 'You cannot use your {principal} in this channel');
-        CyclosKey::add($result, 'errorIndefinitelyBlocked', 'Error message: password indefinitely blocked', 'Your password has been disabled by exceeding the maximum of tries.\nPlease, contact the administration');
-        CyclosKey::add($result, 'errorTemporarilyBlocked', 'Error message: password temporarily blocked', 'Your password has been blocked by exceeding the maximum of tries');
+        CyclosKey::add($result, "errorUserBlocked", 'Error message: user blocked', 'Your access has been blocked. Please, contact the administration.');
+        CyclosKey::add($result, "errorUserDisabled", 'Error message: user disabled', 'Your user account has been disabled. Please, contact the administration.');
+        CyclosKey::add($result, "errorUserPending", 'Error message: pending user', 'Your user account is pending for activation. Please, contact the administration for more information.');
         CyclosKey::add($result, "errorLogin", 'Error message: invalid login', 'Invalid username / password');
-        CyclosKey::add($result, 'errorInvalidPassword', 'Error message: password invalid', 'The given user / password are incorrect. Please, try again');
+        CyclosKey::add($result, 'errorPasswordIndefinitelyBlocked', 'Error message: password indefinitely blocked', 'Your password has been disabled by exceeding the maximum of tries.\nPlease, contact the administration');
+        CyclosKey::add($result, 'errorPasswordTemporarilyBlocked', 'Error message: password temporarily blocked', 'Your password has been blocked by exceeding the maximum of tries');
+        CyclosKey::add($result, 'errorInvalidPassword', 'Error message: password invalid', 'The given password is incorrect. Please, try again');
         CyclosKey::add($result, "errorInvalidAccessClient", "Error message: invalid access client", "The current access client is not correctly configured");
         CyclosKey::add($result, 'errorOperatorWithPendingAgreements', 'Error message: operator pending agreements', 'A required agreement needs to be accepted by your manager before you can login');        
         CyclosKey::add($result, 'errorEntityNotFound', 'Error message: information not found', 'The required information was not found');
@@ -156,10 +159,22 @@ function handleError($e) {
 			} else {
 				// Likely a connection error (no REST API found)
 				$property = 'errorConnection';
-			}					
-		} elseif (property_path_exists($e, 'error->code')) {		
+			}		
+		} elseif (property_path_exists($e, 'error->code')) {					
 			// Conflict, forbidden or other errors which contains a 'code' attribute			
-			$property = 'error'.ucwords($e->error->code);			
+			if($e->error->code = 'login') {
+				// Handle login error
+				if(property_exists($e->error, 'passwordStatus')) {
+					// Password errors
+					$property = 'errorPassword'.ucwords($e->error->passwordStatus);
+				} else if(property_exists($e->error, 'userStatus')) {
+					// User errors
+					$property = 'errorUser'.ucwords($e->error->userStatus);
+				}
+			}
+			if($property == NULL) {
+				$property = 'error'.ucwords($e->error->code);
+			}
 		} 
 	}
 	

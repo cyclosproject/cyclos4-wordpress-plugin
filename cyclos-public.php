@@ -60,7 +60,10 @@ function cyclosLoginForm($atts) {
     configureCyclos();
     $authService = new Cyclos\AuthService();
 
-    $out = '';
+    $out = '<div id="alert" style="display: none;">
+ 			 <span class="closebtn" onclick="this.parentElement.style.display=\'none\';">&times;</span> 
+  			 <strong>Notice</strong> <span id="alertMessage"></span></div>';
+    
     $returnToValue = '';
 
     // Execute this request as guest, otherwise it would return 204 (no content)
@@ -145,12 +148,30 @@ function cyclosLoginForm($atts) {
         $GLOBALS['cyclos_behavior_applied'] = true;
         $out = $out . '
         <script>
-            jQuery(document).ready(function($) {
+            jQuery(document).ready(function($) {        		
         ';
         $out = $out . '
-                $(".cyclosLoginForm").submit(function(event) {
+                
+        		/**
+        		 * Shows a notification with type Error, Warning, Info
+        		 */
+        		function showNotification(message, type) {        			
+        			$("#alertMessage").html(message);
+        			$("#alert").show();        			
+        			$("#alert").attr( "class", "alert"+type);
+        	
+        			 
+    			}
+        		
+        		function hideNotification() {
+        			$("#alertMessage").html("");
+        			$("#alert").hide();
+    			}
+        		
+        		$(".cyclosLoginForm").submit(function(event) {
         			var submitEnabled = true;
                     if (submitEnabled) {
+        				hideNotification();
                         var principal = this.cyclosPrincipal.value.trim();
                         var password = this.cyclosPassword.value.trim();
                         var returnTo = this.cyclosReturn.value.trim();
@@ -169,9 +190,9 @@ function cyclosLoginForm($atts) {
                                     response = response || {};                            		
                                     if (response.redirectUrl) {
                                         location.href = response.redirectUrl;                                        
-                                    } else {
-                                        alert(response.errorMessage || "Invalid data received from server");
-                                        submitEnabled = true;
+                                    } else {                                        
+                                        showNotification(response.errorMessage || "Invalid data received from server", "Error");
+                            			submitEnabled = true;
                                     }
                                 })
                                 .fail(function() {
@@ -197,6 +218,7 @@ function cyclosLoginForm($atts) {
                 
                 function showLogin() {
                     if (submitEnabled) {
+            			hideNotification();
                         $(".cyclosLoginForm").trigger("reset");
                         $(".cyclosLoginContainer").show();
                         $(".cyclosForgotContainer").hide();
@@ -205,8 +227,9 @@ function cyclosLoginForm($atts) {
                 }
                 
                 function showForgotPassword() {
-                    if (submitEnabled) {
-                        $(".cyclosForgotPasswordForm").trigger("reset");
+            		if (submitEnabled) {
+						hideNotification();
+            			$(".cyclosForgotPasswordForm").trigger("reset");
                         $(".cyclosLoginContainer").hide();
                         $(".cyclosForgotContainer").show();
                         $(".cyclosEmail").focus();
@@ -234,6 +257,9 @@ function cyclosLoginForm($atts) {
                 
                 $(".cyclosForgotPasswordForm").submit(function(event) {
                     if (submitEnabled) {
+                    	
+                    	hideNotification();	
+                    		
                         var email = this.cyclosEmail.value.trim();
                         var captchaText = this.cyclosCaptcha.value.trim();
                         
@@ -251,11 +277,11 @@ function cyclosLoginForm($atts) {
                                     submitEnabled = true;
                                     response = response || {};
                                     if (response.errorMessage) {
-                                        alert(response.errorMessage || "Invalid data received from server");
+										showNotification(response.errorMessage || "Invalid data received from server", "Error");
                                     } else {
                             			captchaId = null;
                                         showLogin();
-                                        alert("' . $t->forgotDone . '".replace("{email}", email));
+                                        showNotification("' . $t->forgotDone . '".replace("{email}", email), "Error");
                                     }
                                 })
                                 .fail(function() {
@@ -307,7 +333,7 @@ function cyclosLogin() {
         			sanitize_text_field($_POST['principal']), 
         			sanitize_text_field($_POST['password']),
         			$_SERVER['REMOTE_ADDR']);       
-    } catch (\Exception $e) {    	
+    } catch (\Exception $e) {      	
         $errorMessage = handleError($e);
     }
     // Get the redirect url if there were no errors
