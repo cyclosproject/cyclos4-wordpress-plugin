@@ -172,18 +172,18 @@ function cyclosConfigureAccessClient() {
         <li>User management: Profile fields of other users > make sure for the Login name to select "Visible" and "User keywords".</li>
         <li>User management: Login users via web services, make sure this option is enabled. </li>
         <li>Save the permissions.</li>
-        <li>Go to the default configuration (of the network): System > System configuration > default configuration > Channels > Web services > User identification methods > And select the access client "wp_client" (if you are connecting to a specific url use the configuration of that specific url).</li>
+        <li>Go to the default configuration (of the network): System > System configuration > default configuration > Channels > Web services > User identification methods > And select the access client "wp_client" (if you are connecting to a specific url use the configuration of that specific url). And save the configuration.</li>
     </ol>
     <h3>Step 3 (give permissions to manage the access client):</h3>
     <ol>
-        <li>Now go to the permission (tab) of the admin you are loged in with: System > User configuration > Group > <i>Your group</i> > Permission (tab), and do the following:</li>
+        <li>Now go to the permission (tab) of the admin you are loged in with: System > User configuration > Groups > <i>Your group</i> > Permission (tab), and do the following:</li>
 		<li>Make sure the admin you are logged in with can manage the group <i>wp_admin_group</i>: User management > Make sure "Accessible administrator groups" is set to "All groups" or "wp_admin_group" is selected under "Specific accessible administrator groups".</li>
         <li>Make sure the admin you are logged in with can manage the access client: User management > Access clients > Select here all options for wp_client (View, Manage, Activate, etc.).</li>
     </ol>
     <h3>Step 4 (configure logout redirect):</h3>
     <ol>
         <li>Go to the default configuration (of the network): System > System configuration > default configuration.</li>
-        <li>In the configuration set the logout redirect url to your wordpress site: Display > URL to redirect after logout.</li>
+        <li>In the configuration set the logout redirect url to your wordpress site: Display > URL to redirect after logout. Make sure to enter the full url including https:// or http:// at the beginning.</li>
         <li>Save the configuration.</li>
     </ol>
     <h3>Step 5 (create user and activate access client for wordpress plugin):</h3>
