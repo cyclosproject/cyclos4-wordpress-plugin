@@ -1,0 +1,8 @@
+{
+	"css.validate": false,
+	"javascript.implicitProjectConfig.checkJs": false,
+	"phpcs.executablePath": "vendor\\bin\\phpcs.bat",
+	"phpcs.autoConfigSearch": false,
+	"phpcs.standard": ".phpcs.xml.dist",
+	"phpcs.showSources": true
+}

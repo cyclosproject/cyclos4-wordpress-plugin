@@ -1,0 +1,20 @@
+{
+    "name": "cyclos/cyclos",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "description": "Development of the Cyclos 4 plugin for WordPress.",
+	"require-dev": {
+        "wp-coding-standards/wpcs": "^2.2",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+        "phpcompatibility/phpcompatibility-wp": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Cyclos\\": "app/"
+		}
+	},
+    "scripts": {
+        "wpcs:fix": "phpcbf --report-summary --report-source .",
+        "wpcs:check": "phpcs ."
+    }
+}
