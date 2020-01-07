@@ -1,30 +1,31 @@
 === Cyclos ===
 Contributors: Cyclos, luisfpg, rleon.uy, augusto1995
 Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
-Donate link: http://www.cyclos.org/contributors
+Donate link: https://www.cyclos.org/contributors
 Requires at least: 4.3
-Tested up to: 4.9.2
-Stable tag: 1.1.6
+Tested up to: 5.3
+Requires PHP: 5.6
+Stable tag: 2.0.0-dev
 License: GPLv2
 
-This plugin enables you to easily add a Cyclos login form to your wordpress website.
+This plugin enables you to easily add a Cyclos login form to your WordPress website.
 
 == Description ==
-= Cyclos wordpress Plugin =
-This plugin enables you to easily add a Cyclos login form to your wordpress website. Later extra features will be added such as searching for advertisements.
+= Cyclos WordPress Plugin =
+This plugin enables you to easily add a Cyclos login form to your WordPress website. Later extra features will be added such as searching for advertisements.
 
 == Installation ==
-Please go to the wordpress settings menu and open "Cyclos", further instructions are given there.
+Please go to the WordPress settings menu and open "Cyclos", further instructions are given there.
 
 == Frequently Asked Questions ==
-= What does the plug-in do: = 
-The plug-in alows your Cyclos users to login to Cyclos using a wordpress front-end site.
+= What does the plug-in do: =
+The plug-in alows your Cyclos users to login to Cyclos using a WordPress front-end site.
 
 = What is Cyclos: =
 Cyclos is payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: <a href="http:/www.cyclos.org" target="_blank">www.cyclos.org</a>.
 
 = How do I install the plug-in =
-Please follow the instructions given in the wordpress setting menu of the plug-in.
+Please follow the instructions given in the WordPress setting menu of the plug-in.
 
 == Screenshots ==
 1. Login form (in a page).
@@ -41,5 +42,8 @@ We updated the plugin to be compatible with PHP 7.2.
 
 = Previous versions =
 We updated the PHP4 style constructors in WordPress (see https://make.wordpress.org/core/2015/07/02/deprecating-php4-style-constructors-in-wordpress-4-3/)
-and therefore Wordpress version 4.3 (or higher) is required. If you wish to run the plugin on an older version of wordpress or a php version 5.2 or below please use version 1.0 of our plugin.
+and therefore Wordpress version 4.3 (or higher) is required. If you wish to run the plugin on an older version of WordPress or a php version 5.2 or below please use version 1.0 of our plugin.
 
+== Upgrade Notice ==
+= 2.0.0 =
+The 2.0.0 version requires your Cyclos instance to allow calls to its REST API.
