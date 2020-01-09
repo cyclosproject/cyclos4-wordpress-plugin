@@ -58,7 +58,10 @@ class CyclosAPI {
 				// We have a session token, so build up the Cyclos URL we can redirect to.
 
 				// The Cyclos base URL is either the custom frontend URL or the Cyclos URL that is also used for the REST API.
-				$redirect_url = $this->conf->get_custom_cyclos_frontend_url( false ) ?? $this->conf->get_cyclos_url( false );
+				$redirect_url = $this->conf->get_custom_cyclos_frontend_url( false );
+				if ( empty( $redirect_url ) ) {
+					$redirect_url = $this->conf->get_cyclos_url( false );
+				}
 
 				// The custom frontend URL setting can have %s and %p tokens we must replace.
 				// If there are no tokens, we use the standard pattern with the session token and path as query parameters.
