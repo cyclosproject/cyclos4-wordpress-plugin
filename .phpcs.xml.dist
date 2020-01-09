@@ -5,10 +5,10 @@
     <!-- Exclude some directories or files. -->
     <exclude-pattern>/vendor/*</exclude-pattern>
     <exclude-pattern>/node_modules/*</exclude-pattern>
-    <exclude-pattern>/build/*</exclude-pattern>
+    <exclude-pattern>/css/*</exclude-pattern>
+    <exclude-pattern>/js/*</exclude-pattern>
 	<!-- Instead of excluding minified js, only include php files. -->
     <!-- <exclude-pattern>*.min.js</exclude-pattern> -->
-
 	<!-- Limit to php files only (JS and CSS are checked with eslint and stylelint) -->
 	<arg name="extensions" value="php"/>
 

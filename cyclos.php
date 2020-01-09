@@ -39,22 +39,58 @@
 	www.cyclos.org.
 */
 
+namespace Cyclos;
+
 // Block people to access the script directly (against malicious attempts).
 defined( 'ABSPATH' ) || exit;
+
+define( 'Cyclos\\PLUGIN_VERSION', '2.0.0' );
+define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'Cyclos\\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+
+// Using composer autoload.
+require_once 'vendor/autoload.php';
+
+// Load the necessary parts of the plugin in the proper action hook - so others can remove them if needed.
+add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin_parts' );
+
+/**
+ * Load the parts of the plugin.
+ */
+function load_plugin_parts() {
+	// Load the helper classes.
+	$config     = Configuration::get_instance();
+	$cyclos_api = new Services\CyclosAPI( $config );
+
+	// Load the admin component.
+	$admin = new Components\Admin( $config );
+	$admin->init();
+
+	// Load the login component.
+	$login_component = new Components\LoginComponent( $config, $cyclos_api );
+	$login_component->init();
+
+}
+
+// Include the template functions.
+require_once 'template-functions.php';
 
 /**
  * At plugin activation, check the PHP version.
  */
-function cyclos_plugin_activate() {
+function plugin_activate() {
 	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
 		wp_die( 'The Cyclos plugin requires at least PHP version 5.6. You have ' . PHP_VERSION );
 		deactivate_plugins( basename( __FILE__ ) );
 	}
 }
-register_activation_hook( __FILE__, 'cyclos_plugin_activate' );
 
-if ( version_compare( PHP_VERSION, '5.6.0', '>=' ) ) {
-	include_once 'cyclos-common.php';
-	include_once 'cyclos-admin.php';
-	include_once 'cyclos-public.php';
+/**
+ * At plugin uninstall, remove the plugin option.
+ */
+function plugin_uninstall() {
+	delete_option( Configuration::CYCLOS_OPTION_NAME );
 }
+
+register_activation_hook( __NAMESPACE__, 'plugin_activate' );
+register_uninstall_hook( __NAMESPACE__, 'plugin_uninstall' );
