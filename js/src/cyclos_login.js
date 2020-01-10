@@ -105,7 +105,7 @@ jQuery( document ).ready( function( $ ) {
 	// Generate a new captcha image.
 	function newCaptcha() {
 		cyclosLoginObj = cyclosLoginObj || {};
-		const data = { _ajax_nonce: cyclosLoginObj.nonce, action: 'cyclos_captcha' };
+		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_captcha' };
 		$.post( cyclosLoginObj.ajax_url, data )
 			.done( function( response ) {
 				response = response || {};
