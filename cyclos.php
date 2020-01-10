@@ -58,6 +58,18 @@ add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin_parts' );
  * Load the parts of the plugin.
  */
 function load_plugin_parts() {
+	// Check if we need to run plugin updates.
+	$db_version = get_option( 'cyclos_version', '1' );
+	if ( version_compare( $db_version, PLUGIN_VERSION, '<' ) ) {
+		// The plugin version in the database is older than the current code.
+		// Call the plugin updater that will do updates where needed.
+		new Utils\Updater( $db_version );
+
+		// Next, update the version of the plugin in the database.
+		// Note: if there was no option record yet, this will add one.
+		update_option( 'cyclos_version', PLUGIN_VERSION );
+	}
+
 	// Load the helper classes.
 	$config     = Configuration::get_instance();
 	$cyclos_api = new Services\CyclosAPI( $config );
