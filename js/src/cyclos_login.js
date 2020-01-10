@@ -11,7 +11,7 @@ jQuery( document ).ready( function( $ ) {
 		event.preventDefault();
 		cyclosLoginObj = cyclosLoginObj || {};
 		const loginForm = this;
-		const data = { _ajax_nonce: cyclosLoginObj.nonce, action: 'cyclos_login' };
+		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_login' };
 		data.principal = $( loginForm ).find( 'input[name="principal"]' ).val().trim();
 		data.password = $( loginForm ).find( 'input[name="password"]' ).val().trim();
 		data.returnTo = $( loginForm ).find( 'input[name="return-to"]' ).val().trim();
@@ -76,7 +76,7 @@ jQuery( document ).ready( function( $ ) {
 		event.preventDefault();
 		cyclosLoginObj = cyclosLoginObj || {};
 		const forgotpasswordForm = this;
-		const data = { _ajax_nonce: cyclosLoginObj.nonce, action: 'cyclos_forgot_password' };
+		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_forgot_password' };
 		data.principal = $( forgotpasswordForm ).find( 'input[name="principal"]' ).val().trim();
 		data.captcha_id = captchaID;
 		data.captcha_response = $( forgotpasswordForm ).find( 'input[name="captcha"]' ).val().trim();

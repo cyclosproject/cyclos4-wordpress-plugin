@@ -176,7 +176,7 @@ class LoginComponent {
 			'cyclosLoginObj',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'cyclos_login_nonce' ),
+				'id'       => wp_create_nonce( 'cyclos_login_nonce' ),
 			)
 		);
 	}
