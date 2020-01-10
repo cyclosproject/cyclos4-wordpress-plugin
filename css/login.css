@@ -51,8 +51,7 @@
 }
 
 .cyclos-form-box #cyclos-forgot-cancel {
-	display: inline-block;
-	float: right;
+	text-align: right;
 }
 
 .cyclos-form-box input:focus,
