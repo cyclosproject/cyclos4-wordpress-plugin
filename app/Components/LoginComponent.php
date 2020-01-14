@@ -135,9 +135,10 @@ class LoginComponent {
 		$handle    = 'cyclos-loginform';
 		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'jquery' );
+		$deps      = array( 'jquery', 'wp-i18n' );
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
+		wp_set_script_translations( $handle, 'cyclos' );
 
 		// Register the login style if this is configured.
 		if ( $this->conf->add_styles_to_loginform() ) {

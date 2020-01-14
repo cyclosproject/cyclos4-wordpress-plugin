@@ -3,6 +3,12 @@
  * The Login module script.
  */
 
+import { __ } from '@wordpress/i18n';
+
+const invalidDataMessage = __( 'Invalid data received from server', 'cyclos' );
+const loginFormSetupMessage = __( 'Something is wrong with the login form setup', 'cyclos' );
+const captchaSetupMessage = __( 'Something is wrong with the captcha function', 'cyclos' );
+
 jQuery( document ).ready( function( $ ) {
 	// Handle submit on the login form.
 	$( '.cyclos-login-form' ).submit( function( event ) {
@@ -24,11 +30,11 @@ jQuery( document ).ready( function( $ ) {
 				if ( response.redirectUrl ) {
 					window.location.href = response.redirectUrl;
 				} else {
-					$( notice ).html( `${ response.errorMessage || 'Invalid data received from server' }.` ).show();
+					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
 				}
 			} )
 			.fail( function() {
-				$( notice ).html( `Something is wrong with the login form setup.` ).show();
+				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
 			} )
 			.always( function() {
 				// Remove focus from the submit button.
@@ -117,13 +123,13 @@ jQuery( document ).ready( function( $ ) {
 					$( forgotForm ).hide();
 					$( loginForm ).show();
 				} else {
-					$( notice ).html( `${ response.errorMessage || 'Invalid data received from server' }.` ).show();
+					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
 					// Remove focus from the submit button.
 					$( forgotForm ).find( 'input[type="submit"]' ).blur();
 				}
 			} )
 			.fail( function() {
-				$( notice ).html( `Something is wrong with the login form setup.` ).show();
+				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
 				// Remove focus from the submit button.
 				$( forgotForm ).find( 'input[type="submit"]' ).blur();
 			} );
@@ -145,12 +151,12 @@ jQuery( document ).ready( function( $ ) {
 					$( captcha ).attr( 'src', 'data:image/png;base64,' + response.content ).show();
 				} else {
 					$( captcha ).hide();
-					$( notice ).html( `${ response.errorMessage || 'Invalid data received from server' }.` ).show();
+					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
 				}
 			} )
 			.fail( function() {
 				$( captcha ).hide();
-				$( notice ).html( `Something is wrong with the captcha function.` ).show();
+				$( notice ).html( `${ captchaSetupMessage }.` ).show();
 			} );
 	}
 } );
