@@ -3,6 +3,7 @@
  * The template for displaying the login form.
  *
  * You can override this template in your theme by copying it to {your-theme-directory}/cyclos/login-form.php.
+ * If you do, make sure you keep the classnames in tact. The javascript needs these to let the login form work.
  *
  * Available variables:
  * $cyclos_is_forgot_password_enabled indicates whether the functionality to recover a forgotten password is enabled in Cyclos.
@@ -26,12 +27,12 @@
 				<?php if ( $cyclos_is_captcha_enabled ) : ?>
 					<p class="cyclos-line">
 						<input placeholder="<?php cyclos_loginform_label( 'forgot_captcha' ); ?>" name='captcha' type='text' required>
-						<a id="cyclos-newcaptcha" href='#'><?php cyclos_loginform_label( 'forgot_newcaptcha' ); ?></a>
+						<a class="cyclos-newcaptcha" href='#'><?php cyclos_loginform_label( 'forgot_newcaptcha' ); ?></a>
 					</p>
-					<p><img id="cyclos-captcha" alt='captcha' style='display:none'></p>
+					<p><img class="cyclos-captcha" alt='captcha' style='display:none'></p>
 				<?php endif; ?>
 				<p><input type='submit' value=<?php cyclos_loginform_label( 'forgot_submit' ); ?>></p>
-				<p><a id="cyclos-forgot-cancel" href='#'><?php cyclos_loginform_label( 'forgot_cancel' ); ?></a></p>
+				<p><a class="cyclos-forgot-cancel" href='#'><?php cyclos_loginform_label( 'forgot_cancel' ); ?></a></p>
 			</form>
 		<?php endif; ?>
 
@@ -41,7 +42,7 @@
 			<p><input placeholder="<?php cyclos_loginform_label( 'password' ); ?>" name='password' type='password' required></p>
 			<p><input type='submit' value="<?php cyclos_loginform_label( 'submit' ); ?>"></p>
 			<?php if ( $cyclos_is_forgot_password_enabled ) : ?>
-				<p><a id="cyclos-forgot-link" href='#'><?php cyclos_loginform_label( 'forgot_link' ); ?></a></p>
+				<p><a class="cyclos-forgot-link" href='#'><?php cyclos_loginform_label( 'forgot_link' ); ?></a></p>
 			<?php endif; ?>
 		</form>
 
