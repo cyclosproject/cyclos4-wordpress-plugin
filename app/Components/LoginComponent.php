@@ -167,6 +167,13 @@ class LoginComponent {
 	 * Enqueue frontend javascript for the loginform.
 	 */
 	public function enqueue_script() {
+		// Keep track of wether we have prepared the scripts already or not.
+		// If we call wp_localize_script more than once, the resulting javascript object is also put on the html several times.
+		static $scripts_ready = false;
+		if ( $scripts_ready ) {
+			// We have done the enqueue and localize script work already before, so just return.
+			return;
+		}
 		// Enqueue the login script.
 		wp_enqueue_script( 'cyclos-loginform' );
 
@@ -179,6 +186,8 @@ class LoginComponent {
 				'id'       => wp_create_nonce( 'cyclos_login_nonce' ),
 			)
 		);
+		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
+		$scripts_ready = true;
 	}
 
 	/**
