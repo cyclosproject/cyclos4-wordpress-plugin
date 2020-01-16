@@ -98,10 +98,11 @@ function plugin_activate() {
 }
 
 /**
- * At plugin uninstall, remove the plugin option.
+ * At plugin uninstall, remove the plugin option records.
  */
 function plugin_uninstall() {
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
+	delete_option( 'cyclos_version' );
 }
 
 register_activation_hook( __NAMESPACE__, 'plugin_activate' );
