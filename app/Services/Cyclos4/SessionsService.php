@@ -28,6 +28,7 @@ class SessionsService extends Service {
 			'password'      => $password,
 			'remoteAddress' => $remote_address,
 		);
+		// Note: we don't need to specify a channel, because the default channel for this route is 'main', which is what we want here.
 		return $this->run( $data );
 	}
 }
