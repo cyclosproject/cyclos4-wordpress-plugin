@@ -19,7 +19,7 @@ class AuthService extends Service {
 	 */
 	public function get_current_user_info() {
 		$this->method = 'GET';
-		$this->route  = '/auth';
+		$this->route  = '/auth?fields=permissions.users&fields=permissions.sessions';
 		return $this->run();
 	}
 
