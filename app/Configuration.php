@@ -7,6 +7,9 @@
 
 namespace Cyclos;
 
+use Cyclos\Components\Admin;
+use Cyclos\Services\CyclosAPI;
+
 /**
  * The Configuration class.
  */
