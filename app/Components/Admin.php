@@ -289,6 +289,15 @@ class Admin {
 	 * @return array Array of sanitized field values.
 	 */
 	public function sanitize_settings( $input ) {
+		// Workaround a WP core bug that calls sanitize callback twice when option record does not exist yet.
+		// See https://core.trac.wordpress.org/ticket/21989.
+		static $sanitize_has_run = false;
+		if ( $sanitize_has_run ) {
+			// We have sanitized already, so just return the input now.
+			return $input;
+		}
+		$sanitize_has_run = true;
+
 		$settings = $this->conf->get_settings();
 		foreach ( $input as $field => $value ) {
 			if ( empty( $value ) ) {
