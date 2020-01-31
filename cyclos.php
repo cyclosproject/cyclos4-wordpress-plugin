@@ -104,6 +104,5 @@ function plugin_uninstall() {
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
 	delete_option( 'cyclos_version' );
 }
-
-register_activation_hook( __NAMESPACE__, 'plugin_activate' );
-register_uninstall_hook( __NAMESPACE__, 'plugin_uninstall' );
+register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activate' );
+register_uninstall_hook( __FILE__, __NAMESPACE__ . '\\plugin_uninstall' );
