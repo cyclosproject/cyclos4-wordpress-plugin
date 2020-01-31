@@ -88,14 +88,18 @@ function load_plugin_parts() {
 require_once 'template-functions.php';
 
 /**
- * At plugin activation, check the PHP version.
+ * At plugin activation, check the PHP version and register the uninstall hook.
  */
 function plugin_activate() {
 	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
 		wp_die( 'The Cyclos plugin requires at least PHP version 5.6. You have ' . PHP_VERSION );
 		deactivate_plugins( basename( __FILE__ ) );
 	}
+
+	// Register the uninstall hook.
+	register_uninstall_hook( __FILE__, __NAMESPACE__ . '\\plugin_uninstall' );
 }
+register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activate' );
 
 /**
  * At plugin uninstall, remove the plugin option records.
@@ -104,5 +108,3 @@ function plugin_uninstall() {
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
 	delete_option( 'cyclos_version' );
 }
-register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activate' );
-register_uninstall_hook( __FILE__, __NAMESPACE__ . '\\plugin_uninstall' );
