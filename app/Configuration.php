@@ -224,7 +224,7 @@ class Configuration {
 		$current_token    = $this->get_accessclient_token();
 
 		// Check if we have new connection information.
-		if ( $current_url === $fields['cyclos_url'] && $current_username === $fields['username'] ) {
+		if ( $current_url === $url && $current_username === $username ) {
 			// Keep the original token, because the url and username have not been changed.
 			// If the password and activation code are filled in, we will re-generate a new token later on.
 			$new_token = $current_token;
