@@ -66,11 +66,11 @@ class Configuration {
 			self::$sections = array(
 				'general'    => array(
 					'label' => __( 'General Settings', 'cyclos' ),
-					'intro' => __( 'Configure the connection to your Cyclos instance with the fields below. Please read the <a href="https://wiki.cyclos.org" target="_blank">instructions</a> in our Wiki for a detailed explanation.', 'cyclos' ),
+					'intro' => __( 'Configure the connection to your Cyclos instance with the fields below. Please read the <a href="https://wiki4.cyclos.org" target="_blank">instructions</a> in our Wiki for a detailed explanation.', 'cyclos' ),
 				),
 				'login_form' => array(
 					'label' => 'Login Form',
-					'intro' => 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode.<br>Below you can configure your own label texts for the Login Form. If you are fine with the default texts, you can leave any field empty here.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>To completely change the login form look and feel, you could create your own template. Please see the instructions in the <a href="#">wiki</a> on how to do this.',
+					'intro' => 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode.<br>Below you can configure your own label texts for the Login Form. If you are fine with the default texts, you can leave any field empty here.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>To completely change the login form look and feel, you could create your own template. Please see the instructions in the <a href="https://wiki4.cyclos.org" target="_blank">wiki</a> on how to do this.',
 				),
 			);
 			self::$settings = array(
