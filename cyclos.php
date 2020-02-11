@@ -47,6 +47,7 @@ defined( 'ABSPATH' ) || exit;
 define( 'Cyclos\\PLUGIN_VERSION', '2.0.0' );
 define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'Cyclos\\PLUGIN_FILE', __FILE__ );
 
 // Using composer autoload.
 require_once 'vendor/autoload.php';

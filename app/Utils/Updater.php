@@ -29,10 +29,17 @@ class Updater {
 
 	/**
 	 * Changes when updating to version 2.0.0.:
+	 * - Register the uninstall hook, that was newly added in the activation hook of the plugin in version 2.0.0.
 	 * - Move option records into one condensed option record.
 	 * - Default to use styling on the loginform because the old version included styling on the form.
 	 */
 	protected function update_200() {
+		// Register the uninstall hook for our plugin, which the old version did not have yet.
+		// For new installs of the 2.0 version, the activate hook does this. But someone updating the plugin without
+		// deactivating/activating, would not have the uninstall hook. So register it now, while we update.
+		// Register the uninstall hook.
+		register_uninstall_hook( \Cyclos\PLUGIN_FILE, '\\Cyclos\\plugin_uninstall' );
+
 		// Retrieve the old-style option record values.
 		$cyclos_url      = get_option( 'cyclos_url' );
 		$cyclos_admin    = get_option( 'cyclos_adminuser' );
