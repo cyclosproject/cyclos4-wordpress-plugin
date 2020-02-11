@@ -9,6 +9,7 @@ namespace Cyclos\Components;
 
 use Cyclos\Configuration;
 use Cyclos\Services\CyclosAPI;
+use Cyclos\Widgets\LoginWidget;
 
 /**
  * LoginComponent class
@@ -69,7 +70,7 @@ class LoginComponent {
 	 * Register the widget for the Cyclos login form.
 	 */
 	public function register_widget() {
-		return register_widget( '\\Cyclos\\Widgets\\LoginWidget' );
+		return register_widget( LoginWidget::class );
 	}
 
 	/**

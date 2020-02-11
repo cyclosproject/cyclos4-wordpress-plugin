@@ -102,9 +102,18 @@ function plugin_activate() {
 register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activate' );
 
 /**
- * At plugin uninstall, remove the plugin option records.
+ * At plugin uninstall, remove all plugin data.
  */
 function plugin_uninstall() {
+	// Delete any instances of our widget from any sidebar.
+	// First unregister the widget, then use retrieve_widgets() that removes 'lost' widgets for us.
+	unregister_widget( Widgets\LoginWidget::class );
+	retrieve_widgets();
+
+	// Delete the widget options record.
+	delete_option( 'widget_' . Widgets\LoginWidget::ID_BASE );
+
+	// Delete the plugin options records.
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
 	delete_option( 'cyclos_version' );
 }

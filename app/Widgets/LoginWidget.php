@@ -13,6 +13,11 @@ namespace Cyclos\Widgets;
 class LoginWidget extends \WP_Widget {
 
 	/**
+	 * The id of our login widget.
+	 */
+	const ID_BASE = 'cyclosplugin';
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
@@ -20,7 +25,7 @@ class LoginWidget extends \WP_Widget {
 		// If we would change the id_base for example to 'cyclos_login', all existing widgets would disappear from their widget areas.
 		// So to keep backwards compatibility, we keep using the slightly incorrect 'cyclosplugin' id_base for this widget.
 		parent::__construct(
-			'cyclosplugin', // Widget id_base.
+			self::ID_BASE, // Widget id_base.
 			__( 'Cyclos Login', 'cyclos' ), // Widget name.
 			array( 'description' => __( 'Cyclos Login Form', 'cyclos' ) )
 		);
