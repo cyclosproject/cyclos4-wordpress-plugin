@@ -45,6 +45,8 @@ namespace Cyclos;
 defined( 'ABSPATH' ) || exit;
 
 define( 'Cyclos\\PLUGIN_VERSION', '2.0.0' );
+define( 'Cyclos\\MINIMUM_PHP_REQUIRED', '5.6' );
+define( 'Cyclos\\MINIMUM_WP_REQUIRED', '5.0' );
 define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_FILE', __FILE__ );
@@ -65,10 +67,6 @@ function load_plugin_parts() {
 		// The plugin version in the database is older than the current code.
 		// Call the plugin updater that will do updates where needed.
 		new Utils\Updater( $db_version );
-
-		// Next, update the version of the plugin in the database.
-		// Note: if there was no option record yet, this will add one.
-		update_option( 'cyclos_version', PLUGIN_VERSION );
 	}
 
 	// Load the helper classes.
@@ -89,14 +87,9 @@ function load_plugin_parts() {
 require_once 'template-functions.php';
 
 /**
- * At plugin activation, check the PHP version and register the uninstall hook.
+ * At plugin activation, register the uninstall hook.
  */
 function plugin_activate() {
-	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
-		wp_die( 'The Cyclos plugin requires at least PHP version 5.6. You have ' . PHP_VERSION );
-		deactivate_plugins( basename( __FILE__ ) );
-	}
-
 	// Register the uninstall hook.
 	register_uninstall_hook( __FILE__, __NAMESPACE__ . '\\plugin_uninstall' );
 }
