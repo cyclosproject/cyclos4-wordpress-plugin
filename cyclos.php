@@ -65,8 +65,12 @@ function load_plugin_parts() {
 	$db_version = get_option( 'cyclos_version', '1' );
 	if ( version_compare( $db_version, PLUGIN_VERSION, '<' ) ) {
 		// The plugin version in the database is older than the current code.
-		// Call the plugin updater that will do updates where needed.
-		new Utils\Updater( $db_version );
+		// Call the plugin Setup that will do initial setup or updates where needed.
+		$plugin_setup = new Utils\Setup();
+		if ( ! $plugin_setup->run( $db_version ) ) {
+			// Something went wrong during the Setup. Stop doing anything else.
+			return;
+		}
 	}
 
 	// Load the helper classes.
@@ -87,16 +91,9 @@ function load_plugin_parts() {
 require_once 'template-functions.php';
 
 /**
- * At plugin activation, register the uninstall hook.
- */
-function plugin_activate() {
-	// Register the uninstall hook.
-	register_uninstall_hook( __FILE__, __NAMESPACE__ . '\\plugin_uninstall' );
-}
-register_activation_hook( __FILE__, __NAMESPACE__ . '\\plugin_activate' );
-
-/**
  * At plugin uninstall, remove all plugin data.
+ *
+ * This function is registered as the uninstall hook of our plugin by the Setup class.
  */
 function plugin_uninstall() {
 	// Delete any instances of our widget from any sidebar.
