@@ -110,8 +110,11 @@ jQuery( document ).ready( function( $ ) {
 		const notice = $( box ).find( '.notice' );
 		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_forgot_password' };
 		data.principal = $( forgotForm ).find( 'input[name="principal"]' ).val().trim();
-		data.captcha_id = $( forgotForm ).data( 'captchaID' );
-		data.captcha_response = $( forgotForm ).find( 'input[name="captcha"]' ).val().trim();
+		// Only do captcha things when the captcha field is there; it might not be when captcha is disabled in Cyclos.
+		if ( $( forgotForm ).find( '.cyclos-captcha' ).length ) {
+			data.captcha_id = $( forgotForm ).data( 'captchaID' );
+			data.captcha_response = $( forgotForm ).find( 'input[name="captcha"]' ).val().trim();
+		}
 
 		$( notice ).hide();
 		$.post( cyclosLoginObj.ajax_url, data )
