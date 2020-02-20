@@ -4,7 +4,7 @@ Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance
 Donate link: https://www.cyclos.org/contributors
 Requires at least: 5.0
 Tested up to: 5.3
-Requires PHP: 5.6
+Requires PHP: 7.2
 Stable tag: 2.0.0-dev
 License: GPLv2
 

@@ -10,7 +10,7 @@
  * Description:       Integrates the Cyclos login form into your WordPress blog.
  * Version:           2.0.0-dev
  * Requires at least: 5.0
- * Requires PHP:      5.6
+ * Requires PHP:      7.2
  * Author:            The Cyclos team
  * Author URI:        https://www.cyclos.org
  * Text domain:       cyclos
@@ -45,7 +45,7 @@ namespace Cyclos;
 defined( 'ABSPATH' ) || exit;
 
 define( 'Cyclos\\PLUGIN_VERSION', '2.0.0' );
-define( 'Cyclos\\MINIMUM_PHP_REQUIRED', '5.6' );
+define( 'Cyclos\\MINIMUM_PHP_REQUIRED', '7.2' );
 define( 'Cyclos\\MINIMUM_WP_REQUIRED', '5.0' );
 define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
@@ -85,10 +85,9 @@ function load_plugin_parts() {
 	$login_component = new Components\LoginComponent( $config, $cyclos_api );
 	$login_component->init();
 
+	// Include the template functions.
+	require_once 'template-functions.php';
 }
-
-// Include the template functions.
-require_once 'template-functions.php';
 
 /**
  * At plugin uninstall, remove all plugin data.

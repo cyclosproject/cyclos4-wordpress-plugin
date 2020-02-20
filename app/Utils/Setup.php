@@ -26,7 +26,10 @@ class Setup {
 	 * @param string $db_version   The version of the plugin in the database. This determines which steps are run.
 	 * @return boolean             Returns true when the Setup steps were run successfully.
 	 */
-	public function run( string $db_version ) {
+	public function run( $db_version ) {
+		// Note: Normally we add typehinting to method parameters, so in this case you would expect: run( string $db_version ).
+		// But this only works in PHP7 and up and since we have not checked the system requirements yet, we can not be sure this would work.
+
 		// Do initial setup steps. This might throw an Exception when the minimum requirements are not met.
 		if ( version_compare( $db_version, '1', '<=' ) ) {
 			try {
