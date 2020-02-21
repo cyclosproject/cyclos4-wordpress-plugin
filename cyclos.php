@@ -77,9 +77,11 @@ function load_plugin_parts() {
 	$config     = Configuration::get_instance();
 	$cyclos_api = new Services\CyclosAPI( $config );
 
-	// Load the admin component.
-	$admin = new Components\Admin( $config );
-	$admin->init();
+	if ( is_admin() ) {
+		// Load the admin component.
+		$admin = new Components\Admin( $config );
+		$admin->init();
+	}
 
 	// Load the login component.
 	$login_component = new Components\LoginComponent( $config, $cyclos_api );
