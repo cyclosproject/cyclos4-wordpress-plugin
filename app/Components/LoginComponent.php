@@ -106,9 +106,9 @@ class LoginComponent {
 			set_query_var( 'cyclos_is_captcha_enabled', false );
 			set_query_var( 'cyclos_return_to', '' );
 		} else {
-			// phpcs:disable WordPress.Security.NonceVerification.Recommended
+			// Cyclos can not send us a nonce, so ignore the recommended nonce verification.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$return_to = isset( $_GET['returnTo'] ) ? sanitize_text_field( wp_unslash( $_GET['returnTo'] ) ) : '';
-			// phpcs:enable
 			set_query_var( 'cyclos_is_forgot_password_enabled', $login_configuration['is_forgot_password_enabled'] );
 			set_query_var( 'cyclos_is_captcha_enabled', $login_configuration['is_captcha_enabled'] );
 			set_query_var( 'cyclos_return_to', $return_to );

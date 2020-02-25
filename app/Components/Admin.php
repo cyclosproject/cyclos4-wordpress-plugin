@@ -60,9 +60,8 @@ class Admin {
 			if ( isset( $section['intro'] ) ) {
 				$callback = function() use ( $section ) {
 					// Note: we need to output the description without escaping it, to allow the description to contain a hyperlink for example.
-					// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					printf( '<p class="intro">%s</p>', $section['intro'] );
-					// phpcs:enable
 				};
 			}
 			add_settings_section( $section_id, $section['label'], $callback, self::SETTINGS_PAGE );
@@ -110,7 +109,6 @@ class Admin {
 	 */
 	public function enqueue_admin_scripts( $hook ) {
 		// Only add our assets on our own settings page.
-		// phpcs:disable Squiz.Commenting.InlineComment.InvalidEndChar
 		// Note:
 		// Using hardcoded 'settings_page_' here.
 		// We could also store the result of our add_options_page() call in add_cyclos_settings_submenu() in a class property and use that.
@@ -118,7 +116,6 @@ class Admin {
 		// - 'settings' (because we created a submenu under Settings),
 		// - '_page' (hardcoded in https://developer.wordpress.org/reference/functions/get_plugin_page_hookname/),
 		// - and our own settings_page constant we used as menu_slug in our add_options_page() call.
-		// phpcs:enable
 		if ( 'settings_page_' . self::SETTINGS_PAGE !== $hook ) {
 			return;
 		}

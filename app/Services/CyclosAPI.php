@@ -213,9 +213,8 @@ class CyclosAPI {
 				if ( is_wp_error( $cyclos_response ) ) {
 					$error_message = $this->handle_error( $cyclos_response );
 				} else {
-					// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
+					// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 					$content = base64_encode( $cyclos_response );
-					// phpcs:enable
 				}
 			}
 		}
