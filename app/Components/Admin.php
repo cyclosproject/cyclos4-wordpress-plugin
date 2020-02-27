@@ -250,7 +250,7 @@ class Admin {
 	 * This is not an input field, but shows the result of the Cyclos API with the currently configured connection information.
 	 */
 	public function render_connection_status() {
-		$message = __( 'Status unknown. The connection has not been setup yet. Please make sure you fill in all connection fields.', 'cyclos' );
+		$message = __( 'The connection has not been setup yet. Please configure your Cyclos connection settings on the Connection tab.', 'cyclos' );
 		$status  = 'none';
 
 		// Only try to retrieve the connection status if we have a token, since without it, the connection will fail anyway.
@@ -277,6 +277,30 @@ class Admin {
 		}
 
 		printf( '<p class="dashicons %1$s"></p><p>%2$s</p>', esc_html( $css_dashicon ), esc_html( $message ) );
+	}
+
+	/**
+	 * Render a read-only setting field.
+	 * This is not an input field, but a read-only field showing the current value of one of the other setting fields.
+	 * By convention, the id of the read-only field must be: read_{id-of-the-field-to-show}.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_read_field( $args ) {
+		$field_id = $args['label_for'];
+		// The convention for read-only fields is to use a key of the form: read_{field_id}.
+		// So, to retrieve the id of the field to show, remove the 'read_' part, i.e. remove the first 5 characters.
+		$field_id = substr( $field_id, 5 );
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id, false );
+		if ( empty( $value ) ) {
+			// If the setting is not found, fallback to the default, telling us the setting is not configured yet.
+			$value = $setting->get_default();
+		}
+		printf( '<p>%s</p>', esc_attr( $value ) );
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
 	}
 
 	/**
