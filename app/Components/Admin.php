@@ -227,25 +227,6 @@ class Admin {
 	}
 
 	/**
-	 * Render the setting field for fields of type info.
-	 * Note: don't use this field type; it does not work correctly.
-	 *
-	 * @param array $args Contains the key and Settings object of the field to render.
-	 */
-	public function render_info( $args ) {
-		$setting = $args['setting_info'];
-		if ( ! empty( $setting->get_description() ) ) {
-			// If we would do simply do: echo $setting->get_description() the text would come next to the label.
-			// If we put the text in a colspan like below, it gets under the label (which is not what we want) and also with invalid html.
-			// Note: we need to output the description without escaping it, to allow the description to contain a hyperlink for example.
-			// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo $setting->get_description();
-			printf( '<tr valign="top"><td colspan="2">%s</td></tr>', $setting->get_description() );
-			// phpcs:enable
-		}
-	}
-
-	/**
 	 * Render the connection status setting field.
 	 * This is not an input field, but shows the result of the Cyclos API with the currently configured connection information.
 	 */
