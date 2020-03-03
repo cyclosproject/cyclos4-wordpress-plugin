@@ -51,8 +51,21 @@ define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'Cyclos\\PLUGIN_FILE', __FILE__ );
 
-// Using composer autoload.
-require_once 'vendor/autoload.php';
+// Use a custom autoload, so we don't need to include composer in our plugin build.
+spl_autoload_register(
+	function( $classname ) {
+		// Only autoload classes in our own Cyclos namespace.
+		if ( 0 === strpos( $classname, __NAMESPACE__ . '\\' ) ) {
+			// Replace the namespace separator with a directory separator.
+			$filename = str_replace( '\\', DIRECTORY_SEPARATOR, $classname );
+			// Replace the namespace prefix ('Cyclos') with the directory prefix ('app').
+			// Note: don't use str_replace() because we must only replace 'Cyclos' in the namespace, not in the classname (i.e. CyclosAPI).
+			$filename = substr_replace( $filename, 'app', 0, strlen( __NAMESPACE__ ) );
+			// Load the file containing the class.
+			include PLUGIN_DIR . $filename . '.php';
+		}
+	}
+);
 
 // Load the necessary parts of the plugin in the proper action hook - so others can remove them if needed.
 add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin_parts' );
