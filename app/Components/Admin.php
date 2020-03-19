@@ -40,6 +40,7 @@ class Admin {
 		add_action( 'admin_menu', array( $this, 'add_cyclos_settings_submenu' ) );
 		add_action( 'admin_init', array( $this, 'register_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
+		add_action( 'plugin_action_links_' . plugin_basename( \Cyclos\PLUGIN_FILE ), array( $this, 'add_plugin_action_links' ) );
 	}
 
 	/**
@@ -140,6 +141,20 @@ class Admin {
 			.dashicons-yes { color: green; }
 		';
 		wp_add_inline_style( 'wp-admin', $custom_css );
+	}
+
+	/**
+	 * Extend the links for our plugin in the Plugins list admin screen: add a link to our plugin settings.
+	 *
+	 * This is just for webmaster convenience; the plugin settings can also be reached via the Settings menu.
+	 *
+	 * @param array $actions Array of plugin action links. By default this can include 'activate', 'deactivate', and 'delete'.
+	 * @return array Array of plugin action links with a link to our plugin settings added.
+	 */
+	public function add_plugin_action_links( $actions ) {
+		$settings_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( admin_url( 'options-general.php?page=' . self::SETTINGS_PAGE ) ), esc_html( __( 'Settings', 'cyclos' ) ) );
+		array_unshift( $actions, $settings_link );
+		return $actions;
 	}
 
 	/**
