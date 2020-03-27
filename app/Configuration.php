@@ -66,11 +66,11 @@ class Configuration {
 			self::$sections = array(
 				'general'    => array(
 					'label' => __( 'General', 'cyclos' ),
-					'intro' => __( 'With the Cyclos plugin you can let your WordPress website communicate with your Cyclos server. Please read the <a href="https://wiki4.cyclos.org" target="_blank">instructions</a> in our Wiki for a detailed explanation or if you encounter problems using the plugin.', 'cyclos' ),
+					'intro' => __( 'With the Cyclos plugin you can let your WordPress website communicate with your Cyclos server. Please read the <a href="https://wiki4.cyclos.org/index.php/WordPress" target="_blank">instructions</a> in our Wiki for a detailed explanation or if you encounter problems using the plugin.', 'cyclos' ),
 				),
 				'connection' => array(
 					'label' => __( 'Connection', 'cyclos' ),
-					'intro' => __( 'Configure the connection to your Cyclos server with the fields below. Please read the <a href="https://wiki4.cyclos.org" target="_blank">instructions</a> in our Wiki for a detailed explanation.<br><br><strong>IMPORTANT:<br>Create a dedicated Cyclos user for connecting your WordPress site and make absolutely sure that this user has only the permissions in Cyclos that are needed for the plugin to work, as described in the wiki, and no other permissions. If ever your WordPress site might get hacked, the hacker could not do much harm within Cyclos this way.</strong>', 'cyclos' ),
+					'intro' => __( 'Configure the connection to your Cyclos server with the fields below. Please read the <a href="https://wiki4.cyclos.org/index.php/WordPress" target="_blank">instructions</a> in our Wiki for a detailed explanation.<br><br><strong>IMPORTANT:<br>Create a dedicated Cyclos user for connecting your WordPress site and make absolutely sure that this user has only the permissions in Cyclos that are needed for the plugin to work, as described in the wiki, and no other permissions. If ever your WordPress site might get hacked, the hacker could not do much harm within Cyclos this way.</strong>', 'cyclos' ),
 				),
 				'login_form' => array(
 					'label' => 'Login Form',
