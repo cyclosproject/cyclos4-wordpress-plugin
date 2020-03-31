@@ -1,30 +1,48 @@
 === Cyclos ===
-Contributors: Cyclos, luisfpg, rleon.uy, augusto1995
+Contributors: Cyclos, luisfpg, rleon.uy, augusto1995, rozijntje
 Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
-Donate link: http://www.cyclos.org/contributors
-Requires at least: 4.3
-Tested up to: 4.9.2
-Stable tag: 1.1.6
+Donate link: https://www.cyclos.org/contributors/
+Requires at least: 5.0
+Tested up to: 5.3
+Requires PHP: 7.2
+Stable tag: 2.0.0-dev
 License: GPLv2
 
-This plugin enables you to easily add a Cyclos login form to your wordpress website.
+This plugin enables you to easily add a Cyclos login form to your WordPress website.
 
 == Description ==
-= Cyclos wordpress Plugin =
-This plugin enables you to easily add a Cyclos login form to your wordpress website. Later extra features will be added such as searching for advertisements.
+
+### Cyclos WordPress Plugin ###
+This plugin enables you to easily add a Cyclos login form to your WordPress website.
 
 == Installation ==
-Please go to the wordpress settings menu and open "Cyclos", further instructions are given there.
+
+### Either from within WordPress: ###
+1. Go to 'Plugins' and click 'Add New'.
+1. Search for 'Cyclos'.
+1. Click 'Install Now' near the 'Cyclos' plugin.
+
+### or manually: ###
+1. Download the Cyclos plugin from the WordPress plugin page and store the zip file on your computer.
+1. Unpack the contents of the zip file on your computer. This should be a folder called 'cyclos'.
+1. Upload the 'cyclos' folder to the '/wp-content/plugins/' directory of your WordPress website.
+
+### And next: ###
+1. Activate the Cyclos plugin through the 'Plugins' menu in WordPress.
+1. Configure the plugin by going to 'Cyclos' under the 'Settings' menu.
+
+Detailed instructions for the configuration of both Cyclos and WordPress settings are available in our [Wiki](https://wiki4.cyclos.org/index.php/WordPress).
 
 == Frequently Asked Questions ==
-= What does the plug-in do: = 
-The plug-in alows your Cyclos users to login to Cyclos using a wordpress front-end site.
 
-= What is Cyclos: =
-Cyclos is payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: <a href="http:/www.cyclos.org" target="_blank">www.cyclos.org</a>.
+= What does the plugin do? =
+The plugin alows your Cyclos users to login to Cyclos using a WordPress front-end site.
 
-= How do I install the plug-in =
-Please follow the instructions given in the wordpress setting menu of the plug-in.
+= What is Cyclos? =
+Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
+
+= Where can I find more information? =
+Please read the dedicated page in our [Wiki](https://wiki4.cyclos.org/index.php/WordPress) about this plugin.
 
 == Screenshots ==
 1. Login form (in a page).
@@ -33,13 +51,4 @@ Please follow the instructions given in the wordpress setting menu of the plug-i
 4. Customizing labels of the form.
 
 == Changelog ==
-= 1.1.6 - 2018-10-03 =
-We added support to go to a specific page in Cyclos instead of the home after a successfully login.
-
-= 1.1.5 - 2018-01-25 =
-We updated the plugin to be compatible with PHP 7.2.
-
-= Previous versions =
-We updated the PHP4 style constructors in WordPress (see https://make.wordpress.org/core/2015/07/02/deprecating-php4-style-constructors-in-wordpress-4-3/)
-and therefore Wordpress version 4.3 (or higher) is required. If you wish to run the plugin on an older version of wordpress or a php version 5.2 or below please use version 1.0 of our plugin.
-
+Please see the [Changelog](https://wiki4.cyclos.org/index.php/WordPress#Changelog) in our Wiki.

@@ -1,0 +1,5 @@
+{
+    // Without calling the wordpres eslint package here, the ESLint VSCode extension can
+    // not find the eslint configuration.
+    "extends": [ "plugin:@wordpress/eslint-plugin/recommended" ]
+}
