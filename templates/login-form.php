@@ -23,7 +23,7 @@
 
 		<?php if ( $cyclos_is_forgot_password_enabled ) : ?>
 			<form class='cyclos-forgotpassword-form' action='#' method='post' style='display:none'>
-				<p><input placeholder="<?php cyclos_loginform_label( 'forgot_principal' ); ?>" name='principal' type='text' required></p>
+				<p><input placeholder="<?php cyclos_loginform_label( 'forgot_principal' ); ?>" name='principal' type='text' autocomplete="username" required></p>
 				<?php if ( $cyclos_is_captcha_enabled ) : ?>
 					<p class="cyclos-line">
 						<input placeholder="<?php cyclos_loginform_label( 'forgot_captcha' ); ?>" name='captcha' type='text' required>
@@ -38,8 +38,8 @@
 
 		<form class='cyclos-login-form' action='#' method='post'>
 			<input name='return-to' value='<?php echo esc_attr( $cyclos_return_to ); ?>' type='hidden'>
-			<p><input placeholder="<?php cyclos_loginform_label( 'principal' ); ?>" name='principal' type='text' required></p>
-			<p><input placeholder="<?php cyclos_loginform_label( 'password' ); ?>" name='password' type='password' required></p>
+			<p><input placeholder="<?php cyclos_loginform_label( 'principal' ); ?>" name='principal' type='text' autocomplete="username" required></p>
+			<p><input placeholder="<?php cyclos_loginform_label( 'password' ); ?>" name='password' type='password' autocomplete="current-password" required></p>
 			<p><input type='submit' value="<?php cyclos_loginform_label( 'submit' ); ?>"></p>
 			<?php if ( $cyclos_is_forgot_password_enabled ) : ?>
 				<p><a class="cyclos-forgot-link" href='#'><?php cyclos_loginform_label( 'forgot_link' ); ?></a></p>
