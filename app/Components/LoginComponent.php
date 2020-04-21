@@ -200,8 +200,8 @@ class LoginComponent {
 		check_ajax_referer( 'cyclos_login_nonce' );
 
 		// Do a remote request to Cyclos.
-		$username       = isset( $_POST['principal'] ) ? sanitize_text_field( wp_unslash( $_POST['principal'] ) ) : '';
-		$password       = isset( $_POST['password'] ) ? sanitize_text_field( wp_unslash( $_POST['password'] ) ) : '';
+		$username       = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$password       = isset( $_POST['password'] ) ? wp_unslash( $_POST['password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$remote_address = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$return_to      = isset( $_POST['returnTo'] ) ? sanitize_text_field( wp_unslash( $_POST['returnTo'] ) ) : '';
 
@@ -229,7 +229,7 @@ class LoginComponent {
 		check_ajax_referer( 'cyclos_login_nonce' );
 
 		// Do a remote request to Cyclos.
-		$principal        = isset( $_POST['principal'] ) ? sanitize_text_field( wp_unslash( $_POST['principal'] ) ) : '';
+		$principal        = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$captcha_id       = isset( $_POST['captcha_id'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha_id'] ) ) : '';
 		$captcha_response = isset( $_POST['captcha_response'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha_response'] ) ) : '';
 
