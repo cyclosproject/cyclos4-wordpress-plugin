@@ -15,10 +15,14 @@ jQuery( document ).ready( function( $ ) {
 	 */
 	function activateSection( tab ) {
 		const section = tab.text();
-		$( '.wrap' ).find( "h2:contains('" + section + "')" ).each( function() {
-			$( this ).addClass( 'active' );
-			$( this ).nextUntil( 'h2', ':not(.submit)' ).addClass( 'active' );
-		} );
+		$( '.wrap' )
+			.find( "h2:contains('" + section + "')" )
+			.each( function() {
+				$( this ).addClass( 'active' );
+				$( this )
+					.nextUntil( 'h2', ':not(.submit)' )
+					.addClass( 'active' );
+			} );
 	}
 
 	// Make the first tab active initially.
@@ -30,7 +34,9 @@ jQuery( document ).ready( function( $ ) {
 	$( '.nav-tab-wrapper a' ).click( function() {
 		// Remove the active class from all tab links and all section elements.
 		$( '.nav-tab-wrapper a' ).removeClass( 'nav-tab-active' );
-		$( '.wrap h2, .wrap .intro, .wrap .form-table' ).removeClass( 'active' );
+		$( '.wrap h2, .wrap .intro, .wrap .form-table' ).removeClass(
+			'active'
+		);
 
 		// Add the active class to the clicked tab link and the section elements that belong to it.
 		$( this ).addClass( 'nav-tab-active' );

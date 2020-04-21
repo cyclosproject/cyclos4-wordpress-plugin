@@ -6,8 +6,14 @@
 import { __ } from '@wordpress/i18n';
 
 const invalidDataMessage = __( 'Invalid data received from server', 'cyclos' );
-const loginFormSetupMessage = __( 'Something is wrong with the login form setup', 'cyclos' );
-const captchaSetupMessage = __( 'Something is wrong with the captcha function', 'cyclos' );
+const loginFormSetupMessage = __(
+	'Something is wrong with the login form setup',
+	'cyclos'
+);
+const captchaSetupMessage = __(
+	'Something is wrong with the captcha function',
+	'cyclos'
+);
 
 jQuery( document ).ready( function( $ ) {
 	// Handle submit on the login form.
@@ -19,9 +25,18 @@ jQuery( document ).ready( function( $ ) {
 		const box = $( loginForm ).parents( '.cyclos-form-box' );
 		const notice = $( box ).find( '.notice' );
 		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_login' };
-		data.principal = $( loginForm ).find( 'input[name="principal"]' ).val().trim();
-		data.password = $( loginForm ).find( 'input[name="password"]' ).val().trim();
-		data.returnTo = $( loginForm ).find( 'input[name="return-to"]' ).val().trim();
+		data.principal = $( loginForm )
+			.find( 'input[name="principal"]' )
+			.val()
+			.trim();
+		data.password = $( loginForm )
+			.find( 'input[name="password"]' )
+			.val()
+			.trim();
+		data.returnTo = $( loginForm )
+			.find( 'input[name="return-to"]' )
+			.val()
+			.trim();
 
 		$( notice ).hide();
 		$.post( cyclosLoginObj.ajax_url, data )
@@ -30,15 +45,23 @@ jQuery( document ).ready( function( $ ) {
 				if ( response.redirectUrl ) {
 					window.location.href = response.redirectUrl;
 				} else {
-					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
+					$( notice )
+						.html(
+							`${ response.errorMessage || invalidDataMessage }.`
+						)
+						.show();
 				}
 			} )
 			.fail( function() {
-				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
+				$( notice )
+					.html( `${ loginFormSetupMessage }.` )
+					.show();
 			} )
 			.always( function() {
 				// Remove focus from the submit button.
-				$( loginForm ).find( 'input[type="submit"]' ).blur();
+				$( loginForm )
+					.find( 'input[type="submit"]' )
+					.blur();
 			} );
 	} );
 
@@ -95,8 +118,12 @@ jQuery( document ).ready( function( $ ) {
 
 		// Empty the captcha code input field and give it focus.
 		// Quirck: Toggle the required html5 attribute to avoid getting an html5 browser error on this field.
-		$( captchaAnswer ).attr( 'required', false ).val( '' );
-		$( captchaAnswer ).focus().attr( 'required', true );
+		$( captchaAnswer )
+			.attr( 'required', false )
+			.val( '' );
+		$( captchaAnswer )
+			.focus()
+			.attr( 'required', true );
 	} );
 
 	// Handle submit on the forgot password form.
@@ -108,12 +135,21 @@ jQuery( document ).ready( function( $ ) {
 		const box = $( forgotForm ).parents( '.cyclos-form-box' );
 		const loginForm = $( box ).find( '.cyclos-login-form' );
 		const notice = $( box ).find( '.notice' );
-		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_forgot_password' };
-		data.principal = $( forgotForm ).find( 'input[name="principal"]' ).val().trim();
+		const data = {
+			_ajax_nonce: cyclosLoginObj.id,
+			action: 'cyclos_forgot_password',
+		};
+		data.principal = $( forgotForm )
+			.find( 'input[name="principal"]' )
+			.val()
+			.trim();
 		// Only do captcha things when the captcha field is there; it might not be when captcha is disabled in Cyclos.
 		if ( $( forgotForm ).find( '.cyclos-captcha' ).length ) {
 			data.captcha_id = $( forgotForm ).data( 'captchaID' );
-			data.captcha_response = $( forgotForm ).find( 'input[name="captcha"]' ).val().trim();
+			data.captcha_response = $( forgotForm )
+				.find( 'input[name="captcha"]' )
+				.val()
+				.trim();
 		}
 
 		$( notice ).hide();
@@ -122,19 +158,31 @@ jQuery( document ).ready( function( $ ) {
 				response = response || {};
 				if ( response.successMessage ) {
 					// Show the success message and show the login form again.
-					$( notice ).html( `${ response.successMessage }.` ).show();
+					$( notice )
+						.html( `${ response.successMessage }.` )
+						.show();
 					$( forgotForm ).hide();
 					$( loginForm ).show();
 				} else {
-					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
+					$( notice )
+						.html(
+							`${ response.errorMessage || invalidDataMessage }.`
+						)
+						.show();
 					// Remove focus from the submit button.
-					$( forgotForm ).find( 'input[type="submit"]' ).blur();
+					$( forgotForm )
+						.find( 'input[type="submit"]' )
+						.blur();
 				}
 			} )
 			.fail( function() {
-				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
+				$( notice )
+					.html( `${ loginFormSetupMessage }.` )
+					.show();
 				// Remove focus from the submit button.
-				$( forgotForm ).find( 'input[type="submit"]' ).blur();
+				$( forgotForm )
+					.find( 'input[type="submit"]' )
+					.blur();
 			} );
 	} );
 
@@ -144,22 +192,36 @@ jQuery( document ).ready( function( $ ) {
 	function newCaptcha( forgotForm, notice ) {
 		const captcha = $( forgotForm ).find( '.cyclos-captcha' );
 		cyclosLoginObj = cyclosLoginObj || {};
-		const data = { _ajax_nonce: cyclosLoginObj.id, action: 'cyclos_captcha' };
+		const data = {
+			_ajax_nonce: cyclosLoginObj.id,
+			action: 'cyclos_captcha',
+		};
 		$.post( cyclosLoginObj.ajax_url, data )
 			.done( function( response ) {
 				response = response || {};
 				if ( response.id && response.content ) {
 					// Store the captcha ID on the form and show its contents as an image.
 					$( forgotForm ).data( 'captchaID', response.id );
-					$( captcha ).attr( 'src', 'data:image/png;base64,' + response.content ).show();
+					$( captcha )
+						.attr(
+							'src',
+							'data:image/png;base64,' + response.content
+						)
+						.show();
 				} else {
 					$( captcha ).hide();
-					$( notice ).html( `${ response.errorMessage || invalidDataMessage }.` ).show();
+					$( notice )
+						.html(
+							`${ response.errorMessage || invalidDataMessage }.`
+						)
+						.show();
 				}
 			} )
 			.fail( function() {
 				$( captcha ).hide();
-				$( notice ).html( `${ captchaSetupMessage }.` ).show();
+				$( notice )
+					.html( `${ captchaSetupMessage }.` )
+					.show();
 			} );
 	}
 } );
