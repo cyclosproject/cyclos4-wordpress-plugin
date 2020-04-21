@@ -130,9 +130,11 @@ class CyclosAPI {
 			$status  = 'error';
 		} else {
 			// The user exists in Cyclos and the account has no problems. Now check if it has all the required permissions.
-			$can_login        = $cyclos_response->permissions->sessions->login ?? false;
-			$can_view_profile = $cyclos_response->permissions->users->viewProfile ?? false;
-			// If one of the required permissions is not set, set the status to 'warning' and set the error message to indicate the problem.
+			// Note: when a property does not exist, we cannot check it, so we skip the check and don't warn (fallback to default true).
+			// This happens when the REST API does not contain a property yet in older Cyclos versions.
+			$can_login        = $cyclos_response->permissions->sessions->login ?? true;
+			$can_view_profile = $cyclos_response->permissions->users->viewProfile ?? true;
+			// If one of the required permissions is not set correctly, set the status to 'warning' and set the error message to indicate the problem.
 			if ( ! $can_login ) {
 				$message = __( "The Cyclos user needs permission to login other users. Please correct the configuration of the user group in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
 				$status  = 'warning';
