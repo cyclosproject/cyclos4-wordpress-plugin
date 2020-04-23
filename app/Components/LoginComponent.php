@@ -136,10 +136,9 @@ class LoginComponent {
 		$handle    = 'cyclos-loginform';
 		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'jquery', 'wp-i18n' );
+		$deps      = array( 'jquery' );
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
-		wp_set_script_translations( $handle, 'cyclos' );
 
 		// Register the login style if this is configured.
 		if ( $this->conf->add_styles_to_loginform() ) {
@@ -180,12 +179,19 @@ class LoginComponent {
 		wp_enqueue_script( 'cyclos-loginform' );
 
 		// Pass the necessary information to the login script.
+		// Note: We also need a few localized strings in the Javascript and instead of using wp-i18n we just pass them here,
+		// because using wp-i18n leads to two extra network requests (wp-i18n and wp-polyfill), which is a bit overkill.
 		wp_localize_script(
 			'cyclos-loginform',
 			'cyclosLoginObj',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'id'       => wp_create_nonce( 'cyclos_login_nonce' ),
+				'l10n'     => array(
+					'invalidDataMessage'    => __( 'Invalid data received from server', 'cyclos' ),
+					'loginFormSetupMessage' => __( 'Something is wrong with the login form setup', 'cyclos' ),
+					'captchaSetupMessage'   => __( 'Something is wrong with the captcha function', 'cyclos' ),
+				),
 			)
 		);
 		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.

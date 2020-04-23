@@ -3,23 +3,15 @@
  * The Login module script.
  */
 
-import { __ } from '@wordpress/i18n';
-
-const invalidDataMessage = __( 'Invalid data received from server', 'cyclos' );
-const loginFormSetupMessage = __(
-	'Something is wrong with the login form setup',
-	'cyclos'
-);
-const captchaSetupMessage = __(
-	'Something is wrong with the captcha function',
-	'cyclos'
-);
-
 jQuery( document ).ready( function( $ ) {
+	cyclosLoginObj = cyclosLoginObj || {};
+	const invalidDataMessage = cyclosLoginObj.l10n.invalidDataMessage;
+	const loginFormSetupMessage = cyclosLoginObj.l10n.loginFormSetupMessage;
+	const captchaSetupMessage = cyclosLoginObj.l10n.captchaSetupMessage;
+
 	// Handle submit on the login form.
 	$( '.cyclos-login-form' ).submit( function( event ) {
 		event.preventDefault();
-		cyclosLoginObj = cyclosLoginObj || {};
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
 		const loginForm = this;
 		const box = $( loginForm ).parents( '.cyclos-form-box' );
