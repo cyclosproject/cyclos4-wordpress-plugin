@@ -136,9 +136,11 @@ class CyclosAPI {
 			$can_view_profile = $cyclos_response->permissions->users->viewProfile ?? true;
 			// If one of the required permissions is not set correctly, set the status to 'warning' and set the error message to indicate the problem.
 			if ( ! $can_login ) {
+				/* translators: 'Login users via web services' is a string in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.loginUsers from the Cyclos crowdin project. This text may have a custom translation in Cyclos however. */
 				$message = __( "The Cyclos user needs permission to login other users. Please correct the configuration of the user group in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
 				$status  = 'warning';
 			} elseif ( ! $can_view_profile ) {
+				/* translators: 'Accessible user groups' and 'All groups' are strings in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.userGroupAccessibility and USERS.PRODUCTS.userGroupAccessibility.ALL from the Cyclos crowdin project. These texts may have a custom translation in Cyclos however. */
 				$message = __( "The Cyclos user needs permission to access user groups. Please correct the configuration of the user group in Cyclos: set the 'Accessible user groups' to 'All groups'.", 'cyclos' );
 				$status  = 'warning';
 			} else {
