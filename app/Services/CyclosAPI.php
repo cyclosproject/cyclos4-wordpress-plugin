@@ -304,7 +304,7 @@ class CyclosAPI {
 				'pw-indefinitelyBlocked'        => __( 'Your password is indefinitely blocked', 'cyclos' ),
 				'pw-neverCreated'               => __( 'Your password was not created', 'cyclos' ),
 				'pw-pending'                    => __( 'Your password is pending', 'cyclos' ),
-				'pw-reset'                      => __( 'Your password was reset ', 'cyclos' ),
+				'pw-reset'                      => __( 'Your password was reset', 'cyclos' ),
 				'pw-temporarilyBlocked'         => __( 'Your password is temporarily blocked by exceeding invalid login attempts', 'cyclos' ),
 			);
 
