@@ -8,7 +8,7 @@
  * Plugin Name:       Cyclos
  * Plugin URI:        https://www.cyclos.org/wordpress-plugins/
  * Description:       Integrates the Cyclos login form into your WordPress blog.
- * Version:           2.0.0-dev
+ * Version:           2.0.0
  * Requires at least: 5.0
  * Requires PHP:      7.2
  * Author:            The Cyclos team
