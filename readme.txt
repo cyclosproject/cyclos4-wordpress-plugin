@@ -36,7 +36,7 @@ Detailed instructions for the configuration of both Cyclos and WordPress setting
 == Frequently Asked Questions ==
 
 = What does the plugin do? =
-The plugin alows your Cyclos users to login to Cyclos using a WordPress front-end site.
+The plugin allows your Cyclos users to login to Cyclos using a WordPress front-end site.
 
 = What is Cyclos? =
 Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
