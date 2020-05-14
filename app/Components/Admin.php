@@ -162,7 +162,7 @@ class Admin {
 	 */
 	public function add_cyclos_settings_submenu() {
 		// add_options_page params: string $page_title, string $menu_title, string $capability, string $menu_slug, callable $function = ''.
-		add_options_page( 'Cyclos Plugin Settings', 'Cyclos', 'manage_options', self::SETTINGS_PAGE, array( $this, 'cyclos_settings_page' ) );
+		add_options_page( __( 'Cyclos Plugin Settings', 'cyclos' ), __( 'Cyclos', 'cyclos' ), 'manage_options', self::SETTINGS_PAGE, array( $this, 'cyclos_settings_page' ) );
 	}
 
 	/**
@@ -172,7 +172,7 @@ class Admin {
 	public function cyclos_settings_page() {
 		?>
 		<div class="wrap">
-			<h1>Cyclos Settings</h1>
+			<h1><?php esc_html_e( 'Cyclos Plugin Settings', 'cyclos' ); ?></h1>
 			<form method="post" action="options.php">
 
 				<nav class="nav-tab-wrapper">

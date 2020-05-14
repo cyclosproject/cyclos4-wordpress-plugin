@@ -5,7 +5,7 @@ Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
 Tested up to: 5.4
 Requires PHP: 7.2
-Stable tag: 2.0.0
+Stable tag: 2.0.0-plus
 License: GPLv2
 
 This plugin enables you to easily add a Cyclos login form to your WordPress website.
@@ -36,7 +36,7 @@ Detailed instructions for the configuration of both Cyclos and WordPress setting
 == Frequently Asked Questions ==
 
 = What does the plugin do? =
-The plugin alows your Cyclos users to login to Cyclos using a WordPress front-end site.
+The plugin allows your Cyclos users to login to Cyclos using a WordPress front-end site.
 
 = What is Cyclos? =
 Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
