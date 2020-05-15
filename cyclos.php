@@ -90,15 +90,19 @@ function load_plugin_parts() {
 	$config     = Configuration::get_instance();
 	$cyclos_api = new Services\CyclosAPI( $config );
 
+	// Load the admin component.
 	if ( is_admin() ) {
-		// Load the admin component.
 		$admin = new Components\Admin( $config );
 		$admin->init();
 	}
 
-	// Load the login component.
-	$login_component = new Components\LoginComponent( $config, $cyclos_api );
-	$login_component->init();
+	// Load the optional components.
+	$components = $config->get_components();
+	foreach ( $components as $id => $component_class ) {
+		if ( $config->is_active( $id ) ) {
+			( new $component_class( $config, $cyclos_api ) )->init();
+		}
+	}
 
 	// Include the template functions.
 	require_once 'template-functions.php';

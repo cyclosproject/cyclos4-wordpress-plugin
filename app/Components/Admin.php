@@ -242,6 +242,37 @@ class Admin {
 	}
 
 	/**
+	 * Render the setting field for fields of type components.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_components( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id, false );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		printf( '<fieldset><legend class="screen-reader-text"><span>%s</span></legend>', esc_html( $setting->get_label() ) );
+		// Get the components that are selectable by the webmaster and create a checkbox for each of them.
+		$components = $this->conf->get_components();
+		foreach ( $components as $id => $component_class ) {
+			$field_name  = $name . '[' . $id . ']';
+			$field_value = $value ? $value[ $id ] : '';
+			$field_label = $component_class::get_component_info()['tab'];
+			printf(
+				'<label for="%1$s"><input type="checkbox" name="%2$s" id="%1$s" value="1" %3$s />%4$s</label><br>',
+				esc_html( $id ),
+				esc_html( $field_name ),
+				checked( 1, esc_attr( $field_value ), false ),
+				esc_html( $field_label )
+			);
+		}
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+		print( '</fieldset>' );
+	}
+
+	/**
 	 * Render the connection status setting field.
 	 * This is not an input field, but shows the result of the Cyclos API with the currently configured connection information.
 	 */

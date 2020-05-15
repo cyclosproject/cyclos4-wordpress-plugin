@@ -8,6 +8,7 @@
 namespace Cyclos;
 
 use Cyclos\Components\Admin;
+use Cyclos\Components\LoginComponent;
 use Cyclos\Services\CyclosAPI;
 
 /**
@@ -49,6 +50,13 @@ class Configuration {
 	protected static $settings;
 
 	/**
+	 * Array containing the plugin components a webmaster can turn on/off. This never includes the Admin component.
+	 *
+	 * @var Setting[] $settings Array of plugin components.
+	 */
+	protected static $components;
+
+	/**
 	 * Returns the unique instance of this class.
 	 */
 	public static function get_instance() {
@@ -63,6 +71,13 @@ class Configuration {
 	 */
 	protected function initialize_settings() {
 		if ( ! isset( self::$settings ) ) {
+
+			// Initialize the components a webmaster can turn on/off.
+			self::$components = array(
+				'login_form' => LoginComponent::class,
+			);
+
+			// Initialize the sections (= tabs). These are the general and connection tabs and a tab for each of the optional components.
 			self::$sections = array(
 				'general'    => array(
 					'label' => __( 'General', 'cyclos' ),
@@ -82,17 +97,24 @@ class Configuration {
 						'</a>'
 					),
 				),
-				'login_form' => array(
-					'label' => __( 'Login Form', 'cyclos' ),
-					'intro' => __( 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode on one of your Posts or Pages.<br>Below, you can configure your own label texts for the login form. If you are fine with the default texts, you can leave any field empty here.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>If your Cyclos server uses a custom frontend, you can fill in the URL of your frontend. Leave this field blank if you use the default Cyclos frontend.', 'cyclos' ),
-				),
 			);
+			// Add a section for each of the optional components.
+			$components = $this->get_components();
+			foreach ( $components as $id => $component_class ) {
+				self::$sections[ $id ] = array(
+					'label' => $component_class::get_component_info()['tab'],
+					'intro' => $component_class::get_component_info()['intro'],
+				);
+			}
+
+			// Initialize the settings. They are divided per section (= tab).
 			/* translators: The %s and %p are placeholders, please leave them in. */
 			$custom_url_description = __( 'Custom frontend URL. Please leave blank unless you use a custom Cyclos frontend. You can use %s and/or %p for the token and return path variables.', 'cyclos' );
 			self::$settings         = array(
 				'connection_status'    => new Setting( 'general', __( 'Connection status', 'cyclos' ), 'connection_status' ),
 				'read_cyclos_url'      => new Setting( 'general', __( 'Cyclos URL', 'cyclos' ), 'read_field', false, __( '(not configured yet)', 'cyclos' ), __( 'The URL of your Cyclos server', 'cyclos' ) ),
 				'read_username'        => new Setting( 'general', __( 'Cyclos user', 'cyclos' ), 'read_field', false, __( '(not configured yet)', 'cyclos' ), __( 'The Cyclos user used to communicate with your Cyclos server', 'cyclos' ) ),
+				'active_components'    => new Setting( 'general', __( 'Active plugin parts', 'cyclos' ), 'components', false, false, __( 'The functionality you would like to use. You can use the plugin to create a Login Form, a User Directory (a map or list with Cyclos Members), or both if you like.', 'cyclos' ) ),
 				'cyclos_url'           => new Setting( 'connection', __( 'Cyclos URL', 'cyclos' ), 'url', true, 'https://demo.cyclos.org', __( 'The Cyclos URL. The required REST API methods via /api/* are always enabled in Cyclos, but please make sure to control access in the Cyclos Web services channel according to the instructions.', 'cyclos' ) ),
 				'username'             => new Setting( 'connection', __( 'Username', 'cyclos' ), 'text', true, 'wp_admin_user', __( 'The Cyclos user to connect with. Important: Always use a dedicated Cyclos user, with only the permissions needed for the Cyclos plugin to work!', 'cyclos' ) ),
 				'password'             => new Setting( 'connection', __( 'Password', 'cyclos' ), 'password', true, '', __( 'The password of the Cyclos user to connect with. The password is not stored anywhere. It is only used once, together with the activation code below, to activate the accessclient for you. The accessclient token is used for all further requests to your Cyclos server by this plugin.', 'cyclos' ) ),
@@ -130,6 +152,16 @@ class Configuration {
 			$this->initialize_settings();
 		}
 		return self::$settings;
+	}
+
+	/**
+	 * Returns the array of components a webmaster can turn on/off.
+	 */
+	public function get_components() {
+		if ( ! isset( self::$components ) ) {
+			$this->initialize_settings();
+		}
+		return self::$components;
 	}
 
 	/**
@@ -319,6 +351,15 @@ class Configuration {
 		// Note: we don't use get_setting() in this case, because the token is not a normal setting field.
 		// Call the setting option record directly instead.
 		return $this->get_plugin_option()['accessclient_token'] ?? '';
+	}
+
+	/**
+	 * Returns whether the given component is active or not.
+	 *
+	 * @param string $component_id The id of the component.
+	 */
+	public function is_active( string $component_id ) {
+		return $this->get_setting( 'active_components' )[ $component_id ] ?? false;
 	}
 
 	/**
