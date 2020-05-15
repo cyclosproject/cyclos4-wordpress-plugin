@@ -132,6 +132,7 @@ class Admin {
 
 		// Add our css inline - it is too little to put in a file and enqueue that for now.
 		$custom_css = '
+			.nav-tab.disabled { pointer-events: none; opacity: .4;}
 			.wrap h2, .wrap .intro, .wrap .form-table { display: none; }
 			.wrap h2.active, .wrap .intro.active, .wrap .form-table.active { display: block; }
 			.form-table td p.dashicons { font-size: 24px; }
@@ -177,8 +178,14 @@ class Admin {
 
 				<nav class="nav-tab-wrapper">
 					<?php
-					foreach ( $this->conf->get_sections() as $section ) {
-						printf( '<a href="#" class="nav-tab">%1$s</a>', esc_html( $section['label'] ) );
+					$optional_components = $this->conf->get_components();
+					foreach ( $this->conf->get_sections() as $id => $section ) {
+						$extra_css_class = '';
+						// If the section is optional, check whether it is currently active. If it is not active, add the disabled class.
+						if ( array_key_exists( $id, $optional_components ) ) {
+							$extra_css_class = $this->conf->is_active( $id ) ? '' : ' disabled';
+						}
+						printf( '<a href="#" class="nav-tab%1$s">%2$s</a>', esc_attr( $extra_css_class ), esc_html( $section['label'] ) );
 					}
 					?>
 				</nav>
