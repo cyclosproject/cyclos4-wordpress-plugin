@@ -43,6 +43,9 @@ class Setup {
 		if ( version_compare( $db_version, '2.0.0', '<' ) ) {
 			$this->step_200();
 		}
+		if ( version_compare( $db_version, '3.0.0', '<' ) ) {
+			$this->step_300();
+		}
 
 		// We have run all steps, now update the version of the plugin in the database.
 		// Note: if there was no option record yet, this will add one.
@@ -154,6 +157,26 @@ class Setup {
 		delete_option( 'cyclos_t_errorEntityNotFound' );
 		delete_option( 'cyclos_t_errorEntityNotFoundUser' );
 		delete_option( 'cyclos_t_errorEntityNotFoundAccessClient' );
+	}
+
+
+	/**
+	 * Changes when updating to version 3.0.0.:
+	 * - Activate the loginform component, because this component was not optional yet in the previous version.
+	 *
+	 * When the plugin is newly installed, there will be no old data and this Setup step will do nothing.
+	 * So, in new installs no component will be active by default. The webmaster can choose which component to activate.
+	 */
+	protected function step_300() {
+		$option     = get_option( Configuration::CYCLOS_OPTION_NAME, array() );
+		$cyclos_url = $option['cyclos_url'] ?? '';
+		// If there is no cyclos_url, the plugin was newly installed or never used and we don't need to do anything.
+		if ( ! ( $cyclos_url ) ) {
+			return;
+		}
+		// The plugin was already in use, so we set the loginform component which is now optional to active.
+		$option['active_components']['login_form'] = true;
+		update_option( Configuration::CYCLOS_OPTION_NAME, $option );
 	}
 
 	/**
