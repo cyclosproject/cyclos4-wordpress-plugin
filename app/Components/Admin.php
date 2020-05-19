@@ -263,7 +263,7 @@ class Admin {
 		$components = $this->conf->get_components();
 		foreach ( $components as $id => $component_class ) {
 			$field_name  = $name . '[' . $id . ']';
-			$field_value = $value ? $value[ $id ] : '';
+			$field_value = $value ? ( $value[ $id ] ?? '' ) : '';
 			$field_label = $component_class::get_component_info()['tab'];
 			printf(
 				'<label for="%1$s"><input type="checkbox" name="%2$s" id="%1$s" value="1" %3$s />%4$s</label><br>',

@@ -9,6 +9,7 @@ namespace Cyclos;
 
 use Cyclos\Components\Admin;
 use Cyclos\Components\LoginForm;
+use Cyclos\Components\UserDirectory;
 use Cyclos\Services\CyclosAPI;
 
 /**
@@ -74,7 +75,8 @@ class Configuration {
 
 			// Initialize the components a webmaster can turn on/off.
 			self::$components = array(
-				'login_form' => LoginForm::class,
+				'login_form'     => LoginForm::class,
+				'user_directory' => UserDirectory::class,
 			);
 
 			// Initialize the sections (= tabs). These are the general and connection tabs and a tab for each of the optional components.
