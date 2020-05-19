@@ -1,6 +1,6 @@
 <?php
 /**
- * The Login component enables the Cyclos login form.
+ * The LoginForm component enables the Cyclos login form.
  *
  * @package Cyclos
  */
@@ -12,9 +12,9 @@ use Cyclos\Services\CyclosAPI;
 use Cyclos\Widgets\LoginWidget;
 
 /**
- * LoginComponent class
+ * LoginForm class
  */
-class LoginComponent {
+class LoginForm {
 
 	/**
 	 * The Cyclos API.
