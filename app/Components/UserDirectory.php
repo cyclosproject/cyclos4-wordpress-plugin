@@ -49,17 +49,86 @@ class UserDirectory {
 
 	/**
 	 * Shortcode handler for the Cyclos user directory.
+	 *
+	 * @param array  $atts     The shortcode attributes.
+	 * @param string $content  The content of the shortcode.
+	 * @param string $tag      The shortcode tag.
+	 * @return string          The rendered user data.
 	 */
-	public function handle_users_shortcode() {
-		return $this->render_userdirectory();
+	public function handle_users_shortcode( $atts = array(), $content = null, $tag = '' ) {
+		$atts = shortcode_atts(
+			array(
+				'view' => 'list',
+			),
+			$atts,
+			$tag
+		);
+		return $this->render_userdirectory( $atts['view'] );
 	}
 
 	/**
-	 * Render the user directory.
+	 * Render the user directory. Depending on the given view, the data is returned as a map or a list.
+	 *
+	 * @param string $view   The view to show the user data. Can be either 'map' or 'list'.
+	 * @return string        The rendered user data or an error message if something went wrong.
 	 */
-	public function render_userdirectory() {
-		// During development, just render some minimal data.
-		return 'The Cyclos userdirectory will be shown here.';
+	public function render_userdirectory( $view ) {
+		// Retrieve the user data from Cyclos.
+		$user_data = $this->cyclos->get_user_data();
+
+		// If something went wrong, return the error message instead of rendering the view.
+		if ( is_wp_error( $user_data ) ) {
+			return $user_data->get_error_message();
+		}
+
+		// We have an array with user data. Pass it to the render method for the relevant view.
+		switch ( $view ) {
+			case 'map':
+				return $this->render_user_map( $user_data );
+			case 'list':
+				return $this->render_user_list( $user_data );
+			default:
+				return __( 'The user directory must use either a map or a list view. No other options are available.', 'cyclos' );
+		}
+	}
+
+	/**
+	 * Render the user directory list view.
+	 *
+	 * @param array $user_data  Array with the user data.
+	 * @return string           The rendered list with the user data.
+	 */
+	public function render_user_list( $user_data ) {
+		// Find out which template we should use.
+		// There might be a template override in the theme, in: {theme-directory}/cyclos/user-list.php.
+		$template_file = locate_template( 'cyclos/user-list.php' );
+		if ( empty( $template_file ) ) {
+			// If the theme does not contain a template override, use the default template in our plugin.
+			$template_file = \Cyclos\PLUGIN_DIR . 'templates/user-list.php';
+		}
+
+		// Allow other plugins to change the template location.
+		$template_file = apply_filters( 'cyclos_userlist_template', $template_file );
+
+		// Pass variables to the template.
+		set_query_var( 'cyclos_user_data', $user_data );
+
+		// Load the template and return its contents.
+		// Make sure the template can load more than once, in case the shortcode is on the screen more than once.
+		$require_once = false;
+		ob_start();
+		load_template( $template_file, $require_once );
+		return ob_get_clean();
+	}
+
+	/**
+	 * Render the user directory map view.
+	 *
+	 * @param array $user_data  Array with the user data.
+	 * @return string           The rendered map with the user data.
+	 */
+	public function render_user_map( $user_data ) {
+		return sprintf( 'There are %1$u Cyclos users, but the map view is not implemented yet. Please use the list view for now.', count( $user_data ) );
 	}
 
 	/**

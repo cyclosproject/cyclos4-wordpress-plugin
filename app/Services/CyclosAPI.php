@@ -261,6 +261,27 @@ class CyclosAPI {
 	}
 
 	/**
+	 * Returns data of Cyclos users. Used for the user directory (map/list).
+	 *
+	 * @param string $group        (Optional) The group to filter the data on.
+	 * @return array|\WP_Error     Array with user data or a WP_Error object on failure.
+	 */
+	public function get_user_data( $group = null ) {
+		// Use the users service to request the map data.
+		$cyclos_service  = new Cyclos4\UsersService( $this->conf );
+		$cyclos_response = $cyclos_service->search_user_directory( $group );
+
+		// If the request failed, return a WP_Error object with the error message.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$message = $this->handle_error( $cyclos_response );
+			return new \WP_Error( 'CYCLOS_EXCEPTION', $message );
+		}
+
+		// If we have no error, return the response containing the user data array.
+		return $cyclos_response;
+	}
+
+	/**
 	 * Return a custom error message that describes what went wrong with the request to the Cyclos API.
 	 *
 	 * @param \WP_Error $error   The WP_Error object with information about the error.
