@@ -73,8 +73,8 @@ class UserDirectory {
 	 * @return string        The rendered user data or an error message if something went wrong.
 	 */
 	public function render_userdirectory( $view ) {
-		// Retrieve the user data from Cyclos.
-		$user_data = $this->cyclos->get_user_data();
+		// Retrieve the Cyclos user data.
+		$user_data = $this->get_cyclos_user_data();
 
 		// If something went wrong, return the error message instead of rendering the view.
 		if ( is_wp_error( $user_data ) ) {
@@ -90,6 +90,25 @@ class UserDirectory {
 			default:
 				return __( 'The user directory must use either a map or a list view. No other options are available.', 'cyclos' );
 		}
+	}
+
+	/**
+	 * Return the Cyclos user data, using a transient to limit the number of calls to the Cyclos server.
+	 */
+	protected function get_cyclos_user_data() {
+		$transient_name = 'cyclos_user_data';
+
+		// If we can use the data from our transient, use that.
+		$user_data = get_transient( $transient_name );
+		if ( false === $user_data ) {
+			// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
+			$user_data = $this->cyclos->get_user_data();
+			// Store the data in the transient, but only if it is not an error.
+			if ( ! is_wp_error( $user_data ) ) {
+				set_transient( $transient_name, $user_data, 10 * MINUTE_IN_SECONDS );
+			}
+		}
+		return $user_data;
 	}
 
 	/**
