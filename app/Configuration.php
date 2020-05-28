@@ -23,6 +23,11 @@ class Configuration {
 	const CYCLOS_OPTION_NAME = 'cyclos';
 
 	/**
+	 * The unique key for our user data transient record.
+	 */
+	const USER_DATA_TRANSIENT = 'cyclos_user_data';
+
+	/**
 	 * The unique instance of this class.
 	 *
 	 * @var Configuration $instance
@@ -132,6 +137,8 @@ class Configuration {
 				'forgot_pw_newcaptcha' => new Setting( 'login_form', __( 'Forgotten password new captcha', 'cyclos' ), 'text', false, __( 'New code', 'cyclos' ), __( 'The text for the new captcha link in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
+				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
+				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes user data retrieved from Cyclos is kept in cache. By default, new user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
 			);
 		}
 	}
@@ -231,6 +238,11 @@ class Configuration {
 	 */
 	protected function validator( $field, $value ) {
 		switch ( $field ) {
+			case 'user_expiration':
+				if ( $value < 0 ) {
+					return __( 'The expiration time must be 0 or higher', 'cyclos' );
+				}
+				break;
 			case 'latitude':
 				if ( -90 > $value || $value > 90 ) {
 					return __( 'The latitude must be between -90 and 90', 'cyclos' );
@@ -400,6 +412,24 @@ class Configuration {
 			'forgot_submit'     => $this->get_setting( 'forgot_pw_submit' ),
 			'forgot_cancel'     => $this->get_setting( 'forgot_pw_cancel' ),
 		);
+	}
+
+	/**
+	 * Returns the user group to filter the user data.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_group( bool $use_default = true ) {
+		return $this->get_setting( 'user_group', $use_default );
+	}
+
+	/**
+	 * Returns the expiration time for user data in minutes.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_data_expiration_time( bool $use_default = true ) {
+		return $this->get_setting( 'user_expiration', $use_default );
 	}
 
 }

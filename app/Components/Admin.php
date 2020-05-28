@@ -217,6 +217,22 @@ class Admin {
 	}
 
 	/**
+	 * Render the setting field for fields of type number.
+	 *
+	 * @param array $args Contains the field id and Settings object of the field to render.
+	 */
+	public function render_number( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id, false );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		printf( '<input type="number" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+	}
+
+	/**
 	 * Render the setting field for fields of type password.
 	 *
 	 * @param array $args Contains the field id and Settings object of the field to render.
