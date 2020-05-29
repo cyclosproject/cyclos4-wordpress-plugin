@@ -78,12 +78,14 @@ class Admin {
 			if ( is_callable( array( $this, "render_{$type}" ) ) ) {
 				$render_method = "render_{$type}";
 			}
+			$callback = apply_filters( 'cyclos_render_setting', array( $this, $render_method ), $type );
+
 			$section = $setting_info->get_section();
 			$args    = array(
 				'label_for'    => $key,
 				'setting_info' => $setting_info,
 			);
-			add_settings_field( $key, $setting_info->get_label(), array( $this, $render_method ), self::SETTINGS_PAGE, $section, $args );
+			add_settings_field( $key, $setting_info->get_label(), $callback, self::SETTINGS_PAGE, $section, $args );
 
 			// Add the validation hook for this field type if not already added before.
 			$hook      = "cyclos_sanitize_{$type}";

@@ -1,4 +1,4 @@
-/* global jQuery */
+/* global jQuery, ajaxurl */
 /**
  * The script to handle our admin settings screen.
  */
@@ -41,5 +41,28 @@ jQuery( document ).ready( function( $ ) {
 		// Add the active class to the clicked tab link and the section elements that belong to it.
 		$( this ).addClass( 'nav-tab-active' );
 		activateSection( $( this ) );
+	} );
+
+	// Handle click on the user data refresh button on the User Directory tab.
+	$( '#cyclos-user-data-refresh' ).click( function() {
+		// Make an AJAX call to the UserDirectory component to refresh the Cyclos user data.
+		// Note: since we are in the admin, we can use the global WP variable ajaxurl.
+		const data = {
+			_ajax_nonce: $( this )
+				.parents( 'form' )
+				.find( '#_wpnonce' )
+				.val(),
+			action: 'cyclos_refresh_user_data',
+		};
+		$.post( ajaxurl, data )
+			.done( function( response ) {
+				// Show the result.
+				response = response || '';
+				$( '.cyclos-user-data-info' ).text( response );
+			} )
+			.fail( function() {
+				// Something went wrong, show an error message.
+				$( '.cyclos-user-data-info' ).text( 'Something went wrong.' );
+			} );
 	} );
 } );

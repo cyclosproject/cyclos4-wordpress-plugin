@@ -45,6 +45,9 @@ class UserDirectory {
 	 */
 	public function init() {
 		add_shortcode( 'cyclosusers', array( $this, 'handle_users_shortcode' ) );
+		add_filter( 'cyclos_render_setting', array( $this, 'render_user_settings' ), 10, 2 );
+		add_action( 'wp_ajax_cyclos_refresh_user_data', array( $this, 'handle_refresh_user_data_ajax_request' ) );
+		// Note: we don't need a 'wp_ajax_nopriv_cyclos_refresh_user_data' because the refresh data action can only be done by admins.
 	}
 
 	/**
@@ -94,11 +97,14 @@ class UserDirectory {
 
 	/**
 	 * Return the Cyclos user data, using a transient to limit the number of calls to the Cyclos server.
+	 *
+	 * @param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
+	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
 	 */
-	protected function get_cyclos_user_data() {
+	protected function get_cyclos_user_data( bool $force_new = false ) {
 		// If we can use the data from our transient, use that.
 		$user_data = get_transient( Configuration::USER_DATA_TRANSIENT );
-		if ( false === $user_data ) {
+		if ( $force_new || false === $user_data ) {
 			// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
 			$user_data = $this->cyclos->get_user_data( $this->conf->get_user_group() );
 			// Store the data in the transient, but only if it is not an error.
@@ -157,4 +163,66 @@ class UserDirectory {
 			'intro' => __( 'You can put a user directory (map/list) on your website using the <code>[cyclosusers]</code> shortcode on one of your Posts or Pages.', 'cyclos' ),
 		);
 	}
+
+	/**
+	 * Render custom setting types for this component.
+	 *
+	 * @param callable $callback  The original function to call to render the setting.
+	 * @param string   $type      The setting type.
+	 * @return callable           The new function to call to render the setting.
+	 */
+	public function render_user_settings( $callback, $type ) {
+		if ( 'user_data_transient' === $type ) {
+			return array( $this, 'render_user_data_transient' );
+		}
+		return $callback;
+	}
+
+	/**
+	 * Render a user data transient setting field.
+	 * This is not an input field, but information on the current data and a button to refresh the data.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_user_data_transient( $args ) {
+		$setting   = $args['setting_info'];
+		$user_data = $this->get_cyclos_user_data();
+		if ( is_wp_error( $user_data ) ) {
+			echo esc_html( $user_data->get_error_message() );
+			return;
+		}
+		printf(
+			'<p class="cyclos-user-data-info">%s %s</p><p><button class="button" type="button" id="cyclos-user-data-refresh">%s</button></p>',
+			esc_html( count( $user_data ) ),
+			esc_html__( 'Cyclos users', 'cyclos' ),
+			esc_html__( 'Refresh current user data', 'cyclos' )
+		);
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+	}
+
+	/**
+	 * Handle the AJAX request to refresh the Cyclos user data.
+	 */
+	public function handle_refresh_user_data_ajax_request() {
+		// Die if the nonce is incorrect.
+		// Note: In Admin we call settings_fields( self::SETTINGS_PAGE ), which creates a nonce for an action of the form: {$option_group}-options.
+		// So, to check the nonce here, we must use this same action. In admin.js we get the nonce value from the _wpnonce form field.
+		// See https://developer.wordpress.org/reference/functions/settings_fields/.
+		check_ajax_referer( Admin::SETTINGS_PAGE . '-options' );
+
+		// Get the Cyclos user data, forcing new retrieval from Cyclos.
+		$user_data = $this->get_cyclos_user_data( true );
+
+		// Return either the number of users found, or an error message if something is wrong.
+		$response = '';
+		if ( is_wp_error( $user_data ) ) {
+			$response = $user_data->get_error_message();
+		} else {
+			$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users', 'cyclos' ) );
+		}
+		wp_send_json( $response );
+	}
+
 }
