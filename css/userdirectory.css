@@ -1,0 +1,26 @@
+/*
+ * Default styles for the userdirectory views.
+*/
+
+.cyclos-user-list ul {
+	list-style: none;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-between;
+	padding-left: 0;
+	margin-bottom: 2em;
+}
+
+.cyclos-user-list li {
+	flex-basis: 250px;
+}
+
+.cyclos-user-list p {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.cyclos-user-list img {
+	max-width: 100%;
+	height: auto;
+}

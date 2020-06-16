@@ -44,10 +44,23 @@ class UserDirectory {
 	 * Init function to setup hooks.
 	 */
 	public function init() {
+		add_action( 'init', array( $this, 'register_stuff' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
 		add_shortcode( 'cyclosusers', array( $this, 'handle_users_shortcode' ) );
 		add_filter( 'cyclos_render_setting', array( $this, 'render_user_settings' ), 10, 2 );
 		add_action( 'wp_ajax_cyclos_refresh_user_data', array( $this, 'handle_refresh_user_data_ajax_request' ) );
 		// Note: we don't need a 'wp_ajax_nopriv_cyclos_refresh_user_data' because the refresh data action can only be done by admins.
+		add_action( 'wp_ajax_cyclos_userdata', array( $this, 'handle_retrieve_userdata_ajax_request' ) );
+		add_action( 'wp_ajax_nopriv_cyclos_userdata', array( $this, 'handle_retrieve_userdata_ajax_request' ) );
+	}
+
+	/**
+	 * First register the scripts and styles, then register the Gutenberg blocks.
+	 * This way, the scripts are always registered before we register the blocks (that depend on the scripts).
+	 * Note: the userdirectory is only available as a shortcode at this moment, not as a Gutenberg block.
+	 */
+	public function register_stuff() {
+		$this->register_assets();
 	}
 
 	/**
@@ -59,6 +72,8 @@ class UserDirectory {
 	 * @return string          The rendered user data.
 	 */
 	public function handle_users_shortcode( $atts = array(), $content = null, $tag = '' ) {
+		$this->enqueue_script();
+
 		$atts = shortcode_atts(
 			array(
 				'view' => 'list',
@@ -66,30 +81,12 @@ class UserDirectory {
 			$atts,
 			$tag
 		);
-		return $this->render_userdirectory( $atts['view'] );
-	}
 
-	/**
-	 * Render the user directory. Depending on the given view, the data is returned as a map or a list.
-	 *
-	 * @param string $view   The view to show the user data. Can be either 'map' or 'list'.
-	 * @return string        The rendered user data or an error message if something went wrong.
-	 */
-	public function render_userdirectory( $view ) {
-		// Retrieve the Cyclos user data.
-		$user_data = $this->get_cyclos_user_data();
-
-		// If something went wrong, return the error message instead of rendering the view.
-		if ( is_wp_error( $user_data ) ) {
-			return $user_data->get_error_message();
-		}
-
-		// We have an array with user data. Pass it to the render method for the relevant view.
-		switch ( $view ) {
+		switch ( $atts['view'] ) {
 			case 'map':
-				return $this->render_user_map( $user_data );
+				return $this->render_user_map( $atts );
 			case 'list':
-				return $this->render_user_list( $user_data );
+				return $this->render_user_list( $atts );
 			default:
 				return __( 'The user directory must use either a map or a list view. No other options are available.', 'cyclos' );
 		}
@@ -118,40 +115,108 @@ class UserDirectory {
 	/**
 	 * Render the user directory list view.
 	 *
-	 * @param array $user_data  Array with the user data.
-	 * @return string           The rendered list with the user data.
+	 * @param array $atts     The shortcode attributes relevant for list views.
+	 * @return string         The rendered list with the user data.
 	 */
-	public function render_user_list( $user_data ) {
-		// Find out which template we should use.
-		// There might be a template override in the theme, in: {theme-directory}/cyclos/user-list.php.
-		$template_file = locate_template( 'cyclos/user-list.php' );
-		if ( empty( $template_file ) ) {
-			// If the theme does not contain a template override, use the default template in our plugin.
-			$template_file = \Cyclos\PLUGIN_DIR . 'templates/user-list.php';
-		}
-
-		// Allow other plugins to change the template location.
-		$template_file = apply_filters( 'cyclos_userlist_template', $template_file );
-
-		// Pass variables to the template.
-		set_query_var( 'cyclos_user_data', $user_data );
-
-		// Load the template and return its contents.
-		// Make sure the template can load more than once, in case the shortcode is on the screen more than once.
-		$require_once = false;
-		ob_start();
-		load_template( $template_file, $require_once );
-		return ob_get_clean();
+	public function render_user_list( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'filter_category' => '',
+				'show_filter'     => true,
+				'orderby_field'   => '',
+				'show_orderby'    => true,
+			),
+			$atts
+		);
+		return sprintf(
+			'<div class="cyclos-user-list" data-cyclos-filter="%s" data-cyclos-show-filter="%d" data-cyclos-orderby="%s" data-cyclos-show-orderby="%d"></div>',
+			$atts['filter_category'],
+			$atts['show_filter'],
+			$atts['orderby_field'],
+			$atts['show_orderby']
+		);
 	}
 
 	/**
 	 * Render the user directory map view.
 	 *
-	 * @param array $user_data  Array with the user data.
 	 * @return string           The rendered map with the user data.
 	 */
-	public function render_user_map( $user_data ) {
-		return sprintf( 'There are %1$u Cyclos users, but the map view is not implemented yet. Please use the list view for now.', count( $user_data ) );
+	public function render_user_map() {
+		return '<div class="cyclos-user-map">The map view is not implemented yet. Please use the list view for now.</div>';
+	}
+
+	/**
+	 * Register the frontend assets for the userdirectory.
+	 */
+	public function register_assets() {
+		// Stop if we are not on the frontend.
+		if ( is_admin() ) {
+			return;
+		}
+
+		// Register the userdirectory script.
+		$file      = 'js/dist/cyclos_userdirectory.js';
+		$handle    = 'cyclos-userdirectory';
+		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
+		$file_url  = \Cyclos\PLUGIN_URL . $file;
+		$deps      = array( 'jquery', 'wp-polyfill' );
+		$in_footer = true;
+		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
+
+		// phpcs:disable Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.SpacingBefore
+		// // Register the userdirectory style if this is configured.
+		// if ( $this->conf->add_styles_to_userdirectory() ) {
+			$file     = 'css/userdirectory.css';
+			$handle   = 'cyclos-userdirectory-style';
+			$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
+			$file_url = \Cyclos\PLUGIN_URL . $file;
+			$deps     = array();
+			wp_register_style( $handle, $file_url, $deps, $version );
+		// }
+		// phpcs:enable Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.SpacingBefore
+	}
+
+	/**
+	 * Enqueue frontend stylesheet for the userdirectory.
+	 * Note: we always enqueue the userdirectory stylesheet, regardless of whether the userdirectory is on the screen.
+	 * This could be improved by checking if the screen actually contains the userdirectory shortcode.
+	 * But this is not trivial (for example the content may be in an intro text on a category screen).
+	 */
+	public function enqueue_style() {
+		// phpcs:disable Squiz.PHP.CommentedOutCode.Found
+		// // Enqueue the userdirectory stylesheet if this is configured.
+		// if ( $this->conf->add_styles_to_userdirectory() ) {
+			wp_enqueue_style( 'cyclos-userdirectory-style' );
+		// }
+		// phpcs:enable Squiz.PHP.CommentedOutCode.Found
+	}
+
+	/**
+	 * Enqueue frontend javascript for the userdirectory.
+	 */
+	public function enqueue_script() {
+		// Keep track of wether we have prepared the scripts already or not.
+		// If we call wp_localize_script more than once, the resulting javascript object is also put on the html several times.
+		static $scripts_ready = false;
+		if ( $scripts_ready ) {
+			// We have done the enqueue and localize script work already before, so just return.
+			return;
+		}
+		// Enqueue the userdirectory script.
+		wp_enqueue_script( 'cyclos-userdirectory' );
+
+		// Pass the necessary information to the userdirectory script.
+		wp_localize_script(
+			'cyclos-userdirectory',
+			'cyclosUserDirectoryObj',
+			array(
+				'ajax_url' => admin_url( 'admin-ajax.php' ),
+				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
+			)
+		);
+		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
+		$scripts_ready = true;
 	}
 
 	/**
@@ -222,6 +287,30 @@ class UserDirectory {
 		} else {
 			$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users', 'cyclos' ) );
 		}
+		wp_send_json( $response );
+	}
+
+	/**
+	 * Handle the AJAX request for retrieving the Cyclos users.
+	 */
+	public function handle_retrieve_userdata_ajax_request() {
+		// error_log( 'Start handle_retrieve_userdata_ajax_request.' );
+		// Die if the nonce is incorrect.
+		check_ajax_referer( 'cyclos_userdirectory_nonce' );
+
+		// Get the Cyclos user data.
+		$user_data = $this->get_cyclos_user_data();
+
+		// Return either the users found, or an error message if something is wrong.
+		$response = '';
+		if ( is_wp_error( $user_data ) ) {
+			$response = $user_data->get_error_message();
+		} else {
+			$response = $user_data;
+		}
+		// phpcs:disable
+		// error_log( 'User data: ' . print_r( $user_data, true ) );
+		// phpcs:enable
 		wp_send_json( $response );
 	}
 
