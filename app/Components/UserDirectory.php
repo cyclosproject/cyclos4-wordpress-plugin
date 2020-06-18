@@ -209,7 +209,7 @@ class UserDirectory {
 		// Pass the necessary information to the userdirectory script.
 		wp_localize_script(
 			'cyclos-userdirectory',
-			'cyclosUserDirectoryObj',
+			'cyclosUserObj',
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),

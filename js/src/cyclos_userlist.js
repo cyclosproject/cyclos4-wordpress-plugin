@@ -1,5 +1,3 @@
-import retrieveUsers from './cyclos_userdata';
-
 const showFilter = () => {
 	// For now, just fill the dropdown with some fake data - to be implemented later.
 	return '<select name="category"><option value="bakeries">Bakeries</option><option value="bike_shops">Bike shops</option><option value="groceries">Grocery Stores</option></select>';
@@ -27,9 +25,8 @@ const showListItem = ( user ) => {
 	return html;
 };
 
-async function buildUserList( listElement ) {
+function buildUserList( listElement, users ) {
 	const props = listElement.dataset;
-	const users = await retrieveUsers();
 	let userList = '';
 	userList += props.cyclosShowFilter ? showFilter() : '';
 	userList += '<ul>';
