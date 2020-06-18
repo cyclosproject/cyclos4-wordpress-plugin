@@ -213,6 +213,10 @@ class UserDirectory {
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
+				'l10n'     => array(
+					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
+					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),
+				),
 			)
 		);
 		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
@@ -294,23 +298,26 @@ class UserDirectory {
 	 * Handle the AJAX request for retrieving the Cyclos users.
 	 */
 	public function handle_retrieve_userdata_ajax_request() {
-		// error_log( 'Start handle_retrieve_userdata_ajax_request.' );
+		$error_message = '';
+		$users         = array();
+
 		// Die if the nonce is incorrect.
 		check_ajax_referer( 'cyclos_userdirectory_nonce' );
 
 		// Get the Cyclos user data.
 		$user_data = $this->get_cyclos_user_data();
 
-		// Return either the users found, or an error message if something is wrong.
-		$response = '';
+		// Return the users found, and an error message if something is wrong.
 		if ( is_wp_error( $user_data ) ) {
-			$response = $user_data->get_error_message();
+			$error_message = $user_data->get_error_message();
 		} else {
-			$response = $user_data;
+			$users = $user_data;
 		}
-		// phpcs:disable
-		// error_log( 'User data: ' . print_r( $user_data, true ) );
-		// phpcs:enable
+		$response = array(
+			'userData'     => $users,
+			'errorMessage' => $error_message,
+		);
+
 		wp_send_json( $response );
 	}
 

@@ -12,16 +12,23 @@ jQuery( document ).ready( function( $ ) {
 
 	// Get the userdata. When it's ready, call the function to build up the HTML.
 	cyclosUserObj = cyclosUserObj || {};
+	const invalidDataMessage = cyclosUserObj.l10n.invalidDataMessage;
+	const setupMessage = cyclosUserObj.l10n.setupMessage;
 	const data = { _ajax_nonce: cyclosUserObj.id, action: 'cyclos_userdata' };
 	$.post( cyclosUserObj.ajax_url, data )
 		.done( ( response ) => {
-			// If there are no users, do nothing.
-			if ( ! Array.isArray( response ) || response.length <= 0 ) {
-				return;
+			response = response || {};
+			if ( response.userData && Array.isArray( response.userData ) ) {
+				buildHTML( response.userData );
+			} else {
+				showErrorMsg(
+					`${ response.errorMessage || invalidDataMessage }.`
+				);
 			}
-			buildHTML( response );
 		} )
-		.fail();
+		.fail( () => {
+			showErrorMsg( `${ setupMessage }.` );
+		} );
 
 	// The function to build the HTML for each view, given the userdata we found in the response.
 	const buildHTML = ( userData ) => {
@@ -31,5 +38,15 @@ jQuery( document ).ready( function( $ ) {
 		// userMaps.forEach( ( mapElement ) => {
 		// 	buildUserMap( mapElement, userData );
 		// } );
+	};
+
+	// The function to show error information, if the userdata could not be retrieved.
+	const showErrorMsg = ( errorMsg ) => {
+		userLists.forEach( ( listElement ) => {
+			listElement.innerHTML = `${ errorMsg || invalidDataMessage }.`;
+		} );
+		userMaps.forEach( ( mapElement ) => {
+			mapElement.innerHTML = `${ errorMsg || invalidDataMessage }.`;
+		} );
 	};
 } );
