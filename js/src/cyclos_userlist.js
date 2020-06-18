@@ -28,7 +28,7 @@ const showListItem = ( user ) => {
 function buildUserList( listElement, users ) {
 	const props = listElement.dataset;
 	let userList = '';
-	userList += props.cyclosShowFilter ? showFilter() : '';
+	userList += 'cyclosShowFilter' in props ? showFilter() : '';
 	userList += '<ul>';
 	users.forEach( ( user ) => {
 		userList += showListItem( user );

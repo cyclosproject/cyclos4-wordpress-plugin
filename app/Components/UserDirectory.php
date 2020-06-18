@@ -76,20 +76,33 @@ class UserDirectory {
 
 		$atts = shortcode_atts(
 			array(
-				'view' => 'list',
+				'views'           => 'list',
+				'filter_category' => '',
+				'show_filter'     => true,
+				'orderby_field'   => '',
+				'show_orderby'    => true,
 			),
 			$atts,
 			$tag
 		);
+		// Make sure the views attribute is an array.
+		$views = explode( ',', $atts['views'] );
 
-		switch ( $atts['view'] ) {
-			case 'map':
-				return $this->render_user_map( $atts );
-			case 'list':
-				return $this->render_user_list( $atts );
-			default:
-				return __( 'The user directory must use either a map or a list view. No other options are available.', 'cyclos' );
+		// Build up the output.
+		$output = '';
+		foreach ( $views as $view ) {
+			switch ( trim( $view ) ) {
+				case 'map':
+					$output .= $this->render_user_map( $atts );
+					break;
+				case 'list':
+					$output .= $this->render_user_list( $atts );
+					break;
+				default:
+					$output .= __( 'The user directory must use either a map or a list view. No other options are available.', 'cyclos' );
+			}
 		}
+		return $output;
 	}
 
 	/**
@@ -119,21 +132,12 @@ class UserDirectory {
 	 * @return string         The rendered list with the user data.
 	 */
 	public function render_user_list( $atts ) {
-		$atts = shortcode_atts(
-			array(
-				'filter_category' => '',
-				'show_filter'     => true,
-				'orderby_field'   => '',
-				'show_orderby'    => true,
-			),
-			$atts
-		);
 		return sprintf(
-			'<div class="cyclos-user-list" data-cyclos-filter="%s" data-cyclos-show-filter="%d" data-cyclos-orderby="%s" data-cyclos-show-orderby="%d"></div>',
-			$atts['filter_category'],
-			$atts['show_filter'],
-			$atts['orderby_field'],
-			$atts['show_orderby']
+			'<div class="cyclos-user-list"%s%s%s%s></div>',
+			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
+			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
+			$this->make_data_attribute( 'orderby', $atts['orderby_field'] ),
+			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' )
 		);
 	}
 
@@ -144,6 +148,37 @@ class UserDirectory {
 	 */
 	public function render_user_map() {
 		return '<div class="cyclos-user-map">The map view is not implemented yet. Please use the list view for now.</div>';
+	}
+
+	/**
+	 * Build an HTML data attribute with the given value.
+	 * For string attributes: when non-empty, the data attribute is added and filled with the value; when empty, the data attribute is left out.
+	 * For boolean attributes: when truthy, the data attribute is added without any value; when false, the data attribute is left out.
+	 *
+	 * @param string $name    The id to use in the name of the data attribute. Used after the 'data-cyclos-' prefix.
+	 * @param string $value   The value.
+	 * @param string $type    (Optional) The type of the value. Can be string or boolean. Default: string.
+	 * @return $html          The HTML of the data attribute.
+	 */
+	protected function make_data_attribute( string $name, string $value, string $type = 'string' ) {
+		$html = '';
+		switch ( $type ) {
+			case 'string':
+				// String attributes are filled with their value if the value is not empty.
+				if ( ! empty( $value ) ) {
+					$html .= sprintf( ' data-cyclos-%s="%s"', esc_attr( $name ), esc_attr( $value ) );
+				}
+				break;
+			case 'boolean':
+				// Boolean attributes are simply put in without value if the value is true.
+				// To check whether the given value is truthy, use PHP's filter_var function.
+				// This way it does not matter if the value is passed as 0/1, '0'/'1', 'true'/'false', 'TRUE'/'FALSE'.
+				if ( filter_var( $value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE ) ) {
+					$html .= sprintf( ' data-cyclos-%s', esc_attr( $name ) );
+				}
+				break;
+		}
+		return $html;
 	}
 
 	/**
