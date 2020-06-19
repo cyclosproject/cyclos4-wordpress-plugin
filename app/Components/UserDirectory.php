@@ -251,7 +251,10 @@ class UserDirectory {
 				'l10n'     => array(
 					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
 					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),
+					'noUsers'            => __( 'No users found', 'cyclos' ),
+					'noFilterOption'     => __( 'Show all users', 'cyclos' ),
 				),
+				'fields'   => $this->conf->get_cyclos_userfields(),
 			)
 		);
 		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
