@@ -106,26 +106,6 @@ class UserDirectory {
 	}
 
 	/**
-	 * Return the Cyclos user data, using a transient to limit the number of calls to the Cyclos server.
-	 *
-	 * @param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
-	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
-	 */
-	protected function get_cyclos_user_data( bool $force_new = false ) {
-		// If we can use the data from our transient, use that.
-		$user_data = get_transient( Configuration::USER_DATA_TRANSIENT );
-		if ( $force_new || false === $user_data ) {
-			// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
-			$user_data = $this->cyclos->get_user_data( $this->conf->get_user_group() );
-			// Store the data in the transient, but only if it is not an error.
-			if ( ! is_wp_error( $user_data ) ) {
-				set_transient( Configuration::USER_DATA_TRANSIENT, $user_data, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
-			}
-		}
-		return $user_data;
-	}
-
-	/**
 	 * Render the user directory list view.
 	 *
 	 * @param array $atts     The shortcode attributes relevant for list views.
@@ -279,10 +259,14 @@ class UserDirectory {
 	 * @return callable           The new function to call to render the setting.
 	 */
 	public function render_user_settings( $callback, $type ) {
-		if ( 'user_data_transient' === $type ) {
-			return array( $this, 'render_user_data_transient' );
+		switch ( $type ) {
+			case 'user_data_transient':
+				return array( $this, 'render_user_data_transient' );
+			case 'user_data_sort':
+				return array( $this, 'render_user_data_sort' );
+			default:
+				return $callback;
 		}
-		return $callback;
 	}
 
 	/**
@@ -304,6 +288,33 @@ class UserDirectory {
 			esc_html__( 'Cyclos users', 'cyclos' ),
 			esc_html__( 'Refresh current user data', 'cyclos' )
 		);
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+	}
+
+	/**
+	 * Render a user data sort setting field.
+	 * This is a dropdown list, with options according to what the REST API /users/map can receive as 'orderBy' parameter.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_user_data_sort( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		$options  = array(
+			'alphabeticallyAsc'  => __( 'Alphabetically Ascending [a-z]', 'cyclos' ),
+			'alphabeticallyDesc' => __( 'Alphabetically Descending [z-a]', 'cyclos' ),
+			'creationDate'       => __( 'By Creation Date (newest first)', 'cyclos' ),
+			'random'             => __( 'Random', 'cyclos' ),
+		);
+		printf( '<select name="%s" id="%s">', esc_html( $name ), esc_html( $field_id ) );
+		foreach ( $options as $option => $name ) {
+			printf( '<option value="%s" %s>%s</option>', esc_attr( $option ), ( $value === $option ? 'selected' : '' ), esc_html( $name ) );
+		}
+		print( '</select>' );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -357,6 +368,26 @@ class UserDirectory {
 		);
 
 		wp_send_json( $response );
+	}
+
+	/**
+	 * Return the Cyclos user data, using a transient to limit the number of calls to the Cyclos server.
+	 *
+	 * @param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
+	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
+	 */
+	protected function get_cyclos_user_data( bool $force_new = false ) {
+		// If we can use the data from our transient, use that.
+		$user_data = get_transient( Configuration::USER_DATA_TRANSIENT );
+		if ( $force_new || false === $user_data ) {
+			// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
+			$user_data = $this->cyclos->get_user_data();
+			// Store the data in the transient, but only if it is not an error.
+			if ( ! is_wp_error( $user_data ) ) {
+				set_transient( Configuration::USER_DATA_TRANSIENT, $user_data, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
+			}
+		}
+		return $user_data;
 	}
 
 }

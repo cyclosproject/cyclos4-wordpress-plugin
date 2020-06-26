@@ -263,13 +263,14 @@ class CyclosAPI {
 	/**
 	 * Returns data of Cyclos users. Used for the user directory (map/list).
 	 *
-	 * @param string $group        (Optional) The group to filter the data on.
 	 * @return array|\WP_Error     Array with user data or a WP_Error object on failure.
 	 */
-	public function get_user_data( $group = null ) {
-		// Use the users service to request the map data.
+	public function get_user_data() {
+		// Use the users service to request the user data.
 		$cyclos_service  = new Cyclos4\UsersService( $this->conf );
-		$cyclos_response = $cyclos_service->search_user_directory( $group );
+		$group           = $this->conf->get_user_group();
+		$order_by        = $this->conf->get_user_data_sort( false );
+		$cyclos_response = $cyclos_service->search_user_directory( $group, $order_by );
 
 		// If the request failed, return a WP_Error object with the error message.
 		if ( is_wp_error( $cyclos_response ) ) {

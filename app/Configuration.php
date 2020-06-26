@@ -137,12 +137,13 @@ class Configuration {
 				'forgot_pw_newcaptcha' => new Setting( 'login_form', __( 'Forgotten password new captcha', 'cyclos' ), 'text', false, __( 'New code', 'cyclos' ), __( 'The text for the new captcha link in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
-				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
-				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
-				'user_data_info'       => new Setting( 'user_directory', __( 'Current user data', 'cyclos' ), 'user_data_transient', false, null, __( 'Use this if you would like to retrieve fresh user data from Cyclos before the expiration time is over.', 'cyclos' ) ),
 				'user_category'        => new Setting( 'user_directory', __( 'Cyclos field for category', 'cyclos' ), 'text', false, 'category', __( 'The internal name of the Cyclos field to use as a category filter in the user list or map.', 'cyclos' ) ),
 				'user_description'     => new Setting( 'user_directory', __( 'Cyclos field for description', 'cyclos' ), 'text', false, 'description', __( 'The internal name of the Cyclos field containing the description of a Cyclos user. It is shown in the user map popup and in the user list.', 'cyclos' ) ),
 				'user_website'         => new Setting( 'user_directory', __( 'Cyclos field for website', 'cyclos' ), 'text', false, 'website', __( 'The internal name of the Cyclos field containing the website of a Cyclos user. It is shown in the user map popup and in the user list.', 'cyclos' ) ),
+				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
+				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
+				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
+				'user_data_info'       => new Setting( 'user_directory', __( 'Current user data', 'cyclos' ), 'user_data_transient', false, null, __( 'Use this if you would like to retrieve fresh user data from Cyclos before the expiration time is over.', 'cyclos' ) ),
 			);
 		}
 	}
@@ -434,6 +435,15 @@ class Configuration {
 	 */
 	public function get_user_data_expiration_time( bool $use_default = true ) {
 		return $this->get_setting( 'user_expiration', $use_default );
+	}
+
+	/**
+	 * Returns the field to use as orderby when retrieving the Cyclos user data.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_data_sort( bool $use_default = true ) {
+		return $this->get_setting( 'user_data_sort', $use_default );
 	}
 
 	/**
