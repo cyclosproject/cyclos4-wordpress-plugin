@@ -80,6 +80,7 @@ class UserDirectory {
 				'filter_category' => '',
 				'show_filter'     => true,
 				'orderby_field'   => '',
+				'orderby_desc'    => false,
 				'show_orderby'    => true,
 			),
 			$atts,
@@ -113,10 +114,11 @@ class UserDirectory {
 	 */
 	public function render_user_list( $atts ) {
 		return sprintf(
-			'<div class="cyclos-user-list"%s%s%s%s></div>',
+			'<div class="cyclos-user-list"%s%s%s%s%s></div>',
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$this->make_data_attribute( 'orderby', $atts['orderby_field'] ),
+			$this->make_data_attribute( 'order-desc', $atts['orderby_desc'], 'boolean' ),
 			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' )
 		);
 	}

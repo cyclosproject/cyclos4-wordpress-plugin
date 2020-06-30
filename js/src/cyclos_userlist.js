@@ -55,6 +55,48 @@ const truncate = ( inputString ) => {
 };
 
 /**
+ * Creates a comparator callback function that compares two given users a and b.
+ * The callback returns -1 if a should be before b; 1 if b should be before a; 0 otherwise.
+ *
+ * @param { string } orderBy The property to use for the ordering.
+ * @param { string } sortOrder The sort order. Either 'asc' or 'desc'.
+ */
+const usersComparator = ( orderBy, sortOrder ) => ( a, b ) => {
+	// Get the properties to compare for both users, using their path.
+	// For example, if the orderBy string is: customValues.rating, the property is in: user['customValues']['rating'].
+	// We could have used lodash _.get() function, but this saves another frontend JS include.
+	let x = orderBy.split( '.' ).reduce( ( o, i ) => o[ i ], a );
+	let y = orderBy.split( '.' ).reduce( ( o, i ) => o[ i ], b );
+
+	// Now, compare the two values.
+	let comparison = 0;
+	// Check the property type, because this determines the way we should compare the values.
+	if ( isNaN( parseInt( x ) ) ) {
+		// For string field types, use string comparison. Can also be used for boolean field types, because "true" comes after "false".
+		x = x ? x.toLowerCase() : '';
+		y = y ? y.toLowerCase() : '';
+	} else {
+		// For numbers (even if inside quotes) use number comparison.
+		x = parseInt( x );
+		y = parseInt( y );
+	}
+
+	// Put users with an empty orderBy property at the end.
+	if ( ! x ) return y ? 1 : 0;
+	if ( ! y ) return -1;
+
+	// If both users have the orderBy property, use that to determine their order.
+	if ( x < y ) comparison = -1;
+	if ( x > y ) comparison = 1;
+
+	// Reverse the order if the requested sortOrder is descending.
+	if ( sortOrder === 'desc' ) comparison *= -1;
+
+	// Return the result.
+	return comparison;
+};
+
+/**
  * Build up the HTML for a user list item.
  *
  * @param { Object } user The user object
@@ -103,8 +145,16 @@ function buildUserList( listElement, users ) {
 		return;
 	}
 
-	// Build up the list of users and put it in the list element.
 	const props = listElement.dataset;
+
+	// Do an initial sort on the user list if the data attribute tells us to.
+	const orderBy = props.cyclosOrderby ?? '';
+	if ( orderBy ) {
+		const sortOrder = 'cyclosOrderDesc' in props ? 'desc' : 'asc';
+		users.sort( usersComparator( orderBy, sortOrder ) );
+	}
+
+	// Build up the list of users and put it in the list element.
 	let userList = '<ul>';
 	users.forEach( ( user ) => {
 		userList += buildListItem( user );
