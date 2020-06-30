@@ -60,9 +60,12 @@ const truncate = ( inputString ) => {
  * @param { Object } user The user object
  */
 const buildListItem = ( user ) => {
-	const category = user.customValues[ cyclosUserObj.fields?.category ];
-	categories.add( category ); // Store the category for later use.
-	const catData = ` data-cyclos-category="${ category }"`; // Create a data attribute with this category, used for filtering.
+	const category = user.customValues[ cyclosUserObj.fields?.category ] ?? '';
+	let catData = '';
+	if ( category ) {
+		categories.add( category ); // Store the category for later use.
+		catData = ` data-cyclos-category="${ category }"`; // Create a data attribute with this category, used for filtering.
+	}
 	const display = user.display ? user.display : '';
 	const name = user.name ? user.name : display;
 	const logo = user.image;
