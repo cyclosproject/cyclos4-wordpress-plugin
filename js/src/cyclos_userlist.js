@@ -70,15 +70,15 @@ const usersComparator = ( orderBy, sortOrder ) => ( a, b ) => {
 
 	// Now, compare the two values.
 	let comparison = 0;
-	// Check the property type, because this determines the way we should compare the values.
-	if ( isNaN( parseInt( x ) ) ) {
+	// Check the property type, because this determines the way we should compare the values. Otherwise "12" would be seen as lower than "3".
+	if ( isNaN( parseInt( x, 10 ) ) || isNaN( parseInt( y, 10 ) ) ) {
 		// For string field types, use string comparison. Can also be used for boolean field types, because "true" comes after "false".
 		x = x ? x.toLowerCase() : '';
 		y = y ? y.toLowerCase() : '';
 	} else {
 		// For numbers (even if inside quotes) use number comparison.
-		x = parseInt( x );
-		y = parseInt( y );
+		x = parseInt( x, 10 );
+		y = parseInt( y, 10 );
 	}
 
 	// Put users with an empty orderBy property at the end.
