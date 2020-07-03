@@ -3,16 +3,41 @@
 const categories = new Set();
 
 /**
- * Build up the HTML for a dropdown to be used as a category filter.
+ * Filters the given users list so only users with the given category remain visible.
+ *
+ * @param { HTMLUListElement } list The list element containing the users to filter.
+ * @param { string } cat The category to filter the users by.
  */
-const buildFilterDropdown = () => {
+const filterUsers = ( list, cat ) => {
+	// Start with showing all items.
+	const allItems = 'li';
+	list.querySelectorAll( allItems ).forEach( ( el ) => {
+		el.style.display = 'block';
+	} );
+	// If we are to show all categories, there is nothing more to do.
+	if ( cat.length <= 0 ) {
+		return;
+	}
+	// Filter the items by the chosen category: find all items that do not have the chosen category and hide them.
+	const redundantItems = `li:not([data-cyclos-category="${ cat }"])`;
+	list.querySelectorAll( redundantItems ).forEach( ( el ) => {
+		el.style.display = 'none';
+	} );
+};
+/**
+ * Build up the HTML for a dropdown to be used as a category filter.
+ *
+ * @param { string } currentFilter (Optional) The current filter.
+ */
+const buildFilterDropdown = ( currentFilter = '' ) => {
 	if ( categories.size <= 0 ) return '';
 	let dropdown = '<div class="filter">';
 	dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:</label>`;
 	dropdown += `<select name="${ cyclosUserObj.fields?.category }">`;
 	dropdown += `<option value="">${ cyclosUserObj.l10n?.noFilterOption }</option>`;
 	categories.forEach( ( cat ) => {
-		dropdown += `<option value="${ cat }">${ cat }</option>`;
+		const selected = cat === currentFilter ? ' selected' : '';
+		dropdown += `<option value="${ cat }"${ selected }>${ cat }</option>`;
 	} );
 	dropdown += '</select>';
 	dropdown += '</div>';
@@ -22,25 +47,12 @@ const buildFilterDropdown = () => {
  * Add a filter dropdown to a list element, with an onchange event handler to filter the list items whenever the dropdown is changed.
  *
  * @param { HTMLElement } list The list element to add the filter to.
+ * @param { string } filter (Optional) The current filter.
  */
-const addFilter = ( list ) => {
-	list.insertAdjacentHTML( 'afterbegin', buildFilterDropdown() );
+const addFilter = ( list, filter = '' ) => {
+	list.insertAdjacentHTML( 'afterbegin', buildFilterDropdown( filter ) );
 	list.querySelector( '.filter select' ).onchange = ( event ) => {
-		// Start with showing all items.
-		const allItems = 'li';
-		list.querySelectorAll( allItems ).forEach( ( el ) => {
-			el.style.display = 'block';
-		} );
-		// If the dropdown is set to show all categories, there is nothing more to do.
-		const chosenCategory = event.target.value;
-		if ( chosenCategory.length <= 0 ) {
-			return;
-		}
-		// Filter the items by the chosen category: find all items that do not have the chosen category and hide them.
-		const redundantItems = `li:not([data-cyclos-category="${ chosenCategory }"])`;
-		list.querySelectorAll( redundantItems ).forEach( ( el ) => {
-			el.style.display = 'none';
-		} );
+		filterUsers( list, event.target.value );
 	};
 };
 
@@ -107,8 +119,10 @@ const addOrderBy = ( list, sortOptions, orderBy, sortOrder ) => {
 		// Add an empty non-selectable option at the top of the select list.
 		list.querySelector( '.orderby select' ).insertAdjacentHTML(
 			'afterbegin',
-			`<option value="" selected disabled>${ cyclosUserObj.l10n?.noSortOption }</option>`
+			`<option value="" disabled>${ cyclosUserObj.l10n?.noSortOption }</option>`
 		);
+		// Select the empty option. Note: just adding 'selected' is not enough, we must re-set the selectedIndex.
+		list.querySelector( '.orderby select' ).selectedIndex = 0;
 	}
 };
 
@@ -204,6 +218,47 @@ const buildListItem = ( user ) => {
 };
 
 /**
+ * Adds an HTML list with users to the given container element.
+ *
+ * If this function is called to re-build the users list, the original list is replaced with the new one.
+ *
+ * @param { HTMLElement } container The element we should put the user list on.
+ * @param { Array } users The array of users.
+ * @param { string } orderBy The property to use for the ordering.
+ * @param { string } sortOrder The sort order. Either 'asc' or 'desc'.
+ * @param { string } filter (Optional) The category to filter the users on.
+ */
+function addUsersList( container, users, orderBy, sortOrder, filter = '' ) {
+	// Build up the user list, according to requested filtering and ordering.
+	if ( orderBy?.length > 0 ) {
+		users.sort( usersComparator( orderBy, sortOrder ) );
+	}
+	let userItems = '';
+	users.forEach( ( user ) => {
+		userItems += buildListItem( user );
+	} );
+
+	// Add the user items to the container.
+	const oldList = container.querySelector( 'ul' );
+	// If we already have a list of users, fill it with the new items.
+	if ( oldList ) {
+		oldList.innerHTML = userItems;
+	} else {
+		// If there is no list of users yet, insert a new list into the container element.
+		container.innerHTML = `<ul>${ userItems }</ul>`;
+	}
+
+	// If a filter exists, apply it. Also check if the visitor has set a filter.
+	filter =
+		filter?.length > 0
+			? filter
+			: container.querySelector( '.filter select' )?.value;
+	if ( filter?.length > 0 ) {
+		filterUsers( container.querySelector( 'ul' ), filter );
+	}
+}
+
+/**
  * Build a list of the given users and put it on the given list element.
  *
  * @param { HTMLElement } listElement The list element we should put the users on.
@@ -218,20 +273,11 @@ function buildUserList( listElement, users ) {
 
 	const props = listElement.dataset;
 
-	// Do an initial sort on the user list if the data attribute tells us to.
+	// Add the users to the list element, using the data attributes for initial filter/sort.
 	const orderBy = props.cyclosOrderby ?? '';
 	const sortOrder = 'cyclosOrderDesc' in props ? 'desc' : 'asc';
-	if ( orderBy ) {
-		users.sort( usersComparator( orderBy, sortOrder ) );
-	}
-
-	// Build up the list of users and put it in the list element.
-	let userList = '<ul>';
-	users.forEach( ( user ) => {
-		userList += buildListItem( user );
-	} );
-	userList += '</ul>';
-	listElement.innerHTML = userList;
+	const initialFilter = props.cyclosFilter ?? '';
+	addUsersList( listElement, users, orderBy, sortOrder, initialFilter );
 
 	// If we are to show an orderby, add it to the list element.
 	if ( 'cyclosShowOrderby' in props ) {
@@ -241,11 +287,19 @@ function buildUserList( listElement, users ) {
 		sortOptions.add( [ 'name', 'Name', 'both' ] );
 		sortOptions.add( [ 'customValues.rating', 'Rating', 'desc' ] );
 		addOrderBy( listElement, sortOptions, orderBy, sortOrder );
+
+		// Add the trigger to sort the userlist whenever the orderby option changes.
+		listElement.querySelector( '.orderby select' ).onchange = ( event ) => {
+			// Re-sort the user data.
+			const chosenOrder = event.target.value;
+			const [ orderField, orderDirection ] = chosenOrder.split( '-' );
+			addUsersList( listElement, users, orderField, orderDirection );
+		};
 	}
 
 	// If we are to show a filter, add it to the list element.
 	if ( 'cyclosShowFilter' in props ) {
-		addFilter( listElement );
+		addFilter( listElement, initialFilter );
 	}
 }
 
