@@ -2,6 +2,19 @@
  * Default styles for the userdirectory views.
 */
 
+.cyclos-user-list .filter,
+.cyclos-user-list .orderby {
+	display: inline;
+}
+
+.cyclos-user-list .orderby {
+	float: right;
+}
+
+.cyclos-user-list label {
+	margin-right: 0.25em;
+}
+
 .cyclos-user-list ul {
 	list-style: none;
 	display: flex;

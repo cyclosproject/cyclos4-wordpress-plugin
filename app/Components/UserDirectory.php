@@ -234,7 +234,10 @@ class UserDirectory {
 					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
 					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),
 					'noUsers'            => __( 'No users found', 'cyclos' ),
-					'noFilterOption'     => __( 'Show all users', 'cyclos' ),
+					'filterLabel'        => __( 'Filter', 'cyclos' ),
+					'noFilterOption'     => __( 'All users', 'cyclos' ),
+					'sortLabel'          => __( 'Sort', 'cyclos' ),
+					'noSortOption'       => __( 'Sort by', 'cyclos' ),
 				),
 				'fields'   => $this->conf->get_cyclos_userfields(),
 			)

@@ -7,12 +7,15 @@ const categories = new Set();
  */
 const buildFilterDropdown = () => {
 	if ( categories.size <= 0 ) return '';
-	let dropdown = `<select name="${ cyclosUserObj.fields?.category }" class="filter">`;
+	let dropdown = '<div class="filter">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:</label>`;
+	dropdown += `<select name="${ cyclosUserObj.fields?.category }">`;
 	dropdown += `<option value="">${ cyclosUserObj.l10n?.noFilterOption }</option>`;
 	categories.forEach( ( cat ) => {
 		dropdown += `<option value="${ cat }">${ cat }</option>`;
 	} );
 	dropdown += '</select>';
+	dropdown += '</div>';
 	return dropdown;
 };
 /**
@@ -22,7 +25,7 @@ const buildFilterDropdown = () => {
  */
 const addFilter = ( list ) => {
 	list.insertAdjacentHTML( 'afterbegin', buildFilterDropdown() );
-	list.querySelector( '.filter' ).onchange = ( event ) => {
+	list.querySelector( '.filter select' ).onchange = ( event ) => {
 		// Start with showing all items.
 		const allItems = 'li';
 		list.querySelectorAll( allItems ).forEach( ( el ) => {
@@ -39,6 +42,74 @@ const addFilter = ( list ) => {
 			el.style.display = 'none';
 		} );
 	};
+};
+
+/**
+ * Build up the HTML for a single option in the dropdown the visitor can use to sort the list.
+ *
+ * @param { string } val The string to use as the value of the option.
+ * @param { string } name The string to use as the visible name of the option.
+ * @param { string } dir The sort direction. Either 'asc' or 'desc'.
+ * @param { Array } init The initial ordering (both key and direction).
+ * @param { boolean } showArrow Whether to show an arrow near the option name indicating the direction.
+ */
+const buildSortOption = ( val, name, dir, init, showArrow ) => {
+	const selected = init.val === val && init.dir === dir ? ' selected' : '';
+	const arrows = { asc: ' &#8595;', desc: ' &#8593;' };
+	const arrow = showArrow ? arrows[ dir ] : '';
+	return `<option value="${ val }-${ dir }"${ selected }>${ name }${ arrow }</option>`;
+};
+
+/**
+ * Build up the HTML for a dropdown the visitor can use to sort the list.
+ *
+ * @param { Set } sortOptions The options the visitor has to sort the list.
+ * @param { string } initialOrderBy The initial ordering.
+ * @param { string } initialDirection The initial sort order. Either 'asc' or 'desc'.
+ */
+const buildOrderBy = ( sortOptions, initialOrderBy, initialDirection ) => {
+	if ( sortOptions.size <= 0 ) return '';
+	const initial = { val: initialOrderBy, dir: initialDirection };
+	let dropdown = '<div class="orderby">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }:</label>`;
+	dropdown += `<select>`;
+	sortOptions.forEach( ( [ val, name, dir ] ) => {
+		if ( 'both' === dir ) {
+			dropdown += buildSortOption( val, name, 'asc', initial, true );
+			dropdown += buildSortOption( val, name, 'desc', initial, true );
+		} else {
+			dropdown += buildSortOption( val, name, dir, initial, false );
+		}
+	} );
+	dropdown += '</select>';
+	dropdown += '</div>';
+	return dropdown;
+};
+
+/**
+ * Add an orderby dropdown to a list element, with an onchange event handler to sort the list items whenever the dropdown is changed.
+ *
+ * @param { HTMLElement } list The list element to add the filter to.
+ * @param { Set } sortOptions The options the visitor has to sort the list.
+ * @param { string } orderBy The initial ordering.
+ * @param { string } sortOrder The initial sort order. Either 'asc' or 'desc'.
+ */
+const addOrderBy = ( list, sortOptions, orderBy, sortOrder ) => {
+	// Add the orderby dropdown to the user list.
+	list.insertAdjacentHTML(
+		'afterbegin',
+		buildOrderBy( sortOptions, orderBy, sortOrder )
+	);
+
+	// If there is no initial sorting, add a non-selectable (=disabled) empty option to indicate none of the options reflect the initial order.
+	// Note: this may not be entirely correct if the webmaster has set the plugin setting to order the user data by name and name <is> in the select list.
+	if ( '' === orderBy ) {
+		// Add an empty non-selectable option at the top of the select list.
+		list.querySelector( '.orderby select' ).insertAdjacentHTML(
+			'afterbegin',
+			`<option value="" selected disabled>${ cyclosUserObj.l10n?.noSortOption }</option>`
+		);
+	}
 };
 
 /**
@@ -149,8 +220,8 @@ function buildUserList( listElement, users ) {
 
 	// Do an initial sort on the user list if the data attribute tells us to.
 	const orderBy = props.cyclosOrderby ?? '';
+	const sortOrder = 'cyclosOrderDesc' in props ? 'desc' : 'asc';
 	if ( orderBy ) {
-		const sortOrder = 'cyclosOrderDesc' in props ? 'desc' : 'asc';
 		users.sort( usersComparator( orderBy, sortOrder ) );
 	}
 
@@ -161,6 +232,16 @@ function buildUserList( listElement, users ) {
 	} );
 	userList += '</ul>';
 	listElement.innerHTML = userList;
+
+	// If we are to show an orderby, add it to the list element.
+	if ( 'cyclosShowOrderby' in props ) {
+		const sortOptions = new Set();
+		// For now, just build the sortOptions hardcoded here. Change to dynamic later.
+		sortOptions.add( [ 'customValues.featured', 'Featured', 'desc' ] );
+		sortOptions.add( [ 'name', 'Name', 'both' ] );
+		sortOptions.add( [ 'customValues.rating', 'Rating', 'desc' ] );
+		addOrderBy( listElement, sortOptions, orderBy, sortOrder );
+	}
 
 	// If we are to show a filter, add it to the list element.
 	if ( 'cyclosShowFilter' in props ) {
