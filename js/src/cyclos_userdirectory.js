@@ -1,7 +1,10 @@
-/* global jQuery, cyclosUserObj */
-import buildUserList from './cyclos_userlist';
+/**
+ * Internal dependencies
+ */
+import UserData from './userdirectory/data';
+import UserList from './userdirectory/frontend/userlist';
 
-jQuery( document ).ready( function( $ ) {
+const frontEnd = () => {
 	const userLists = document.querySelectorAll( '.cyclos-user-list' );
 	const userMaps = document.querySelectorAll( '.cyclos-user-map' );
 
@@ -10,43 +13,25 @@ jQuery( document ).ready( function( $ ) {
 		return;
 	}
 
-	// Get the userdata. When it's ready, call the function to build up the HTML.
-	cyclosUserObj = cyclosUserObj || {};
-	const invalidDataMessage = cyclosUserObj.l10n.invalidDataMessage;
-	const setupMessage = cyclosUserObj.l10n.setupMessage;
-	const data = { _ajax_nonce: cyclosUserObj.id, action: 'cyclos_userdata' };
-	$.post( cyclosUserObj.ajax_url, data )
-		.done( ( response ) => {
-			response = response || {};
-			if ( response.userData && Array.isArray( response.userData ) ) {
-				buildHTML( response.userData );
-			} else {
-				showErrorMsg(
-					`${ response.errorMessage || invalidDataMessage }.`
-				);
-			}
-		} )
-		.fail( () => {
-			showErrorMsg( `${ setupMessage }.` );
-		} );
+	// Retrieve the data.
+	const userData = new UserData();
 
-	// The function to build the HTML for each view, given the userdata we found in the response.
-	const buildHTML = ( userData ) => {
+	// Build the proper user view in each div or show an error if something is wrong.
+	if ( userData.error ) {
 		userLists.forEach( ( listElement ) => {
-			buildUserList( listElement, userData );
+			listElement.innerHTML = `${ userData.errorMsg }.`;
+		} );
+		userMaps.forEach( ( mapElement ) => {
+			mapElement.innerHTML = `${ userData.errorMsg }.`;
+		} );
+	} else {
+		userLists.forEach( ( listElement ) => {
+			new UserList( listElement, userData );
 		} );
 		// userMaps.forEach( ( mapElement ) => {
 		// 	buildUserMap( mapElement, userData );
 		// } );
-	};
+	}
+};
 
-	// The function to show error information, if the userdata could not be retrieved.
-	const showErrorMsg = ( errorMsg ) => {
-		userLists.forEach( ( listElement ) => {
-			listElement.innerHTML = `${ errorMsg || invalidDataMessage }.`;
-		} );
-		userMaps.forEach( ( mapElement ) => {
-			mapElement.innerHTML = `${ errorMsg || invalidDataMessage }.`;
-		} );
-	};
-} );
+frontEnd();

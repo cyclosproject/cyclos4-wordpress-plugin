@@ -79,9 +79,10 @@ class UserDirectory {
 				'views'           => 'list',
 				'filter_category' => '',
 				'show_filter'     => true,
-				'orderby_field'   => '',
-				'orderby_desc'    => false,
+				'order_field'     => '',
+				'sort_order'      => 'asc',
 				'show_orderby'    => true,
+				'sort_options'    => '',
 			),
 			$atts,
 			$tag
@@ -117,9 +118,9 @@ class UserDirectory {
 			'<div class="cyclos-user-list"%s%s%s%s%s></div>',
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
-			$this->make_data_attribute( 'orderby', $atts['orderby_field'] ),
-			$this->make_data_attribute( 'order-desc', $atts['orderby_desc'], 'boolean' ),
-			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' )
+			$this->make_data_attribute( 'orderby', $atts['order_field'] . '-' . $atts['sort_order'] ),
+			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' ),
+			$this->make_data_attribute( 'sort-options', $atts['sort_options'] )
 		);
 	}
 
@@ -237,7 +238,7 @@ class UserDirectory {
 					'filterLabel'        => __( 'Filter', 'cyclos' ),
 					'noFilterOption'     => __( 'All users', 'cyclos' ),
 					'sortLabel'          => __( 'Sort', 'cyclos' ),
-					'noSortOption'       => __( 'Sort by', 'cyclos' ),
+					'noSortOption'       => __( 'Default', 'cyclos' ),
 				),
 				'fields'   => $this->conf->get_cyclos_userfields(),
 			)
