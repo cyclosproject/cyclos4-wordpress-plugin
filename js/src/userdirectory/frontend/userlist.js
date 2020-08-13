@@ -2,7 +2,12 @@
 /**
  * UserList class representing a frontend userlist.
  */
-import { listItems, doSort } from '../utils';
+import {
+	UserData,
+	prepareUsersForRender,
+	generateVisibleSortOptions,
+} from '../data';
+import { renderUser } from './templates';
 
 export default class UserList {
 	constructor( container, userData ) {
@@ -12,8 +17,8 @@ export default class UserList {
 			return;
 		}
 
-		// Build the list and its dynamic elements for filter and sort.
 		this.container = container;
+		/** @type { UserData} */
 		this.userData = userData;
 		this.initProps();
 		this.initState();
@@ -30,6 +35,7 @@ export default class UserList {
 	 * Retrieve the properties from the container dataset.
 	 */
 	initProps() {
+		// Retrieve the properties we need from the container dataset.
 		const props = this.container.dataset;
 		this.props = {
 			initialSort: props.cyclosOrderby ?? '',
@@ -60,17 +66,27 @@ export default class UserList {
 	 * Render the user list, using the current sort and filter.
 	 */
 	renderList() {
+		// Make sure we have a list element.
 		let userList = this.container.querySelector( '.user-list' );
 		if ( ! userList ) {
 			this.container.innerHTML = '<div class="user-list"></div>';
 			userList = this.container.querySelector( '.user-list' );
 		}
-		const tempUsers = Array.from( this.userData.users );
-		if ( '' !== this.state.currentSort ) {
-			const [ field, direction ] = this.state.currentSort.split( '-' );
-			doSort( tempUsers, field, direction );
-		}
-		userList.innerHTML = listItems( tempUsers, this.state.currentFilter );
+
+		// Empty the list element, in case this is a re-render.
+		userList.innerHTML = '';
+
+		// Get the users we should show.
+		const preparedUsers = prepareUsersForRender(
+			this.userData,
+			this.state.currentSort,
+			this.state.currentFilter
+		);
+
+		// Add a user element to the list for each user.
+		preparedUsers.forEach( ( user ) =>
+			renderUser( userList, user, this.userData.fieldTypes )
+		);
 	}
 
 	/**
@@ -164,7 +180,8 @@ export default class UserList {
 		let dropdown = '<div class="orderby">';
 		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }:</label>`;
 		dropdown += `<select>`;
-		const optionList = this.userData.generateVisibleSortOptions(
+		const optionList = generateVisibleSortOptions(
+			this.userData,
 			this.props.initialSort,
 			visibleSortOptions
 		);

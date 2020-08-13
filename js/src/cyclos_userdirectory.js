@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import UserData from './userdirectory/data';
+import { initUsers } from './userdirectory/data';
 import UserList from './userdirectory/frontend/userlist';
 
 const frontEnd = () => {
@@ -14,24 +14,25 @@ const frontEnd = () => {
 	}
 
 	// Retrieve the data.
-	const userData = new UserData();
-
-	// Build the proper user view in each div or show an error if something is wrong.
-	if ( userData.error ) {
-		userLists.forEach( ( listElement ) => {
-			listElement.innerHTML = `${ userData.errorMsg }.`;
+	initUsers()
+		// Build the proper user view in each div or show an error if something is wrong.
+		.then( ( userData ) => {
+			userLists.forEach(
+				( listElement ) => new UserList( listElement, userData )
+			);
+			// Analogous code for when we start implementing the user map functionality.
+			// userMaps.forEach(
+			// 	( mapElement ) => new UserMap( mapElement, userData )
+			// );
+		} )
+		.catch( ( err ) => {
+			const errorMsg =
+				'There was an error retrieving the userdata from the server. Please ask your website administrator if this problem persists.';
+			// eslint-disable-next-line no-console
+			console.log( err );
+			userLists.forEach( ( listEl ) => ( listEl.innerHTML = errorMsg ) );
+			userMaps.forEach( ( mapEl ) => ( mapEl.innerHTML = errorMsg ) );
 		} );
-		userMaps.forEach( ( mapElement ) => {
-			mapElement.innerHTML = `${ userData.errorMsg }.`;
-		} );
-	} else {
-		userLists.forEach( ( listElement ) => {
-			new UserList( listElement, userData );
-		} );
-		// userMaps.forEach( ( mapElement ) => {
-		// 	buildUserMap( mapElement, userData );
-		// } );
-	}
 };
 
 frontEnd();

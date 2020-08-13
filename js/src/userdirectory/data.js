@@ -1,99 +1,23 @@
-/* global cyclosUserObj */
+/* global fetch, cyclosUserObj */
+import { getPropByPath } from './utils';
+
 /**
  * UserData class containing current Cyclos user data and metadata.
  */
-export default class UserData {
-	// Use getters so the data is lazy loaded.
-	get users() {
-		if ( ! this._users ) {
-			this._users = this.fetchUsers();
+export class UserData {
+	constructor( users, userMeta ) {
+		this.users = users;
+		this.userMeta = userMeta;
+		if ( users && userMeta ) {
+			// Only initialize our derived properties when we have user data.
+			this.init();
 		}
-		return this._users;
 	}
 
-	get userMeta() {
-		if ( ! this._userMeta ) {
-			this._userMeta = this.fetchUserMeta();
-		}
-		return this._userMeta;
-	}
-
-	get filterOptions() {
-		if ( ! this._filterOptions ) {
-			this._filterOptions = this.generateFilterOptions();
-		}
-		return this._filterOptions;
-	}
-
-	get sortOptions() {
-		if ( ! this._sortOptions ) {
-			this._sortOptions = this.generateSortOptions();
-		}
-		return this._sortOptions;
-	}
-
-	get fields() {
-		if ( ! this._fields ) {
-			this._fields = this.generateFieldMap();
-		}
-		return this._fields;
-	}
-
-	fetchUsers() {
-		// This would fetch the userdata from WP using the action 'cyclos_userdata'.
-		// For now, just return some hardcoded users.
-		/* eslint-disable prettier/prettier */
-		return [
-			{ id: 120, name: 'Piet', customValues: { rating: 3, featured: '1', category: 'bakeries' }, address: { id: '7762070814178009663', name: 'Address 1', addressLine1: 'Boulevard of broken dreams', city: 'Paris', country: 'FR', location: { latitude: 48.856614, longitude: 2.352222 } } },
-			{ id: 123, name: 'Tester', customValues: { rating: 3, featured: '1', category: 'bakeries' }, address: { id: '7762070814178009663', name: 'Address 1', addressLine1: 'Boulevard of broken dreams', city: 'Paris', country: 'FR', location: { latitude: 48.856614, longitude: 2.352222 } } },
-			{ id: 124, name: 'Other Tester', customValues: { rating: 5, featured: '0', category: 'restaurants' }, address: { id: '7762070814178009919', name: 'Home', addressLine1: 'Diagonal 433', city: 'Barcelona', region: 'Barcelona', country: 'ES', location: { latitude: 41.394194, longitude: 2.151278 } } },
-			{ id: 125, name: 'Pierre', customValues: { rating: 5, featured: '1', category: 'bakeries' }, address: { id: '7762070814178009663', name: 'Address 1', addressLine1: 'Boulevard of broken dreams', city: 'Paris', country: 'FR', location: { latitude: 48.856614, longitude: 2.352222 } } },
-			{ id: 126, name: 'Mister X', customValues: { rating: 2, featured: '0', category: 'hairdressers' }, address: { id: '7762070814178009919', name: 'Home', addressLine1: 'Diagonal 433', city: 'Barcelona', region: 'Barcelona', country: 'ES', location: { latitude: 41.394194, longitude: 2.151278 } } },
-			{ id: 127, name: 'Bonnie Ocean', customValues: { rating: 4, featured: '1', category: 'hairdressers' }, address: { id: '7762070814178009663', name: 'Address 1', addressLine1: 'Boulevard of broken dreams', city: 'Paris', country: 'FR', location: { latitude: 48.856614, longitude: 2.352222 } } },
-			{ id: 128, name: 'Amazing Stroopwaffle', customValues: { rating: 4, featured: '1', category: 'bakeries' }, address: { id: '7762070814178009919', name: 'Home', addressLine1: 'Diagonal 433', city: 'Barcelona', region: 'Barcelona', country: 'ES', location: { latitude: 41.394194, longitude: 2.151278 } } },
-			{ id: 130, name: 'Weird empty person', address: { id: '7762070814178009919', name: 'Home', addressLine1: 'Diagonal 433', city: 'Barcelona', region: 'Barcelona', country: 'ES', location: { latitude: 41.394194, longitude: 2.151278 } } },
-		];
-		/* eslint-enable prettier/prettier */
-	}
-
-	fetchUserMeta() {
-		// This would fetch the userdata from WP using the action 'cyclos_usermetadata'.
-		// For now, just return some hardcoded metadata.
-		// Basic fields can be only: [ accountNumber, address, email, image, name, phone, username ].
-		// Note: there is always only one 'phone' field per user, even when the user has both mobile and landline phones set in Cyclos.
-		// Address fields can be: addressLine1, addressLine2, street, buildingNumber, complement, city, country, neighborhood, poBox, region, zip.
-		// Image fields can be: id, name, contentType, length, url, width, height.
-		return {
-			// userFields: [
-			// 	{ id: 'name', name: 'Name', type: 'string' },
-			// 	{ id: 'image', name: 'Logo', type: 'image' },
-			// 	{ id: 'address.addressLine1', name: 'Address Line 1', type: 'string' },
-			// 	{ id: 'address.zip', name: 'Zip code', type: 'string' },
-			// 	{ id: 'address.city', name: 'City', type: 'string' },
-			// 	{ id: 'address.country', name: 'Country', type: 'string' },
-			// 	{ id: 'address.latitude', name: 'Latitude', type: 'decimal' },
-			// 	{ id: 'address.longitude', name: 'Longitude', type: 'decimal' },
-			// 	{ id: 'phone', name: 'Phone', type: 'string' },
-			// 	{ id: 'customValues.website', name: 'Website', type: 'url' },
-			// 	{ id: 'customValues.category', name: 'Sector', type: 'singleSelection' },
-			// 	{ id: 'customValues.description', name: 'Description', type: 'richText' },
-			// 	{ id: 'customValues.featured', name: 'Featured', type: 'boolean' },
-			// 	{ id: 'customValues.rating', name: 'Rating', type: 'integer' },
-			// ],
-			customFields: [
-				{ id: 'website', name: 'Website', type: 'url' },
-				{ id: 'description', name: 'Description', type: 'richText' },
-				{ id: 'category', name: 'Sector', type: 'singleSelection' },
-				{ id: 'featured', name: 'Prominent in WP', type: 'boolean' },
-				{ id: 'rating', name: 'Rating', type: 'integer' },
-			],
-			defaultMapLocation: {
-				latitude: 52.095066,
-				longitude: 5.119164,
-			},
-			defaultMapZoomMobile: 7,
-			defaultMapZoomWeb: 7,
-		};
+	init() {
+		this.generateFieldMaps();
+		this.generateFilterOptions();
+		this.generateSortOptions();
 	}
 
 	/**
@@ -109,6 +33,9 @@ export default class UserData {
 			return cats;
 		}, new Set() );
 
+		// Remove a possible undefined category, which may exist when there are users with no category or even no customValues at all.
+		categories.delete( undefined );
+
 		// Create an array of the unique categories, with a value and label each.
 		const catList = [ ...categories ].map( ( cat ) => ( {
 			value: cat,
@@ -121,7 +48,8 @@ export default class UserData {
 			label: cyclosUserObj.l10n?.noFilterOption,
 		} );
 
-		return catList;
+		// Store the array of categories.
+		this.filterOptions = catList;
 	}
 
 	/**
@@ -144,7 +72,7 @@ export default class UserData {
 		// If we want arrows instead of ASC/DESC in the labels, we could use:
 		// const labels = { asc: ' &#8595;', desc: ' &#8593;' };
 		const optList = [];
-		this.fields.forEach( ( name, id ) => {
+		this.fieldNames.forEach( ( name, id ) => {
 			optList.push( { value: id + val.asc, label: name + label.asc } );
 			optList.push( { value: id + val.desc, label: name + label.desc } );
 		} );
@@ -155,67 +83,233 @@ export default class UserData {
 			label: cyclosUserObj.l10n?.noSortOption,
 		} );
 
-		return optList;
+		// Store the array of sort options.
+		this.sortOptions = optList;
 	}
 
 	/**
-	 * Creates a map of userfields, mapping their internal name to their display name.
+	 * Generates a map of userfields, mapping their internal name to their display name.
+	 * And also generates a map of userfields, mapping their internal name to their field type.
 	 *
 	 * For example:
 	 * 	name -> Name
 	 * 	customValues.rating -> Rating
 	 * 	customValues.website -> Website
+	 * And:
+	 *  name -> text
+	 *  customValues.rating -> integer
+	 *  customValues.website -> url
 	 */
-	generateFieldMap() {
-		const fields = new Map();
+	generateFieldMaps() {
+		const fieldNames = new Map();
+		const fieldTypes = new Map();
 
-		// Add the Name field.
-		// Just hardcoded for now, should be retrieved from dynamic data along with other userfields like image and address.
-		fields.set( 'name', 'Name' );
+		// Add the Name field to both maps.
+		fieldNames.set( 'name', 'Name' );
+		fieldTypes.set( 'name', 'text' );
+
+		// Add the logo and address fields to the types map only - their display name is never needed.
+		fieldTypes.set( 'logo', 'logo' );
+		fieldTypes.set( 'address', 'address' );
 
 		// Add the custom fields.
 		const customValue = 'customValues.';
-		this.userMeta.customFields.forEach( ( field ) =>
-			fields.set( customValue + field.id, field.name )
-		);
+		this.userMeta.customFields.forEach( ( field ) => {
+			fieldNames.set( customValue + field.id, field.name );
+			fieldTypes.set( customValue + field.id, field.type );
+		} );
 
-		return fields;
-	}
-
-	/**
-	 * Creates an array of value/label objects, given an array of option keys and the current sort value.
-	 *
-	 * If the current sort value is not in the given array of option keys, an empty disabled option is added at the top.
-	 *
-	 * For example:
-	 *  [
-	 * 	  { value: '', label: '', disabled: true },
-	 * 	  { value: 'name-asc', label: 'Name ASC' },
-	 * 	  { value: 'name-desc', label: 'Name DESC' },
-	 * 	  { value: 'rating-desc', label: 'Rating DESC' },
-	 *  ]
-	 *
-	 * @param { string } initialSort The initial sorting, for example: name-asc.
-	 * @param { string } visibleSortOptions The visible sort options, for example: name-asc, name-desc, rating-desc.
-	 * @return { Array } The array of value/label objects.
-	 */
-	generateVisibleSortOptions( initialSort, visibleSortOptions ) {
-		const visibleSortOptionsArray = visibleSortOptions.split( ',' );
-
-		// Filter the sortOptions so we only show the ones that should be visible.
-		const sortList = this.sortOptions.filter( ( option ) =>
-			visibleSortOptionsArray.includes( option.value )
-		);
-
-		// Add an empty disabled value at the top when the webmaster sorts on a field that is not in the visitor sort list.
-		if ( visibleSortOptionsArray.indexOf( initialSort ) === -1 ) {
-			sortList.unshift( {
-				value: initialSort,
-				label: cyclosUserObj.l10n?.noSortOption,
-				disabled: true,
-			} );
-		}
-
-		return sortList;
+		// Store the generated maps.
+		this.fieldNames = fieldNames;
+		this.fieldTypes = fieldTypes;
 	}
 }
+
+export async function initUsers() {
+	// Prepare the URL.
+	const url = `${ cyclosUserObj.ajax_url }?_ajax_nonce=${ cyclosUserObj.id }`;
+
+	// First get the user metadata.
+	let response = await fetch( `${ url }&action=cyclos_usermetadata` );
+	if ( ! response.ok ) {
+		throw new Error(
+			'Retrieving metadata from ' +
+				response.url +
+				': ' +
+				response.statusText
+		);
+	}
+	let result = await response.json();
+	if ( result.error ) {
+		throw new Error( 'Retrieving metadata: ' + result.error );
+	}
+	const userMeta = result.data;
+
+	// Next, get the users data.
+	response = await fetch( `${ url }&action=cyclos_userdata` );
+	if ( ! response.ok ) {
+		throw new Error(
+			'Retrieving userdata from ' +
+				response.url +
+				': ' +
+				response.statusText
+		);
+	}
+	result = await response.json();
+	if ( result.error ) {
+		throw new Error( 'Retrieving userdata: ' + result.error );
+	}
+	const users = result.data;
+
+	// Now we have both users and metadata, we can prepare a UserData object.
+	return new UserData( users, userMeta );
+}
+
+/**
+ * Filters the sortOptions from userData to return an array of only the sortOptions that should be visible.
+ *
+ * If the current sort value is not in the given array of option keys, an empty disabled option is added at the top.
+ *
+ * For example:
+ *  [
+ * 	  { value: '', label: '', disabled: true },
+ * 	  { value: 'name-asc', label: 'Name ASC' },
+ * 	  { value: 'name-desc', label: 'Name DESC' },
+ * 	  { value: 'rating-desc', label: 'Rating DESC' },
+ *  ]
+ *
+ * @param { UserData } userData The userData object containing the array of all possible sortOptions.
+ * @param { string } initialSort The initial sorting, for example: name-asc.
+ * @param { string } visibleSortOptions The visible sort options, for example: name-asc, name-desc, rating-desc.
+ * @return { Array } The array of value/label objects.
+ */
+export const generateVisibleSortOptions = (
+	userData,
+	initialSort,
+	visibleSortOptions
+) => {
+	const visibleSortOptionsArray = visibleSortOptions.split( ',' );
+
+	// Filter the sortOptions so we only show the ones that should be visible.
+	const sortList = userData.sortOptions.filter( ( option ) =>
+		visibleSortOptionsArray.includes( option.value )
+	);
+
+	// Add an empty disabled value at the top when the webmaster sorts on a field that is not in the visitor sort list.
+	if ( visibleSortOptionsArray.indexOf( initialSort ) === -1 ) {
+		sortList.unshift( {
+			value: initialSort,
+			label: cyclosUserObj.l10n?.noSortOption,
+			disabled: true,
+		} );
+	}
+
+	return sortList;
+};
+
+/**
+ * Returns the users array filtered on the given filter and order by the given sort.
+ *
+ * @param { UserData } userData The userData object containing the array of users.
+ * @param { string } sort The order to sort by. Contains field and direction separated by a dash, for example: name-asc.
+ * @param { string } filter The field to filter on.
+ * @return { Array } The filtered and sorted array of users.
+ */
+export const prepareUsersForRender = ( userData, sort, filter ) => {
+	// Create a new local array, so the original users array is not affected by our sorting.
+	// This way we can always reset the sort to none if the webmaster wants to.
+	// Note: arrays are passed by reference in JavaScript.
+	let tempUsers = Array.from( userData?.users );
+	if ( '' !== filter ) {
+		tempUsers = doFilter( tempUsers, filter, '' );
+	}
+	if ( '' !== sort ) {
+		const [ orderField, orderDirection ] = sort.split( '-' );
+		doSort( tempUsers, orderField, orderDirection );
+	}
+	return tempUsers;
+};
+
+/**
+ * Filters the given array of users so we only have users in the requested category.
+ *
+ * @param { Array } users The array of users that should be filtered.
+ * @param { string } category The category to filter by.
+ */
+const doFilter = ( users, category ) => {
+	const catField = cyclosUserObj.fields?.category;
+
+	// If there is no category to filter on, or - weird - the category field's internal name is unknown, just return the original users.
+	if ( '' === category || ! catField ) {
+		return users;
+	}
+
+	// Return the users, filtered by category.
+	return users.filter(
+		( user ) => category === user.customValues?.[ catField ]
+	);
+};
+
+/**
+ * Sorts the given array of users.
+ *
+ * @param { Array } users The array of users that should be sorted.
+ * @param { string } orderBy The field to sort by.
+ * @param { string } sortOrder The direction to sort by. Either 'asc' or 'desc'.
+ */
+export const doSort = ( users, orderBy, sortOrder ) => {
+	if ( orderBy.length > 0 ) {
+		users.sort( usersComparator( orderBy, sortOrder ) );
+	}
+};
+
+/**
+ * Creates a comparator callback function that compares two given users a and b.
+ * The callback returns -1 if a should be before b; 1 if b should be before a; 0 otherwise.
+ *
+ * @param { string } orderBy The property to use for the ordering.
+ * @param { string } sortOrder The sort order. Either 'asc' or 'desc'.
+ */
+const usersComparator = ( orderBy, sortOrder ) => ( a, b ) => {
+	// Get the properties to compare for both users, using their path.
+	let x = getPropByPath( a, orderBy );
+	let y = getPropByPath( b, orderBy );
+
+	// Now, compare the two values.
+	let comparison = 0;
+	// Check the property type, because this determines the way we should compare the values. Otherwise "12" would be seen as lower than "3".
+	if ( isNaN( parseInt( x, 10 ) ) ) {
+		x = x ? x.toLowerCase() : '';
+	} else {
+		x = parseInt( x, 10 );
+	}
+	if ( isNaN( parseInt( y, 10 ) ) ) {
+		y = y ? y.toLowerCase() : '';
+	} else {
+		y = parseInt( y, 10 );
+	}
+
+	// Put users with an empty orderBy property at the end.
+	if ( '' === x ) {
+		return y ? 1 : 0;
+	}
+	if ( '' === y ) {
+		return -1;
+	}
+
+	// If both users have the orderBy property, use that to determine their order.
+	if ( x < y ) {
+		comparison = -1;
+	}
+	if ( x > y ) {
+		comparison = 1;
+	}
+
+	// Reverse the order if the requested sortOrder is descending.
+	if ( sortOrder === 'desc' ) {
+		comparison *= -1;
+	}
+
+	// Return the result.
+	return comparison;
+};

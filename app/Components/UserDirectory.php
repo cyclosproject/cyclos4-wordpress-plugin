@@ -52,6 +52,8 @@ class UserDirectory {
 		// Note: we don't need a 'wp_ajax_nopriv_cyclos_refresh_user_data' because the refresh data action can only be done by admins.
 		add_action( 'wp_ajax_cyclos_userdata', array( $this, 'handle_retrieve_userdata_ajax_request' ) );
 		add_action( 'wp_ajax_nopriv_cyclos_userdata', array( $this, 'handle_retrieve_userdata_ajax_request' ) );
+		add_action( 'wp_ajax_cyclos_usermetadata', array( $this, 'handle_retrieve_usermetadata_ajax_request' ) );
+		add_action( 'wp_ajax_nopriv_cyclos_usermetadata', array( $this, 'handle_retrieve_usermetadata_ajax_request' ) );
 	}
 
 	/**
@@ -178,7 +180,7 @@ class UserDirectory {
 		$handle    = 'cyclos-userdirectory';
 		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'jquery', 'wp-polyfill' );
+		$deps      = array( 'wp-polyfill' );
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
@@ -369,8 +371,35 @@ class UserDirectory {
 			$users = $user_data;
 		}
 		$response = array(
-			'userData'     => $users,
-			'errorMessage' => $error_message,
+			'data'  => $users,
+			'error' => $error_message,
+		);
+
+		wp_send_json( $response );
+	}
+
+	/**
+	 * Handle the AJAX request for retrieving the Cyclos user metadata.
+	 */
+	public function handle_retrieve_usermetadata_ajax_request() {
+		$error_message = '';
+		$metadata      = array();
+
+		// Die if the nonce is incorrect.
+		check_ajax_referer( 'cyclos_userdirectory_nonce' );
+
+		// Get the Cyclos user metadata.
+		$user_metadata = $this->get_cyclos_user_metadata();
+
+		// Return the user metadata found, and an error message if something is wrong.
+		if ( is_wp_error( $user_metadata ) ) {
+			$error_message = $user_metadata->get_error_message();
+		} else {
+			$metadata = $user_metadata;
+		}
+		$response = array(
+			'data'  => $metadata,
+			'error' => $error_message,
 		);
 
 		wp_send_json( $response );
@@ -394,6 +423,69 @@ class UserDirectory {
 			}
 		}
 		return $user_data;
+	}
+
+	/**
+	 * Return the Cyclos user metadata, using a transient to limit the number of calls to the Cyclos server.
+	 *
+	 * // @ param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
+	 *
+	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
+	 */
+	protected function get_cyclos_user_metadata() {
+		// phpcs:disable
+	// protected function get_cyclos_user_metadata( bool $force_new = false ) {
+		// // If we can use the data from our transient, use that.
+		// $user_metadata = get_transient( Configuration::USER_DATA_TRANSIENT );
+		// if ( $force_new || false === $user_metadata ) {
+		// 	// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
+		// 	$user_metadata = $this->cyclos->get_user_metadata();
+		// 	// Store the data in the transient, but only if it is not an error.
+		// 	if ( ! is_wp_error( $user_metadata ) ) {
+		// 		set_transient( Configuration::USER_DATA_TRANSIENT, $user_metadata, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
+		// 	}
+		// }
+		// return $user_metadata;
+		// phpcs:enable
+		// For now, just return hardcoded data. Later we should get the data from Cyclos or setup plugin settings if the Cyclos API can not give is all we need.
+		// phpcs:disable Generic.Arrays.DisallowShortArraySyntax.Found
+		return [
+			'customFields'         => [
+				[
+					'id'   => 'website',
+					'name' => 'Website',
+					'type' => 'url',
+				],
+				[
+					'id'   => 'omschrijving', // The internal name of the category field in C3NL is 'omschrijving'. In the test network it is 'description'.
+					'name' => 'Description',
+					'type' => 'richText',
+				],
+				[
+					// This is the category passed via cyclosUserObj.fields in enqueue_script() above.
+					'id'   => 'branche', // The internal name of the category field in C3NL is 'branche'. In the test network it is 'category'.
+					'name' => 'Sector',
+					'type' => 'singleSelection',
+				],
+				[
+					'id'   => 'featured',
+					'name' => 'Prominent in WP',
+					'type' => 'boolean',
+				],
+				[
+					'id'   => 'rating',
+					'name' => 'Rating',
+					'type' => 'integer',
+				],
+			],
+			'defaultMapLocation'   => [
+				'latitude'  => 52.095066,
+				'longitude' => 5.119164,
+			],
+			'defaultMapZoomMobile' => 7,
+			'defaultMapZoomWeb'    => 7,
+		];
+		// phpcs:enable Generic.Arrays.DisallowShortArraySyntax.Found
 	}
 
 }

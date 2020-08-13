@@ -15,17 +15,24 @@
 	margin-right: 0.25em;
 }
 
-.cyclos-user-list ul {
-	list-style: none;
+.cyclos-user-list .user-list {
 	display: flex;
 	flex-flow: row wrap;
-	justify-content: space-between;
-	padding-left: 0;
-	margin-bottom: 2em;
+	align-items: stretch;
+	margin: 1em -0.5em;
 }
 
-.cyclos-user-list li {
-	flex-basis: 250px;
+.cyclos-user-list .cyclos-user {
+	flex: 0 0 100%;
+	padding: 0 0.5em;
+	margin-bottom: 1em;
+}
+
+.cyclos-user-list .cyclos-user-item {
+	border: 1px solid #dee2e6;
+	padding: 0.3em;
+	height: 100%;
+	cursor: pointer;
 }
 
 .cyclos-user-list p {
@@ -36,4 +43,31 @@
 .cyclos-user-list img {
 	max-width: 100%;
 	height: auto;
+}
+
+@media ( min-width: 576px) {
+
+	.cyclos-user-list .cyclos-user {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+
+}
+
+@media ( min-width: 768px) {
+
+	.cyclos-user-list .cyclos-user {
+		flex: 0 0 33%;
+		max-width: 33%;
+	}
+
+}
+
+@media ( min-width: 1024px) {
+
+	.cyclos-user-list .cyclos-user {
+		flex: 0 0 25%;
+		max-width: 25%;
+	}
+
 }
