@@ -242,7 +242,6 @@ class UserDirectory {
 					'sortLabel'          => __( 'Sort', 'cyclos' ),
 					'noSortOption'       => __( 'Default', 'cyclos' ),
 				),
-				'fields'   => $this->conf->get_cyclos_userfields(),
 			)
 		);
 		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
@@ -452,32 +451,62 @@ class UserDirectory {
 		return [
 			'customFields'         => [
 				[
-					'id'   => 'website',
-					'name' => 'Website',
-					'type' => 'url',
+					'internalName' => 'website',
+					'name'         => 'Website',
+					'type'         => 'url',
 				],
 				[
-					'id'   => 'omschrijving', // The internal name of the category field in C3NL is 'omschrijving'. In the test network it is 'description'.
-					'name' => 'Description',
-					'type' => 'richText',
+					'internalName' => 'omschrijving', // The internal name of the category field in C3NL is 'omschrijving'. In the test network it is 'description'.
+					'name'         => 'Description',
+					'type'         => 'richText',
 				],
 				[
-					// This is the category passed via cyclosUserObj.fields in enqueue_script() above.
-					'id'   => 'branche', // The internal name of the category field in C3NL is 'branche'. In the test network it is 'category'.
-					'name' => 'Sector',
-					'type' => 'singleSelection',
+					'internalName'   => 'branche', // The internal name of the category field in C3NL is 'branche'. In the test network it is 'category'.
+					'name'           => 'Sector',
+					'type'           => 'singleSelection',
+					'possibleValues' => [
+						[
+							'value'        => 'Advies, reclame en communicatie',
+							'internalName' => 'advies',
+						],
+						[
+							'value'        => 'Bouw',
+							'internalName' => 'infra',
+						],
+						[
+							'value'        => 'Diensten voor particulieren',
+							'internalName' => 'pers_dv',
+						],
+						[
+							'value'        => 'Energie, Recycling & Circulair',
+							'internalName' => 'delfstoffen',
+						],
+						[
+							'value'        => 'Financiële dienstverlening',
+							'internalName' => 'finan_dv',
+						],
+						[
+							'value'        => 'Flexplek/Zaalhuur/Accommodatie',
+							'internalName' => 'verhuur',
+						],
+						[
+							'value'        => 'Gezondheid',
+							'internalName' => 'gezondheidszorg',
+						],
+					],
 				],
 				[
-					'id'   => 'featured',
-					'name' => 'Prominent in WP',
-					'type' => 'boolean',
+					'internalName' => 'featured',
+					'name'         => 'Prominent in WP',
+					'type'         => 'boolean',
 				],
 				[
-					'id'   => 'rating',
-					'name' => 'Rating',
-					'type' => 'integer',
+					'internalName' => 'rating',
+					'name'         => 'Rating',
+					'type'         => 'integer',
 				],
 			],
+			'mapDirectoryField'    => 'branche',
 			'defaultMapLocation'   => [
 				'latitude'  => 52.095066,
 				'longitude' => 5.119164,

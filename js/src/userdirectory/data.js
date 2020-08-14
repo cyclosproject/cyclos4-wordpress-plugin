@@ -24,11 +24,14 @@ export class UserData {
 	 * Creates an array of unique categories from the given list of users.
 	 */
 	generateFilterOptions() {
+		const catFieldId = this.userMeta.mapDirectoryField;
+		if ( ! catFieldId ) {
+			return null;
+		}
 		// Create a set of internal names of unique categories.
-		const catField = cyclosUserObj.fields?.category;
 		const categories = this.users.reduce( ( cats, user ) => {
 			if ( user.customValues ) {
-				cats.add( user.customValues[ catField ] );
+				cats.add( user.customValues[ catFieldId ] );
 			}
 			return cats;
 		}, new Set() );
@@ -36,10 +39,21 @@ export class UserData {
 		// Remove a possible undefined category, which may exist when there are users with no category or even no customValues at all.
 		categories.delete( undefined );
 
+		// Pull the display names of the possible values of the category field out of the userMeta.
+		const catField = this.userMeta.customFields.find(
+			( field ) => catFieldId === field.internalName
+		);
+		const catValues = catField?.possibleValues;
+		// Map the cat value to the cat display name.
+		const catLabels = new Map();
+		catValues.forEach( ( cat ) => {
+			catLabels.set( cat.internalName, cat.value );
+		} );
+
 		// Create an array of the unique categories, with a value and label each.
 		const catList = [ ...categories ].map( ( cat ) => ( {
 			value: cat,
-			label: cat,
+			label: catLabels.get( cat ) ?? cat,
 		} ) );
 
 		// Add an option to show all users.
@@ -115,8 +129,8 @@ export class UserData {
 		// Add the custom fields.
 		const customValue = 'customValues.';
 		this.userMeta.customFields.forEach( ( field ) => {
-			fieldNames.set( customValue + field.id, field.name );
-			fieldTypes.set( customValue + field.id, field.type );
+			fieldNames.set( customValue + field.internalName, field.name );
+			fieldTypes.set( customValue + field.internalName, field.type );
 		} );
 
 		// Store the generated maps.
@@ -220,8 +234,9 @@ export const prepareUsersForRender = ( userData, sort, filter ) => {
 	// This way we can always reset the sort to none if the webmaster wants to.
 	// Note: arrays are passed by reference in JavaScript.
 	let tempUsers = Array.from( userData?.users );
-	if ( '' !== filter ) {
-		tempUsers = doFilter( tempUsers, filter, '' );
+	const catField = userData.userMeta?.mapDirectoryField;
+	if ( '' !== filter && '' !== catField ) {
+		tempUsers = doFilter( tempUsers, catField, filter, '' );
 	}
 	if ( '' !== sort ) {
 		const [ orderField, orderDirection ] = sort.split( '-' );
@@ -234,12 +249,11 @@ export const prepareUsersForRender = ( userData, sort, filter ) => {
  * Filters the given array of users so we only have users in the requested category.
  *
  * @param { Array } users The array of users that should be filtered.
+ * @param { string } catField The internal name of the category field to filter by.
  * @param { string } category The category to filter by.
  */
-const doFilter = ( users, category ) => {
-	const catField = cyclosUserObj.fields?.category;
-
-	// If there is no category to filter on, or - weird - the category field's internal name is unknown, just return the original users.
+const doFilter = ( users, catField, category ) => {
+	// If there is no category to filter on, or no category field, just return the original users.
 	if ( '' === category || ! catField ) {
 		return users;
 	}

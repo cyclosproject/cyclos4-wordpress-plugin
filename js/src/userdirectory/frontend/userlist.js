@@ -94,7 +94,12 @@ export default class UserList {
 	 */
 	renderFilterElement() {
 		// Add a filter element to the container.
-		this.container.insertAdjacentHTML( 'afterbegin', this.filterElement() );
+		const filter = this.filterElement();
+		// If the filter is empty, don't render anything. This happens when Cyclos has no 'Default filter for map directory' filter field set.
+		if ( ! filter ) {
+			return;
+		}
+		this.container.insertAdjacentHTML( 'afterbegin', filter );
 
 		// Add the trigger to filter the userlist whenever the filter option changes.
 		this.container.querySelector( '.filter select' ).onchange = (
@@ -152,6 +157,9 @@ export default class UserList {
 	 */
 	filterElement() {
 		const catList = this.userData.filterOptions;
+		if ( catList.length <= 0 ) {
+			return '';
+		}
 		const currentFilter = this.state.currentFilter;
 		let dropdown = '<div class="filter">';
 		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:</label>`;
