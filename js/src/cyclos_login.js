@@ -3,14 +3,14 @@
  * The Login module script.
  */
 
-jQuery( document ).ready( function( $ ) {
+jQuery( document ).ready( function ( $ ) {
 	cyclosLoginObj = cyclosLoginObj || {};
 	const invalidDataMessage = cyclosLoginObj.l10n.invalidDataMessage;
 	const loginFormSetupMessage = cyclosLoginObj.l10n.loginFormSetupMessage;
 	const captchaSetupMessage = cyclosLoginObj.l10n.captchaSetupMessage;
 
 	// Handle submit on the login form.
-	$( '.cyclos-login-form' ).submit( function( event ) {
+	$( '.cyclos-login-form' ).submit( function ( event ) {
 		event.preventDefault();
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
 		const loginForm = this;
@@ -32,7 +32,7 @@ jQuery( document ).ready( function( $ ) {
 
 		$( notice ).hide();
 		$.post( cyclosLoginObj.ajax_url, data )
-			.done( function( response ) {
+			.done( function ( response ) {
 				response = response || {};
 				if ( response.redirectUrl ) {
 					window.location.href = response.redirectUrl;
@@ -44,21 +44,17 @@ jQuery( document ).ready( function( $ ) {
 						.show();
 				}
 			} )
-			.fail( function() {
-				$( notice )
-					.html( `${ loginFormSetupMessage }.` )
-					.show();
+			.fail( function () {
+				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
 			} )
-			.always( function() {
+			.always( function () {
 				// Remove focus from the submit button.
-				$( loginForm )
-					.find( 'input[type="submit"]' )
-					.blur();
+				$( loginForm ).find( 'input[type="submit"]' ).blur();
 			} );
 	} );
 
 	// Handle click on the forgot password link.
-	$( '.cyclos-forgot-link' ).click( function( event ) {
+	$( '.cyclos-forgot-link' ).click( function ( event ) {
 		event.preventDefault();
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
 		const loginForm = $( this ).parents( 'form' );
@@ -81,7 +77,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Handle click on the forgot password cancel link.
-	$( '.cyclos-forgot-cancel' ).click( function( event ) {
+	$( '.cyclos-forgot-cancel' ).click( function ( event ) {
 		event.preventDefault();
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
 		const forgotForm = $( this ).parents( 'form' );
@@ -96,7 +92,7 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Handle click on the new captcha link.
-	$( '.cyclos-newcaptcha' ).click( function( event ) {
+	$( '.cyclos-newcaptcha' ).click( function ( event ) {
 		event.preventDefault();
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
 		const forgotForm = $( this ).parents( 'form' );
@@ -110,16 +106,12 @@ jQuery( document ).ready( function( $ ) {
 
 		// Empty the captcha code input field and give it focus.
 		// Quirck: Toggle the required html5 attribute to avoid getting an html5 browser error on this field.
-		$( captchaAnswer )
-			.attr( 'required', false )
-			.val( '' );
-		$( captchaAnswer )
-			.focus()
-			.attr( 'required', true );
+		$( captchaAnswer ).attr( 'required', false ).val( '' );
+		$( captchaAnswer ).focus().attr( 'required', true );
 	} );
 
 	// Handle submit on the forgot password form.
-	$( '.cyclos-forgotpassword-form' ).submit( function( event ) {
+	$( '.cyclos-forgotpassword-form' ).submit( function ( event ) {
 		event.preventDefault();
 		cyclosLoginObj = cyclosLoginObj || {};
 		// Find the form this link belongs to. And from there, find the other elements relative to this form.
@@ -146,13 +138,11 @@ jQuery( document ).ready( function( $ ) {
 
 		$( notice ).hide();
 		$.post( cyclosLoginObj.ajax_url, data )
-			.done( function( response ) {
+			.done( function ( response ) {
 				response = response || {};
 				if ( response.successMessage ) {
 					// Show the success message and show the login form again.
-					$( notice )
-						.html( `${ response.successMessage }.` )
-						.show();
+					$( notice ).html( `${ response.successMessage }.` ).show();
 					$( forgotForm ).hide();
 					$( loginForm ).show();
 				} else {
@@ -162,19 +152,13 @@ jQuery( document ).ready( function( $ ) {
 						)
 						.show();
 					// Remove focus from the submit button.
-					$( forgotForm )
-						.find( 'input[type="submit"]' )
-						.blur();
+					$( forgotForm ).find( 'input[type="submit"]' ).blur();
 				}
 			} )
-			.fail( function() {
-				$( notice )
-					.html( `${ loginFormSetupMessage }.` )
-					.show();
+			.fail( function () {
+				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
 				// Remove focus from the submit button.
-				$( forgotForm )
-					.find( 'input[type="submit"]' )
-					.blur();
+				$( forgotForm ).find( 'input[type="submit"]' ).blur();
 			} );
 	} );
 
@@ -189,7 +173,7 @@ jQuery( document ).ready( function( $ ) {
 			action: 'cyclos_captcha',
 		};
 		$.post( cyclosLoginObj.ajax_url, data )
-			.done( function( response ) {
+			.done( function ( response ) {
 				response = response || {};
 				if ( response.id && response.content ) {
 					// Store the captcha ID on the form and show its contents as an image.
@@ -209,11 +193,9 @@ jQuery( document ).ready( function( $ ) {
 						.show();
 				}
 			} )
-			.fail( function() {
+			.fail( function () {
 				$( captcha ).hide();
-				$( notice )
-					.html( `${ captchaSetupMessage }.` )
-					.show();
+				$( notice ).html( `${ captchaSetupMessage }.` ).show();
 			} );
 	}
 } );

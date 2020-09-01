@@ -3,7 +3,7 @@
  * The script to handle our admin settings screen.
  */
 
-jQuery( document ).ready( function( $ ) {
+jQuery( document ).ready( function ( $ ) {
 	// Show the settings sections in tabs.
 
 	/**
@@ -17,7 +17,7 @@ jQuery( document ).ready( function( $ ) {
 		const section = tab.text();
 		$( '.wrap' )
 			.find( "h2:contains('" + section + "')" )
-			.each( function() {
+			.each( function () {
 				$( this ).addClass( 'active' );
 				$( this )
 					.nextUntil( 'h2', ':not(.submit)' )
@@ -31,7 +31,7 @@ jQuery( document ).ready( function( $ ) {
 	activateSection( firstTab );
 
 	// Handle click on a tab to activate the corresponding section.
-	$( '.nav-tab-wrapper a' ).click( function() {
+	$( '.nav-tab-wrapper a' ).click( function () {
 		// Remove the active class from all tab links and all section elements.
 		$( '.nav-tab-wrapper a' ).removeClass( 'nav-tab-active' );
 		$( '.wrap h2, .wrap .intro, .wrap .form-table' ).removeClass(
