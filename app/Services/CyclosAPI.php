@@ -163,6 +163,7 @@ class CyclosAPI {
 	 * @return array {
 	 *     @type boolean $is_forgot_password_enabled  Whether the forgotten password functionality is enabled in Cyclos or not.
 	 *     @type boolean $is_captcha_enabled          Whether the captcha functionality is enabled in Cyclos or not.
+	 *     @type boolean $has_complex_forgot_password Whether the current Cyclos version uses a more complex forgot password wizard.
 	 * }
 	 */
 	public function login_configuration() {
@@ -177,11 +178,14 @@ class CyclosAPI {
 
 		// If we have no error, return whether the forgotPasswordMediums information is filled. If disabled, this is an empty array.
 		// If the captcha is enabled, the forgotPasswordCaptchaProvider is not null.
+		// From Cyclos 4.13 on, the forgot password construction is more complex, so we will just redirect the visitor to Cyclos.
+		// We use the existence of the identityProviders property that was added in 4.13 to indicate this.
 		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on this line.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		return array(
-			'is_forgot_password_enabled' => ! empty( $cyclos_response->forgotPasswordMediums ),
-			'is_captcha_enabled'         => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
+			'is_forgot_password_enabled'  => ! empty( $cyclos_response->forgotPasswordMediums ),
+			'is_captcha_enabled'          => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
+			'has_complex_forgot_password' => isset( $cyclos_response->identityProviders ),
 		);
 		// phpcs:enable
 	}
