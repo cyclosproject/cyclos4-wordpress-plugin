@@ -19,7 +19,7 @@
 		"@wordpress/scripts": "12.1.1"
 	},
 	"scripts": {
-		"build": "wp-scripts build js/src/admin.js js/src/cyclos_login.js --output-path=js/dist",
+		"build": "wp-scripts build js/src/admin.js js/src/cyclos_login.js js/src/cyclos_userdirectory.js --output-path=js/dist",
 		"build:admin": "wp-scripts build js/src/admin.js --output-path=js/dist",
 		"build:login": "wp-scripts build js/src/cyclos_login.js --output-path=js/dist",
 		"build:userdirectory": "wp-scripts build js/src/cyclos_userdirectory.js --output-path=js/dist",
