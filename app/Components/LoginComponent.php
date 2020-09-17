@@ -55,6 +55,8 @@ class LoginComponent {
 		add_action( 'wp_ajax_nopriv_cyclos_captcha', array( $this, 'handle_captcha_ajax_request' ) );
 		add_action( 'wp_ajax_cyclos_forgot_password', array( $this, 'handle_forgot_password_ajax_request' ) );
 		add_action( 'wp_ajax_nopriv_cyclos_forgot_password', array( $this, 'handle_forgot_password_ajax_request' ) );
+		add_action( 'wp_ajax_cyclos_forgot_password_wizard', array( $this, 'handle_forgot_password_wizard_ajax_request' ) );
+		add_action( 'wp_ajax_nopriv_cyclos_forgot_password_wizard', array( $this, 'handle_forgot_password_wizard_ajax_request' ) );
 	}
 
 	/**
@@ -104,16 +106,17 @@ class LoginComponent {
 			set_query_var( 'cyclos_error', __( 'Something is wrong with the Cyclos server. The login form cannot be used at the moment.', 'cyclos' ) );
 			set_query_var( 'cyclos_is_forgot_password_enabled', false );
 			set_query_var( 'cyclos_is_captcha_enabled', false );
-			set_query_var( 'cyclos_forgot_password_url', '' );
+			set_query_var( 'cyclos_use_forgot_password_wizard', false );
+			set_query_var( 'cyclos_forgot_password_mediums', array() );
 			set_query_var( 'cyclos_return_to', '' );
 		} else {
 			// Cyclos can not send us a nonce, so ignore the recommended nonce verification.
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$return_to           = isset( $_GET['returnTo'] ) ? sanitize_text_field( wp_unslash( $_GET['returnTo'] ) ) : '';
-			$forgot_password_url = $login_configuration['has_complex_forgot_password'] ? $this->conf->get_cyclos_url() . '#login%7Caccess.login.forgot-password' : '';
+			$return_to = isset( $_GET['returnTo'] ) ? sanitize_text_field( wp_unslash( $_GET['returnTo'] ) ) : '';
 			set_query_var( 'cyclos_is_forgot_password_enabled', $login_configuration['is_forgot_password_enabled'] );
 			set_query_var( 'cyclos_is_captcha_enabled', $login_configuration['is_captcha_enabled'] );
-			set_query_var( 'cyclos_forgot_password_url', $forgot_password_url );
+			set_query_var( 'cyclos_use_forgot_password_wizard', $login_configuration['has_complex_forgot_password'] );
+			set_query_var( 'cyclos_forgot_password_mediums', $login_configuration['forgot_password_mediums'] );
 			set_query_var( 'cyclos_return_to', $return_to );
 		}
 
@@ -243,6 +246,50 @@ class LoginComponent {
 		$captcha_response = isset( $_POST['captcha_response'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha_response'] ) ) : '';
 
 		$response = $this->cyclos->forgot_password( $principal, $captcha_id, $captcha_response );
+		wp_send_json( $response );
+	}
+
+	/**
+	 * Handle the AJAX request from the forgot password wizard.
+	 */
+	public function handle_forgot_password_wizard_ajax_request() {
+		// Die if the nonce is incorrect.
+		check_ajax_referer( 'cyclos_login_nonce' );
+
+		// Do a remote request to Cyclos. Check the step field to determine which route we must call.
+		$step = isset( $_POST['step'] ) ? sanitize_text_field( wp_unslash( $_POST['step'] ) ) : '';
+		switch ( $step ) {
+			case 'request':
+				$principal        = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$captcha_id       = isset( $_POST['captcha_id'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha_id'] ) ) : '';
+				$captcha_response = isset( $_POST['captcha_response'] ) ? sanitize_text_field( wp_unslash( $_POST['captcha_response'] ) ) : '';
+				$send_medium      = isset( $_POST['send_medium'] ) ? sanitize_text_field( wp_unslash( $_POST['send_medium'] ) ) : '';
+
+				$response = $this->cyclos->forgot_password_step_request( $principal, $captcha_id, $captcha_response, $send_medium );
+				break;
+			case 'code':
+				$principal = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$code      = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
+
+				$response = $this->cyclos->forgot_password_step_code( $principal, $code );
+				break;
+			case 'change':
+				// Note: we can not sanitize the password and principal fields, because they may contain legitimate special characters.
+				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+				$principal        = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : '';
+				$code             = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
+				$new_password     = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
+				$confirm_password = isset( $_POST['confirm_password'] ) ? wp_unslash( $_POST['confirm_password'] ) : '';
+				$security_answer  = isset( $_POST['security_answer'] ) ? sanitize_text_field( wp_unslash( $_POST['security_answer'] ) ) : '';
+				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
+				$response = $this->cyclos->forgot_password_step_change( $principal, $code, $new_password, $confirm_password, $security_answer );
+				break;
+			default:
+				$response = array(
+					'errorMessage' => __( 'Unidentified wizard step', 'cyclos' ) . ': ' . $step,
+				);
+		}
 		wp_send_json( $response );
 	}
 }
