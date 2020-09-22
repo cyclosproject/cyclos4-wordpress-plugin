@@ -278,9 +278,9 @@ class LoginComponent {
 				// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 				$principal        = isset( $_POST['principal'] ) ? wp_unslash( $_POST['principal'] ) : '';
 				$code             = isset( $_POST['code'] ) ? sanitize_text_field( wp_unslash( $_POST['code'] ) ) : '';
-				$new_password     = isset( $_POST['new_password'] ) ? wp_unslash( $_POST['new_password'] ) : '';
-				$confirm_password = isset( $_POST['confirm_password'] ) ? wp_unslash( $_POST['confirm_password'] ) : '';
-				$security_answer  = isset( $_POST['security_answer'] ) ? sanitize_text_field( wp_unslash( $_POST['security_answer'] ) ) : '';
+				$new_password     = isset( $_POST['new_pw'] ) ? wp_unslash( $_POST['new_pw'] ) : '';
+				$confirm_password = isset( $_POST['confirm_pw'] ) ? wp_unslash( $_POST['confirm_pw'] ) : '';
+				$security_answer  = isset( $_POST['sec_answer'] ) ? sanitize_text_field( wp_unslash( $_POST['sec_answer'] ) ) : '';
 				// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 				$response = $this->cyclos->forgot_password_step_change( $principal, $code, $new_password, $confirm_password, $security_answer );

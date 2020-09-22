@@ -85,7 +85,8 @@ jQuery( document ).ready( function ( $ ) {
 		const loginForm = $( box ).find( '.cyclos-login-form' );
 		const notice = $( box ).find( '.notice' );
 
-		// Hide the forgot password form and possible error message, and show the loginform.
+		// Reset and hide the forgot password form and possible error message, and show the loginform.
+		resetForgotForm( forgotForm );
 		$( forgotForm ).hide();
 		$( notice ).hide();
 		$( loginForm ).show();
@@ -119,204 +120,168 @@ jQuery( document ).ready( function ( $ ) {
 		const box = $( forgotForm ).parents( '.cyclos-form-box' );
 		const loginForm = $( box ).find( '.cyclos-login-form' );
 		const notice = $( box ).find( '.notice' );
-
-		// Determine which version of the forgot password we should use.
-		if ( $( forgotForm ).find( '.cyclos-wizard-step' ) ) {
-			forgotPWRequestWizard( forgotForm, loginForm, notice );
-		} else {
-			forgotPWRequestSimple( forgotForm, loginForm, notice );
-		}
-	} );
-
-	// The forgotten password wizard, using newer Cyclos versions (4.13 or newer).
-	function forgotPWRequestWizard( forgotForm, loginForm, notice ) {
-		cyclosLoginObj = cyclosLoginObj || {};
-		const data = {
-			_ajax_nonce: cyclosLoginObj.id,
-			action: 'cyclos_forgot_password_wizard',
-		};
-		$( notice ).hide();
+		const data = { _ajax_nonce: cyclosLoginObj.id };
 
 		// Find the step we are in and add the relevant information to the data we will post.
 		const stepField = $( forgotForm ).find(
 			'input[name="cyclos-wizard-step"]'
 		);
-		const step = stepField?.val();
+		let step = stepField?.val();
+		if ( step ) {
+			data.action = 'cyclos_forgot_password_wizard';
+			data.step = step;
+		} else {
+			// This is the old simple form, without wizard.
+			data.action = 'cyclos_forgot_password';
+			step = 'simple';
+		}
 
-		// Always pass the step and the principal.
-		data.step = step;
-		data.principal = $( forgotForm )
-			.find( 'input[name="principal"]' )
-			?.val()
-			.trim();
+		// Always pass the principal.
+		data.principal = fieldVal( forgotForm, 'principal' );
 
 		// For each step, put the data we need to post in our data object.
 		switch ( step ) {
 			case 'request':
+			case 'simple':
 				// Only do captcha things when the captcha field is there; it might not be when captcha is disabled in Cyclos.
 				if ( $( forgotForm ).find( '.cyclos-captcha' ).length ) {
 					data.captcha_id = $( forgotForm ).data( 'captchaID' );
-					data.captcha_response = $( forgotForm )
-						.find( 'input[name="captcha"]' )
-						.val()
-						.trim();
+					data.captcha_response = fieldVal( forgotForm, 'captcha' );
 				}
-				data.send_medium = $( forgotForm )
-					.find( 'input[name="send-medium"]' )
-					?.val();
+				// The medium must not be sent in the simple form, so first check if it is there.
+				const sendMedium = fieldVal( forgotForm, 'send-medium' );
+				if ( sendMedium ) {
+					data.send_medium = sendMedium;
+				}
 				break;
 			case 'code':
-				data.code = $( forgotForm ).find( 'input[name="code"]' )?.val();
+				data.code = fieldVal( forgotForm, 'code' );
 				break;
 			case 'change':
-				data.code = $( forgotForm ).find( 'input[name="code"]' )?.val();
+				data.code = fieldVal( forgotForm, 'code' );
 				// Only pass the answer on the security question if it is visible.
 				const securityQuestionP = $( forgotForm ).find(
 					'.cyclos-security-question'
 				);
 				if ( securityQuestionP?.is( ':visible' ) ) {
-					data.security_answer = $( forgotForm )
-						.find( 'input[name="security-answer"]' )
-						?.val();
+					data.sec_answer = fieldVal( forgotForm, 'security-answer' );
 				}
-				data.new_password = $( forgotForm )
-					.find( 'input[name="new-password"]' )
-					?.val();
-				data.confirm_password = $( forgotForm )
-					.find( 'input[name="confirm-password"]' )
-					?.val();
+				data.new_pw = fieldVal( forgotForm, 'new-password' );
+				data.confirm_pw = fieldVal( forgotForm, 'confirm-password' );
 				break;
 		}
+
+		$( notice ).hide();
 
 		// Post the data to WP.
 		$.post( cyclosLoginObj.ajax_url, data )
 			.done( function ( response ) {
 				response = response || {};
 				if ( response.errorMessage ) {
-					showForgotPWError(
-						notice,
-						forgotForm,
-						response.errorMessage
-					);
+					showMsg( notice, response.errorMessage );
 					return;
 				}
 				switch ( step ) {
 					case 'request':
 						// Go to the next step.
-						stepField.val( 'code' );
-						$( forgotForm )
-							.find( '.cyclos-wizard-step-request' )
-							?.hide();
-						$( forgotForm )
-							.find( '.cyclos-wizard-step-code' )
-							?.show();
-						$( notice )
-							.html( `${ response.successMessage }.` )
-							.show();
+						showNextStep( forgotForm, step, stepField );
+
+						// Show where the verification code is sent to.
+						showMsg( notice, response.successMessage );
 						break;
 					case 'code':
 						// Go to the next step.
-						stepField.val( 'change' );
-						$( forgotForm )
-							.find( '.cyclos-wizard-step-code' )
-							?.hide();
-						$( forgotForm )
-							.find( '.cyclos-wizard-step-change' )
-							?.show();
+						showNextStep( forgotForm, step, stepField );
+
+						// Show the security question (if enabled).
 						if ( response.securityQuestion ) {
-							// Show the security question.
-							const securityQuestionP = $( forgotForm ).find(
-								'.cyclos-security-question'
+							showSecurityQuestion(
+								forgotForm,
+								response.securityQuestion
 							);
-							securityQuestionP
-								.find( '.cyclos-question' )
-								.text( `${ response.securityQuestion }` );
-							securityQuestionP.show();
 						}
 						break;
 					case 'change':
-						// We just completed the last step.
-						// Empty the fields in the forgot pw form steps and reset the hidden step field to the first step.
+					case 'simple':
+						// We just completed the last step. Reset the forgot form.
+						resetForgotForm( forgotForm );
+
+						// Show the success message, hide the forgot form and show the login form again.
+						showMsg( notice, response.successMessage );
 						$( forgotForm ).hide();
-						$( forgotForm )
-							.find( 'div input[type!="hidden"]' ) // The sendMedium field may be hidden, if so don't empty it.
-							.val( '' );
-						$( forgotForm ).find( 'div' ).hide();
-						$( forgotForm )
-							.find( '.cyclos-wizard-step-request' )
-							?.show();
-						stepField.val( 'request' );
-						newCaptcha( forgotForm, notice );
-						// Show the success message and show the login form again.
-						$( notice )
-							.html( `${ response.successMessage }.` )
-							.show();
 						$( loginForm ).show();
 						break;
 					default:
 						// There can not be another step than the steps we handled above. So this is an error.
-						showForgotPWError(
-							notice,
-							forgotForm,
-							loginFormSetupMessage
-						);
+						showMsg( notice, loginFormSetupMessage );
 				}
 			} )
 			.fail( function () {
-				showForgotPWError( notice, forgotForm, loginFormSetupMessage );
-			} );
-	}
-
-	// The simple request for forgotten passwords, using older Cyclos versions (4.12 or older).
-	function forgotPWRequestSimple( forgotForm, loginForm, notice ) {
-		cyclosLoginObj = cyclosLoginObj || {};
-		const data = {
-			_ajax_nonce: cyclosLoginObj.id,
-			action: 'cyclos_forgot_password',
-		};
-		data.principal = $( forgotForm )
-			.find( 'input[name="principal"]' )
-			.val()
-			.trim();
-		// Only do captcha things when the captcha field is there; it might not be when captcha is disabled in Cyclos.
-		if ( $( forgotForm ).find( '.cyclos-captcha' ).length ) {
-			data.captcha_id = $( forgotForm ).data( 'captchaID' );
-			data.captcha_response = $( forgotForm )
-				.find( 'input[name="captcha"]' )
-				.val()
-				.trim();
-		}
-
-		$( notice ).hide();
-		$.post( cyclosLoginObj.ajax_url, data )
-			.done( function ( response ) {
-				response = response || {};
-				if ( response.successMessage ) {
-					// Show the success message and show the login form again.
-					$( notice ).html( `${ response.successMessage }.` ).show();
-					$( forgotForm ).hide();
-					$( loginForm ).show();
-				} else {
-					$( notice )
-						.html(
-							`${ response.errorMessage || invalidDataMessage }.`
-						)
-						.show();
-					// Remove focus from the submit button.
-					$( forgotForm ).find( 'input[type="submit"]' ).blur();
-				}
+				showMsg( notice, loginFormSetupMessage );
 			} )
-			.fail( function () {
-				$( notice ).html( `${ loginFormSetupMessage }.` ).show();
+			.always( function () {
 				// Remove focus from the submit button.
 				$( forgotForm ).find( 'input[type="submit"]' ).blur();
 			} );
+	} );
+
+	function fieldVal( forgotForm, fieldName ) {
+		return $( forgotForm )
+			.find( 'input[name="' + fieldName + '"]' )
+			?.val()
+			?.trim();
 	}
 
-	function showForgotPWError( notice, forgotForm, msg ) {
-		$( notice ).html( `${ msg }` ).show();
-		// Remove focus from the submit button.
-		$( forgotForm ).find( 'input[type="submit"]' ).blur();
+	function showMsg( notice, msg ) {
+		// End the message with a period (.) if it doesn't already.
+		if ( '.' !== msg.slice( -1 ) ) {
+			msg = `${ msg }.`;
+		}
+		// Show the message in the notice element.
+		$( notice ).html( msg ).show();
+	}
+
+	function showNextStep( forgotForm, step, stepField ) {
+		// Determine the next step, which is always from: 'request' to 'code' to 'change'.
+		const next = 'request' === step ? 'code' : 'change';
+
+		// Set the next step value in the step field.
+		stepField?.val( next );
+
+		// Hide the old step and show the new step.
+		const oldDiv = '.cyclos-wizard-step-' + step;
+		const newDiv = '.cyclos-wizard-step-' + next;
+		$( forgotForm ).find( oldDiv )?.hide();
+		$( forgotForm ).find( newDiv )?.show();
+	}
+
+	function showSecurityQuestion( forgotForm, question ) {
+		const securityQuestionP = $( forgotForm ).find(
+			'.cyclos-security-question'
+		);
+		securityQuestionP.find( '.cyclos-question' ).text( question );
+		securityQuestionP.show();
+	}
+
+	function resetForgotForm( forgotForm ) {
+		// Empty the input fields in the forgot pw form.
+		$( forgotForm )
+			.find( 'input[type!="hidden"]' ) // The sendMedium field may be hidden, if so don't empty it.
+			.not( 'input[type="submit"]' ) // Skip the submit button.
+			?.val( '' );
+
+		// Reset the captcha field.
+		$( forgotForm ).removeData( 'captchaID' );
+
+		// Hide all divs except the first step div.
+		$( forgotForm ).find( 'div' )?.hide();
+		$( forgotForm ).find( '.cyclos-wizard-step-request' )?.show();
+
+		// Reset the hidden step field to the first step, if this field exists.
+		const stepField = $( forgotForm ).find(
+			'input[name="cyclos-wizard-step"]'
+		);
+		stepField?.val( 'request' );
 	}
 
 	// Generates a new captcha image and puts it on the captcha element of the given form.
