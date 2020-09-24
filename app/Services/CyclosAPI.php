@@ -261,6 +261,26 @@ class CyclosAPI {
 	}
 
 	/**
+	 * Returns configuration data for searching Cyclos users. Used for the user directory (map/list).
+	 *
+	 * @return array|\WP_Error     Array with user metadata or a WP_Error object on failure.
+	 */
+	public function get_user_metadata() {
+		// Use the users service to request the user metadata.
+		$cyclos_service  = new Cyclos4\UsersService( $this->conf );
+		$cyclos_response = $cyclos_service->get_data_for_search();
+
+		// If the request failed, return a WP_Error object with the error message.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$message = $this->handle_error( $cyclos_response );
+			return new \WP_Error( 'CYCLOS_EXCEPTION', $message );
+		}
+
+		// If we have no error, return the response containing the user metadata array.
+		return $cyclos_response;
+	}
+
+	/**
 	 * Returns data of Cyclos users. Used for the user directory (map/list).
 	 *
 	 * @return array|\WP_Error     Array with user data or a WP_Error object on failure.

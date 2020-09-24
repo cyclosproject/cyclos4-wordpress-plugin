@@ -13,6 +13,17 @@ namespace Cyclos\Services\Cyclos4;
 class UsersService extends Service {
 
 	/**
+	 * Get the configuration data for searching the user directory (map) in Cyclos.
+	 *
+	 * @return object|\WP_Error      The body from the Cyclos server response or a WP_Error object on failure.
+	 */
+	public function get_data_for_search() {
+		$this->method = 'GET';
+		$this->route  = '/users/map/data-for-search';
+		return $this->run();
+	}
+
+	/**
 	 * Search the user directory (map) in Cyclos.
 	 *
 	 * @param string $group          (Optional) The user group to search in.

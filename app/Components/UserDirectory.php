@@ -339,13 +339,19 @@ class UserDirectory {
 
 		// Get the Cyclos user data, forcing new retrieval from Cyclos.
 		$user_data = $this->get_cyclos_user_data( true );
-
-		// Return either the number of users found, or an error message if something is wrong.
-		$response = '';
+		$response  = '';
 		if ( is_wp_error( $user_data ) ) {
 			$response = $user_data->get_error_message();
 		} else {
-			$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users', 'cyclos' ) );
+			// Also refresh the metadata, because both data belong together.
+			$user_metadata = $this->get_cyclos_user_metadata( true );
+
+			// Return either the number of users found, or an error message if something is wrong.
+			if ( is_wp_error( $user_metadata ) ) {
+				$response = $user_metadata->get_error_message();
+			} else {
+				$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users', 'cyclos' ) );
+			}
 		}
 		wp_send_json( $response );
 	}
@@ -427,94 +433,21 @@ class UserDirectory {
 	/**
 	 * Return the Cyclos user metadata, using a transient to limit the number of calls to the Cyclos server.
 	 *
-	 * // @ param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
-	 *
+	 * @param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
 	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
 	 */
-	protected function get_cyclos_user_metadata() {
-		// phpcs:disable
-	// protected function get_cyclos_user_metadata( bool $force_new = false ) {
-		// // If we can use the data from our transient, use that.
-		// $user_metadata = get_transient( Configuration::USER_DATA_TRANSIENT );
-		// if ( $force_new || false === $user_metadata ) {
-		// 	// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
-		// 	$user_metadata = $this->cyclos->get_user_metadata();
-		// 	// Store the data in the transient, but only if it is not an error.
-		// 	if ( ! is_wp_error( $user_metadata ) ) {
-		// 		set_transient( Configuration::USER_DATA_TRANSIENT, $user_metadata, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
-		// 	}
-		// }
-		// return $user_metadata;
-		// phpcs:enable
-		// For now, just return hardcoded data. Later we should get the data from Cyclos or setup plugin settings if the Cyclos API can not give is all we need.
-		// phpcs:disable Generic.Arrays.DisallowShortArraySyntax.Found
-		return [
-			'customFields'         => [
-				[
-					'internalName' => 'website',
-					'name'         => 'Website',
-					'type'         => 'url',
-				],
-				[
-					'internalName' => 'omschrijving', // The internal name of the category field in C3NL is 'omschrijving'. In the test network it is 'description'.
-					'name'         => 'Description',
-					'type'         => 'richText',
-				],
-				[
-					'internalName'   => 'branche', // The internal name of the category field in C3NL is 'branche'. In the test network it is 'category'.
-					'name'           => 'Sector',
-					'type'           => 'singleSelection',
-					'possibleValues' => [
-						[
-							'value'        => 'Advies, reclame en communicatie',
-							'internalName' => 'advies',
-						],
-						[
-							'value'        => 'Bouw',
-							'internalName' => 'infra',
-						],
-						[
-							'value'        => 'Diensten voor particulieren',
-							'internalName' => 'pers_dv',
-						],
-						[
-							'value'        => 'Energie, Recycling & Circulair',
-							'internalName' => 'delfstoffen',
-						],
-						[
-							'value'        => 'Financiële dienstverlening',
-							'internalName' => 'finan_dv',
-						],
-						[
-							'value'        => 'Flexplek/Zaalhuur/Accommodatie',
-							'internalName' => 'verhuur',
-						],
-						[
-							'value'        => 'Gezondheid',
-							'internalName' => 'gezondheidszorg',
-						],
-					],
-				],
-				[
-					'internalName' => 'featured',
-					'name'         => 'Prominent in WP',
-					'type'         => 'boolean',
-				],
-				[
-					'internalName' => 'rating',
-					'name'         => 'Rating',
-					'type'         => 'integer',
-				],
-			],
-			'mapDirectoryField'    => 'branche',
-			'defaultMapLocation'   => [
-				'latitude'  => 52.095066,
-				'longitude' => 5.119164,
-			],
-			'defaultMapZoomMobile' => 7,
-			'defaultMapZoomWeb'    => 7,
-		];
-		// phpcs:enable Generic.Arrays.DisallowShortArraySyntax.Found
+	protected function get_cyclos_user_metadata( bool $force_new = false ) {
+		// If we can use the metadata from our transient, use that.
+		$user_metadata = get_transient( Configuration::USER_METADATA_TRANSIENT );
+		if ( $force_new || false === $user_metadata ) {
+			// The transient is not there or not valid anymore, so retrieve the data from Cyclos.
+			$user_metadata = $this->cyclos->get_user_metadata();
+			// Store the data in the transient, but only if it is not an error.
+			if ( ! is_wp_error( $user_metadata ) ) {
+				set_transient( Configuration::USER_METADATA_TRANSIENT, $user_metadata, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
+			}
+		}
+		return $user_metadata;
 	}
 
 }

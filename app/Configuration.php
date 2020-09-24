@@ -23,9 +23,10 @@ class Configuration {
 	const CYCLOS_OPTION_NAME = 'cyclos';
 
 	/**
-	 * The unique key for our user data transient record.
+	 * The unique keys for our user data transient records.
 	 */
-	const USER_DATA_TRANSIENT = 'cyclos_user_data';
+	const USER_METADATA_TRANSIENT = 'cyclos_user_metadata';
+	const USER_DATA_TRANSIENT     = 'cyclos_user_data';
 
 	/**
 	 * The unique instance of this class.
