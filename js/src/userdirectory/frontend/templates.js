@@ -10,7 +10,7 @@ import { getPropByPath } from '../utils';
  *
  * @param { HTMLElement } userList The list element to render the user on.
  * @param { Object } user The user object to render.
- * @param { Array } fields An array of fields to show for this user.
+ * @param { Map } fields A Map of fields to show for this user.
  */
 export const renderUser = ( userList, user, fields ) => {
 	// Render the user card at the end of the userList container.
@@ -24,47 +24,51 @@ export const renderUser = ( userList, user, fields ) => {
  * Returns an HTML string with all fields we should show for this user.
  *
  * @param { Object } user The user object.
- * @param { Array } fields The array of fields to show.
+ * @param { Map } fields The Map of fields to show.
  * @return { string } The html string with the info of the given user.
  */
 export const userDetails = ( user, fields ) => {
 	let userInfo = '';
-	for ( const [ id, type ] of fields ) {
+	for ( const [ id, field ] of fields ) {
 		// The logo and address field need special treatment.
-		if ( 'logo' === type ) {
+		if ( 'logo' === field.type ) {
 			userInfo += logo( user );
 			continue;
 		}
-		if ( 'address' === type ) {
+		if ( 'address' === field.type ) {
 			userInfo += address( user );
 			continue;
 		}
 
-		// For the other fields we use their type to determine how to show them.
+		// For the other fields their value determines whether we need to show them.
 		const value = getPropByPath( user, id );
 		if ( ! value ) {
 			continue;
 		}
 
 		// Call the render method that fits the field type.
-		switch ( type ) {
+		switch ( field.type ) {
 			case 'image':
 				userInfo += image( id, value );
 				break;
 			case 'url':
 				userInfo += url( id, value );
 				break;
+			case 'singleSelection':
+				userInfo += selection( id, value, field.possibleValues );
+				break;
 			default:
-				userInfo += defaultField( id, value, type );
+				userInfo += defaultField( id, value, field.type );
 		}
 	}
 	return userInfo;
 };
+
 /**
  * Creates a modal window with all fields we should show for this user.
  *
  * @param { Object } user The user object.
- * @param { Array } fields The array of fields to show.
+ * @param { Map } fields The Map of fields to show.
  */
 const showInfoWindow = ( user, fields ) => {
 	const userInfo = userDetails( user, fields );
@@ -132,6 +136,16 @@ const image = ( id, value ) => {
 
 const url = ( id, value ) => {
 	return `<div class="${ id } cyclos-user-url"><a href="${ value }">${ value }</a></div>`;
+};
+
+const selection = ( id, value, possibleValues ) => {
+	// Try to pull the display name of the selected value from the possibleValues array.
+	const selectedValue = possibleValues.find(
+		( option ) => value === option.internalName
+	);
+	// Show the selected value, or if we can not find it, fall back to showing the orginal value (i.e. the internalName).
+	const valueName = selectedValue?.value ?? value;
+	return `<div class="${ id } cyclos-user-selection cyclos-value-${ value }">${ valueName }</div>`;
 };
 
 const defaultField = ( id, value, type ) => {

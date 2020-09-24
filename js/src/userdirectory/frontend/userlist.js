@@ -85,7 +85,7 @@ export default class UserList {
 
 		// Add a user element to the list for each user.
 		preparedUsers.forEach( ( user ) =>
-			renderUser( userList, user, this.userData.fieldTypes )
+			renderUser( userList, user, this.userData.fields )
 		);
 	}
 

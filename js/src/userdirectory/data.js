@@ -15,7 +15,7 @@ export class UserData {
 	}
 
 	init() {
-		this.generateFieldMaps();
+		this.generateFieldMap();
 		this.generateFilterOptions();
 		this.generateSortOptions();
 	}
@@ -86,9 +86,15 @@ export class UserData {
 		// If we want arrows instead of ASC/DESC in the labels, we could use:
 		// const labels = { asc: ' &#8595;', desc: ' &#8593;' };
 		const optList = [];
-		this.fieldNames.forEach( ( name, id ) => {
-			optList.push( { value: id + val.asc, label: name + label.asc } );
-			optList.push( { value: id + val.desc, label: name + label.desc } );
+		this.fields.forEach( ( field, id ) => {
+			optList.push( {
+				value: id + val.asc,
+				label: field.name + label.asc,
+			} );
+			optList.push( {
+				value: id + val.desc,
+				label: field.name + label.desc,
+			} );
 		} );
 
 		// Add an empty option.
@@ -102,40 +108,41 @@ export class UserData {
 	}
 
 	/**
-	 * Generates a map of userfields, mapping their internal name to their display name.
-	 * And also generates a map of userfields, mapping their internal name to their field type.
+	 * Generates a map of userfields, mapping their internal name to their field information.
+	 * The field information can contain things like display name, field type and extra information like possibleValues.
 	 *
 	 * For example:
-	 * 	name -> Name
-	 * 	customValues.rating -> Rating
-	 * 	customValues.website -> Website
-	 * And:
-	 *  name -> text
-	 *  customValues.rating -> integer
-	 *  customValues.website -> url
+	 * 	name -> { name: 'Name', type: 'text' }
+	 * 	customValues.rating -> { name: 'Rating', type: 'integer'}
+	 * 	customValues.website -> { name: 'Website', type: 'url'}
+	 * 	customValues.category -> { name: 'Sector', type: 'singleSelection', possibleValues: [
+	 * 	{ value: 'bakeries', internalName: 'Bakeries' },
+	 * 	{ value: 'bikes', internalName: 'Bike shops' },
+	 * 	{ value: 'restaurants', internalName: 'Restaurants and pubs' },
+	 * ] }
 	 */
-	generateFieldMaps() {
-		const fieldNames = new Map();
-		const fieldTypes = new Map();
+	generateFieldMap() {
+		const fields = new Map();
 
 		// Add the Name field to both maps.
-		fieldNames.set( 'name', 'Name' );
-		fieldTypes.set( 'name', 'text' );
+		fields.set( 'name', { name: 'Name', type: 'text' } );
 
 		// Add the logo and address fields to the types map only - their display name is never needed.
-		fieldTypes.set( 'logo', 'logo' );
-		fieldTypes.set( 'address', 'address' );
+		fields.set( 'logo', { type: 'logo' } );
+		fields.set( 'address', { type: 'address' } );
 
 		// Add the custom fields.
 		const customValue = 'customValues.';
 		this.userMeta.customFields.forEach( ( field ) => {
-			fieldNames.set( customValue + field.internalName, field.name );
-			fieldTypes.set( customValue + field.internalName, field.type );
+			fields.set( customValue + field.internalName, {
+				name: field.name,
+				type: field.type,
+				possibleValues: field.possibleValues,
+			} );
 		} );
 
-		// Store the generated maps.
-		this.fieldNames = fieldNames;
-		this.fieldTypes = fieldTypes;
+		// Store the generated map.
+		this.fields = fields;
 	}
 }
 
