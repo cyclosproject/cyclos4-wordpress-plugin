@@ -23,11 +23,11 @@ export default class UserList {
 		this.initProps();
 		this.initState();
 		this.renderList();
-		if ( this.props.showFilter ) {
-			this.renderFilterElement();
-		}
 		if ( this.props.showSort && this.props.visibleSortOptions.length > 0 ) {
 			this.renderSortElement();
+		}
+		if ( this.props.showFilter ) {
+			this.renderFilterElement();
 		}
 	}
 
@@ -157,7 +157,7 @@ export default class UserList {
 	 */
 	filterElement() {
 		const catList = this.userData.filterOptions;
-		if ( catList.length <= 0 ) {
+		if ( ! catList || catList.length <= 0 ) {
 			return '';
 		}
 		const currentFilter = this.state.currentFilter;

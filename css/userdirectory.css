@@ -4,15 +4,13 @@
 
 .cyclos-user-list .filter,
 .cyclos-user-list .orderby {
-	display: inline;
+	display: inline-block;
+	margin: 0 1em 0.5em 0;
 }
 
-.cyclos-user-list .orderby {
-	float: right;
-}
-
-.cyclos-user-list label {
-	margin-right: 0.25em;
+.cyclos-user-list .filter label,
+.cyclos-user-list .orderby label {
+	display: block;
 }
 
 .cyclos-user-list .user-list {
