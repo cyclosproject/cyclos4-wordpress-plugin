@@ -128,7 +128,12 @@ const address = ( user ) => {
 		if ( fieldsToSkip.includes( key ) ) {
 			continue;
 		}
-		result += `<div class="${ key }">${ addressVal[ key ] }</div>`;
+		// For country fields also put the value in the class, to allow CSS styling for specific country codes.
+		let valueClass = '';
+		if ( 'country' === key ) {
+			valueClass = `cyclos-value-${ addressVal[ key ] }`;
+		}
+		result += `<div class="${ key } ${ valueClass }">${ addressVal[ key ] }</div>`;
 	}
 	return `<div class="cyclos-user-address">${ result }</div>`;
 };
@@ -152,7 +157,12 @@ const selection = ( id, value, possibleValues ) => {
 };
 
 const defaultField = ( id, value, type ) => {
-	return `<div class="${ id } cyclos-user-${ type }">${ value }</div>`;
+	// For boolean and integer fields also put the value in the class, to allow CSS styling for specific values.
+	let valueClass = '';
+	if ( 'boolean' === type || 'integer' === type ) {
+		valueClass = `cyclos-value-${ value }`;
+	}
+	return `<div class="${ id } cyclos-user-${ type } ${ valueClass }">${ value }</div>`;
 };
 
 class Modal {
