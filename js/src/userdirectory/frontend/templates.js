@@ -119,15 +119,18 @@ const address = ( user ) => {
 		// This user has no address, so return an empty string.
 		return '';
 	}
-	const addressLine1 = addressVal.addressLine1
-		? `<p>${ addressVal.addressLine1 }</p>`
-		: '';
-	const zipCityLine =
-		addressVal.zip || addressVal.city
-			? `<p>${ addressVal.zip ?? '' } ${ addressVal.city ?? '' }</p>`
-			: '';
-	const country = addressVal.country ? `<p>${ addressVal.country }</p>` : '';
-	return `<div class="cyclos-user-address">${ addressLine1 }${ zipCityLine }${ country }</div>`;
+	// Loop through the address fields and show each one in a div with a class indicating which field it is.
+	// This way a webmaster can style them, for example putting zip and city next to eachother.
+	// We will skip some internal fields: id, name, location (containing lat/lng).
+	let result = '';
+	const fieldsToSkip = [ 'id', 'name', 'location' ];
+	for ( const key in addressVal ) {
+		if ( fieldsToSkip.includes( key ) ) {
+			continue;
+		}
+		result += `<div class="${ key }">${ addressVal[ key ] }</div>`;
+	}
+	return `<div class="cyclos-user-address">${ result }</div>`;
 };
 
 const image = ( id, value ) => {
