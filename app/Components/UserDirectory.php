@@ -120,7 +120,7 @@ class UserDirectory {
 			'<div class="cyclos-user-list"%s%s%s%s%s></div>',
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
-			$this->make_data_attribute( 'orderby', $atts['order_field'] . '-' . $atts['sort_order'] ),
+			$atts['order_field'] ? $this->make_data_attribute( 'orderby', $atts['order_field'] . '-' . $atts['sort_order'] ) : '',
 			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' ),
 			$this->make_data_attribute( 'sort-options', $atts['sort_options'] )
 		);
