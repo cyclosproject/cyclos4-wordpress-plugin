@@ -110,7 +110,7 @@ const logo = ( user ) => {
 	const width = image.width ?? '';
 	const height = image.height ?? '';
 	const alt = image.name ?? '';
-	return `<img class="cyclos-user-logo" src="${ image.url }" width="${ width }" height="${ height }" alt="${ alt }" />`;
+	return `<div class="cyclos-user-logo"><img src="${ image.url }" width="${ width }" height="${ height }" alt="${ alt }" /></div>`;
 };
 
 const address = ( user ) => {
@@ -243,6 +243,8 @@ class Modal {
 		.cyclos-modal-content {
 			margin-bottom: 2%;
 			padding: 2em;
+			word-break: break-word;
+			word-wrap: break-word;
 		}
 		.cyclos-modal-close {
 			line-height: 1;
@@ -257,10 +259,7 @@ class Modal {
 			color: #000;
 			background: none;
 		}
-		.cyclos-user-info {
-			display: none;
-		}
-		.cyclos-user-logo {
+		.cyclos-modal-content .cyclos-user-logo img {
 			max-width: 250px;
 			max-height: 250px;
 			width: auto;
@@ -268,7 +267,6 @@ class Modal {
 		}
 		`;
 		const styleSheet = document.createElement( 'style' );
-		styleSheet.type = 'text/css';
 		styleSheet.innerText = styles;
 		document.head.appendChild( styleSheet );
 	}
