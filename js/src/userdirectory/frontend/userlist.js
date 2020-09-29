@@ -23,7 +23,7 @@ export default class UserList {
 		this.initProps();
 		this.initState();
 		this.renderList();
-		if ( this.props.showSort && this.props.visibleSortOptions.length > 0 ) {
+		if ( this.props.visibleSortOptions.length > 0 ) {
 			this.renderSortElement();
 		}
 		if ( this.props.showFilter ) {
@@ -45,9 +45,6 @@ export default class UserList {
 			showFilter:
 				'cyclosShowFilter' in props &&
 				'false' !== props.cyclosShowFilter,
-			showSort:
-				'cyclosShowOrderby' in props &&
-				'false' !== props.cyclosShowOrderby,
 			visibleSortOptions: props.cyclosSortOptions ?? '',
 		};
 	}

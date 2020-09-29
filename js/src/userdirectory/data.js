@@ -124,10 +124,9 @@ export class UserData {
 	generateFieldMap() {
 		const fields = new Map();
 
-		// Add the Name field to both maps.
+		// Add the name, logo and address fields.
+		// For the logo and address fields we only need the type - their display name is never needed.
 		fields.set( 'name', { name: 'Name', type: 'text' } );
-
-		// Add the logo and address fields to the types map only - their display name is never needed.
 		fields.set( 'logo', { type: 'logo' } );
 		fields.set( 'address', { type: 'address' } );
 
@@ -209,7 +208,9 @@ export const generateVisibleSortOptions = (
 	initialSort,
 	visibleSortOptions
 ) => {
-	const visibleSortOptionsArray = visibleSortOptions.split( ',' );
+	const visibleSortOptionsArray = visibleSortOptions
+		.split( ',' )
+		.map( ( item ) => item.trim() );
 
 	// Filter the sortOptions so we only show the ones that should be visible.
 	const sortList = userData.sortOptions.filter( ( option ) =>

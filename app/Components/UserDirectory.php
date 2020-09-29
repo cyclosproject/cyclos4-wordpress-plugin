@@ -78,13 +78,12 @@ class UserDirectory {
 
 		$atts = shortcode_atts(
 			array(
-				'views'           => 'list',
-				'filter_category' => '',
-				'show_filter'     => true,
-				'order_field'     => '',
-				'sort_order'      => 'asc',
-				'show_orderby'    => true,
-				'sort_options'    => '',
+				'views'                => 'list',
+				'filter_category'      => '',
+				'show_filter'          => true,
+				'order_field'          => '',
+				'sort_order'           => 'asc',
+				'visible_sort_options' => '',
 			),
 			$atts,
 			$tag
@@ -117,12 +116,11 @@ class UserDirectory {
 	 */
 	public function render_user_list( $atts ) {
 		return sprintf(
-			'<div class="cyclos-user-list"%s%s%s%s%s></div>',
+			'<div class="cyclos-user-list"%s%s%s%s></div>',
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$atts['order_field'] ? $this->make_data_attribute( 'orderby', $atts['order_field'] . '-' . $atts['sort_order'] ) : '',
-			$this->make_data_attribute( 'show-orderby', $atts['show_orderby'], 'boolean' ),
-			$this->make_data_attribute( 'sort-options', $atts['sort_options'] )
+			$this->make_data_attribute( 'sort-options', $atts['visible_sort_options'] )
 		);
 	}
 
