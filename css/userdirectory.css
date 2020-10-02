@@ -14,17 +14,15 @@
 }
 
 .cyclos-user-list .user-list {
-	display: flex;
-	flex-flow: row wrap;
-	align-items: stretch;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(250px, 300px));
 	margin: 1em -0.5em;
 }
 
 .cyclos-user-list .cyclos-user {
-	flex: 0 0 100%;
 	padding: 0 0.5em;
 	margin-bottom: 1em;
-	min-width: 200px;
+	max-height: 250px;
 }
 
 .cyclos-user-list .cyclos-user-item {
@@ -32,11 +30,12 @@
 	background-color: #fff;
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 	height: 100%;
-	max-height: 350px;
-	overflow: hidden;
 	cursor: pointer;
 	word-break: break-word;
 	word-wrap: break-word;
+	display: grid;
+	grid-template-rows: auto minmax(1px, 1fr);
+	gap: 0.5em;
 }
 
 .cyclos-user-list .cyclos-user-item:hover {
@@ -44,41 +43,15 @@
 }
 
 .cyclos-user-item .name {
-	padding: 0.3em 0.3em 0.6em;
+	padding: 0.3em;
 	line-height: 1.5;
 }
 
-.cyclos-user-list img {
+.cyclos-user-list .cyclos-user-logo img {
 	display: block;
-	max-width: 200px;
-	height: auto;
 	margin: 0 auto;
-}
-
-@media ( min-width: 576px) {
-
-	.cyclos-user-list .cyclos-user {
-		flex: 0 0 50%;
-	}
-
-}
-
-@media ( min-width: 768px) {
-
-	.cyclos-user-list .cyclos-user {
-		flex: 0 0 33%;
-	}
-
-	.cyclos-user-list img {
-		max-width: 100%;
-	}
-
-}
-
-@media ( min-width: 1024px) {
-
-	.cyclos-user-list .cyclos-user {
-		flex: 0 0 25%;
-	}
-
+	max-width: 100%;
+	height: auto;
+	max-height: 100%;
+	width: auto;
 }
