@@ -181,8 +181,11 @@ class CyclosAPI {
 		// We use the existence of the identityProviders property that was added in 4.13 to indicate this.
 		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on this line.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		// The password type must be manual and there must be medium to reset it. Otherwise we can not do a forgotten password request.
+		$login_pw_mode        = $cyclos_response->loginPasswordInput->mode ?? '';
+		$is_forgot_pw_allowed = ( 'manual' === $login_pw_mode ) && ! empty( $cyclos_response->forgotPasswordMediums );
 		return array(
-			'is_forgot_password_enabled'  => ! empty( $cyclos_response->forgotPasswordMediums ),
+			'is_forgot_password_enabled'  => $is_forgot_pw_allowed,
 			'is_captcha_enabled'          => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
 			'has_complex_forgot_password' => isset( $cyclos_response->identityProviders ),
 			'forgot_password_mediums'     => $cyclos_response->forgotPasswordMediums,
@@ -319,11 +322,6 @@ class CyclosAPI {
 		// Set the error if we have an error situation.
 		if ( is_wp_error( $cyclos_response ) ) {
 			$error_message = $this->handle_error( $cyclos_response );
-		} else {
-			// Check the password type. It must be 'manual'.
-			if ( 'manual' !== $cyclos_response->passwordType->mode ) {
-				$error_message = __( 'You can not change this password manually. Please contact the administration.', 'cyclos' );
-			}
 		}
 
 		// Fill the security question.

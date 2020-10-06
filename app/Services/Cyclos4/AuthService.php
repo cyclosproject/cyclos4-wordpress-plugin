@@ -32,7 +32,8 @@ class AuthService extends Service {
 		$this->method = 'GET';
 		$this->route  = '/auth/data-for-login';
 		$this->authenticate_as_guest();
-		// Note: we don't need to specify a channel, because the information we need from data-for-login does not depend on the channel.
+		// Note: In this case we must specify the channel to be 'Main', because the information we need from data-for-login might depend on the channel.
+		$this->use_explicit_main_channel();
 		return $this->run();
 	}
 
