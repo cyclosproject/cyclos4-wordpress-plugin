@@ -326,8 +326,15 @@ class CyclosAPI {
 			}
 		}
 
+		// Fill the security question.
+		$sec_question = '';
+		if ( $cyclos_response->securityQuestion ) {
+			$sec_question = __( 'Please answer your security question', 'cyclos' ) . ': ' . $cyclos_response->securityQuestion;
+		}
+
 		return array(
-			'securityQuestion' => $cyclos_response->securityQuestion ?? '',
+			'passwordHint'     => $cyclos_response->passwordType->description ?? '',
+			'securityQuestion' => $sec_question,
 			'errorMessage'     => $error_message,
 		);
 	}

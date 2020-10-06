@@ -77,6 +77,7 @@
 							</label>
 						</p>
 
+						<p class='cyclos-password-hint' style='display:none'></p>
 						<p><input placeholder="<?php cyclos_loginform_label( 'forgot_new_pw' ); ?>" name='new-password' type='password'></p>
 						<p><input placeholder="<?php cyclos_loginform_label( 'forgot_confirm_pw' ); ?>" name='confirm-password' type='password'></p>
 					</div>

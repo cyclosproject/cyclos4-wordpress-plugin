@@ -200,6 +200,14 @@ jQuery( document ).ready( function ( $ ) {
 								response.securityQuestion
 							);
 						}
+
+						// Show the password hint (if available).
+						if ( response.passwordHint ) {
+							showPasswordHint(
+								forgotForm,
+								response.passwordHint
+							);
+						}
 						break;
 					case 'change':
 					case 'simple':
@@ -261,6 +269,12 @@ jQuery( document ).ready( function ( $ ) {
 		);
 		securityQuestionP.find( '.cyclos-question' ).text( question );
 		securityQuestionP.show();
+	}
+
+	function showPasswordHint( forgotForm, hint ) {
+		const passwordHintP = $( forgotForm ).find( '.cyclos-password-hint' );
+		passwordHintP.text( hint );
+		passwordHintP.show();
 	}
 
 	function resetForgotForm( forgotForm ) {
