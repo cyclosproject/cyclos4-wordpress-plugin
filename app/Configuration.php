@@ -110,6 +110,7 @@ class Configuration {
 				'forgot_pw_mail'       => new Setting( 'login_form', __( 'Forgotten password e-mail', 'cyclos' ), 'text', false, __( 'E-mail', 'cyclos' ), __( 'The (optional) e-mail send medium choice in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_sms'        => new Setting( 'login_form', __( 'Forgotten password SMS', 'cyclos' ), 'text', false, __( 'SMS', 'cyclos' ), __( 'The (optional) SMS send medium choice in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_code'       => new Setting( 'login_form', __( 'Forgotten password code', 'cyclos' ), 'text', false, __( 'Verification code', 'cyclos' ), __( 'The placeholder in the verification code step in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_sec_answer' => new Setting( 'login_form', __( 'Forgotten password security answer', 'cyclos' ), 'text', false, __( 'Your answer', 'cyclos' ), __( 'The placeholder in the answer to the security question field in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_new_pw'     => new Setting( 'login_form', __( 'Forgotten password new password', 'cyclos' ), 'text', false, __( 'New password', 'cyclos' ), __( 'The placeholder in the new password field in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_confirm_pw' => new Setting( 'login_form', __( 'Forgotten password confirm password', 'cyclos' ), 'text', false, __( 'Confirm new password', 'cyclos' ), __( 'The placeholder in the confirmation field of the new password in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
@@ -366,6 +367,7 @@ class Configuration {
 			'forgot_email'      => $this->get_setting( 'forgot_pw_mail' ),
 			'forgot_sms'        => $this->get_setting( 'forgot_pw_sms' ),
 			'forgot_code'       => $this->get_setting( 'forgot_pw_code' ),
+			'forgot_security'   => $this->get_setting( 'forgot_pw_sec_answer' ),
 			'forgot_new_pw'     => $this->get_setting( 'forgot_pw_new_pw' ),
 			'forgot_confirm_pw' => $this->get_setting( 'forgot_pw_confirm_pw' ),
 		);

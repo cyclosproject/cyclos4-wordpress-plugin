@@ -7,6 +7,8 @@
 .cyclos-form-box input[type="button"],
 .cyclos-form-box input[type="submit"],
 .cyclos-form-box a,
+.cyclos-form-box p,
+.cyclos-form-box label,
 .cyclos-form-box .notice {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 14px;

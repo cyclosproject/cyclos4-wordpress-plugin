@@ -181,7 +181,7 @@ class CyclosAPI {
 		// We use the existence of the identityProviders property that was added in 4.13 to indicate this.
 		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on this line.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// The password type must be manual and there must be medium to reset it. Otherwise we can not do a forgotten password request.
+		// The password type must be manual and there must be a medium to reset it. Otherwise we can not do a forgotten password request.
 		$login_pw_mode        = $cyclos_response->loginPasswordInput->mode ?? '';
 		$is_forgot_pw_allowed = ( 'manual' === $login_pw_mode ) && ! empty( $cyclos_response->forgotPasswordMediums );
 		return array(
