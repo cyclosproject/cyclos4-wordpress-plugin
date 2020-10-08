@@ -30,6 +30,7 @@
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"lint:php": "composer wpcs:check",
 		"start": "wp-scripts start",
+		"start:login": "wp-scripts start js/src/cyclos_login.js --output-path=js/dist",
 		"autoload:dev": "composer dump-autoload"
 	}
 }
