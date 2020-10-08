@@ -158,16 +158,17 @@ class CyclosAPI {
 	}
 
 	/**
-	 * Returns an array indicating whether the forgot password functionality and the captcha are enabled in Cyclos.
+	 * Returns an array with information needed for the forgot password functionality.
 	 *
 	 * @return array {
 	 *     @type boolean $is_forgot_password_enabled  Whether the forgotten password functionality is enabled in Cyclos or not.
 	 *     @type boolean $is_captcha_enabled          Whether the captcha functionality is enabled in Cyclos or not.
 	 *     @type boolean $has_complex_forgot_password Whether the current Cyclos version uses a more complex forgot password wizard.
+	 *     @type Array $forgot_password_mediums       List of mediums the user can choose to receive the forgot password verification code.
 	 * }
 	 */
 	public function login_configuration() {
-		// Use the AuthService to get the data for login, containing information on the forgotPasswordMediums if available.
+		// Use the AuthService to get the data for login, containing information for the forgot password functionality.
 		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
 		$cyclos_response = $cyclos_service->get_data_for_login();
 
@@ -179,7 +180,7 @@ class CyclosAPI {
 		// If we have no error, return an array with all relevant login configuration information.
 		// From Cyclos 4.13 on, the forgot password construction is more complex, requiring a small wizard in our login template.
 		// We use the existence of the identityProviders property that was added in 4.13 to indicate this.
-		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on this line.
+		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on the following lines.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		// The password type must be manual and there must be a medium to reset it. Otherwise we can not do a forgotten password request.
 		$login_pw_mode        = $cyclos_response->loginPasswordInput->mode ?? '';

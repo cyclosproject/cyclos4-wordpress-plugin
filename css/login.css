@@ -6,6 +6,7 @@
 .cyclos-form-box input[type="password"],
 .cyclos-form-box input[type="button"],
 .cyclos-form-box input[type="submit"],
+.cyclos-form-box select,
 .cyclos-form-box a,
 .cyclos-form-box p,
 .cyclos-form-box label,
@@ -21,6 +22,7 @@
 .cyclos-form-box input[type="text"],
 .cyclos-form-box input[type="password"],
 .cyclos-form-box input[type="button"],
+.cyclos-form-box select,
 .cyclos-form-box input[type="submit"] {
 	line-height: 1;
 	color: #5f5f5f;
