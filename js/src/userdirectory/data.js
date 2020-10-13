@@ -56,6 +56,9 @@ export class UserData {
 			label: catLabels.get( cat ) ?? cat,
 		} ) );
 
+		// Sort the categories by their label.
+		catList.sort( ( a, b ) => a.label.localeCompare( b.label ) );
+
 		// Add an option to show all users.
 		catList.unshift( {
 			value: '',
