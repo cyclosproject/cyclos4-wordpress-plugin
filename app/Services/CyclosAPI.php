@@ -158,15 +158,17 @@ class CyclosAPI {
 	}
 
 	/**
-	 * Returns an array indicating whether the forgot password functionality and the captcha are enabled in Cyclos.
+	 * Returns an array with information needed for the forgot password functionality.
 	 *
 	 * @return array {
 	 *     @type boolean $is_forgot_password_enabled  Whether the forgotten password functionality is enabled in Cyclos or not.
 	 *     @type boolean $is_captcha_enabled          Whether the captcha functionality is enabled in Cyclos or not.
+	 *     @type boolean $has_complex_forgot_password Whether the current Cyclos version uses a more complex forgot password wizard.
+	 *     @type Array $forgot_password_mediums       List of mediums the user can choose to receive the forgot password verification code.
 	 * }
 	 */
 	public function login_configuration() {
-		// Use the AuthService to get the data for login, containing information on the forgotPasswordMediums if available.
+		// Use the AuthService to get the data for login, containing information for the forgot password functionality.
 		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
 		$cyclos_response = $cyclos_service->get_data_for_login();
 
@@ -175,13 +177,19 @@ class CyclosAPI {
 			return array();
 		}
 
-		// If we have no error, return whether the forgotPasswordMediums information is filled. If disabled, this is an empty array.
-		// If the captcha is enabled, the forgotPasswordCaptchaProvider is not null.
-		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on this line.
+		// If we have no error, return an array with all relevant login configuration information.
+		// From Cyclos 4.13 on, the forgot password construction is more complex, requiring a small wizard in our login template.
+		// We use the existence of the identityProviders property that was added in 4.13 to indicate this.
+		// Note: the variables in the json we receive from Cyclos. So disable the coding standard for snake case on the following lines.
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		// The password type must be manual and there must be a medium to reset it. Otherwise we can not do a forgotten password request.
+		$login_pw_mode        = $cyclos_response->loginPasswordInput->mode ?? '';
+		$is_forgot_pw_allowed = ( 'manual' === $login_pw_mode ) && ! empty( $cyclos_response->forgotPasswordMediums );
 		return array(
-			'is_forgot_password_enabled' => ! empty( $cyclos_response->forgotPasswordMediums ),
-			'is_captcha_enabled'         => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
+			'is_forgot_password_enabled'  => $is_forgot_pw_allowed,
+			'is_captcha_enabled'          => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
+			'has_complex_forgot_password' => isset( $cyclos_response->identityProviders ),
+			'forgot_password_mediums'     => $cyclos_response->forgotPasswordMediums,
 		);
 		// phpcs:enable
 	}
@@ -233,6 +241,7 @@ class CyclosAPI {
 
 	/**
 	 * Method to let a user request a forgotten password reset.
+	 * This is only used on Cyclos versions before 4.13. From 4.13 on, the forgot password is handled via a wizard.
 	 *
 	 * @param string $principal        The principal (i.e. username, e-mail, ..) to identify the user with.
 	 * @param string $captcha_id       The ID of the captcha challenge.
@@ -252,6 +261,107 @@ class CyclosAPI {
 			$error_message = $this->handle_error( $cyclos_response );
 		} else {
 			$success_message = __( 'You will receive an e-mail shortly with your user identification and instructions on how to reset your password', 'cyclos' );
+		}
+
+		return array(
+			'successMessage' => $success_message,
+			'errorMessage'   => $error_message,
+		);
+	}
+
+	/**
+	 * Method to let a user request a forgotten password reset using the new Cyclos mechanism, requiring a small wizard with steps.
+	 * This method handles step 1 of the wizard.
+	 *
+	 * @param string $principal        The principal (i.e. username, e-mail, ..) to identify the user with.
+	 * @param string $captcha_id       The ID of the captcha challenge.
+	 * @param string $captcha_response The response for the captcha challenge.
+	 * @param string $send_medium      The medium (email/sms) to use for sending the verification code to the visitor.
+	 * @return array                   Array containing a successmessage or an errormessage on failure.
+	 */
+	public function forgot_password_step_request( string $principal, string $captcha_id, string $captcha_response, string $send_medium ) {
+		$success_message = '';
+		$error_message   = '';
+
+		// Use the authentication service to request the password reset.
+		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
+		$cyclos_response = $cyclos_service->forgotten_password_request( $principal, $captcha_id, $captcha_response, $send_medium );
+
+		// Set the error or success message, depending on whether we have an error situation or not.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$error_message = $this->handle_error( $cyclos_response );
+		} else {
+			$sent_to = $cyclos_response->sentTo; // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			if ( is_array( $sent_to ) && count( $sent_to ) > 0 ) {
+				$success_message = __( 'A verification code has been sent to ', 'cyclos' ) . $sent_to[0];
+			} else {
+				$error_message = __( 'Something went wrong while trying to send you the verification code. Please contact the administration.', 'cyclos' );
+			}
+		}
+
+		return array(
+			'successMessage' => $success_message,
+			'errorMessage'   => $error_message,
+		);
+	}
+
+	/**
+	 * Method to handle the verification code step in a user request for a forgotten password reset.
+	 * This method handles step 2 of the wizard.
+	 *
+	 * @param string $principal        The principal (i.e. username, e-mail, ..) to identify the user with.
+	 * @param string $code             The verification code which was sent to the user.
+	 * @return array                   Array containing the security question (or empty string if not enabled in Cyclos) or an errormessage on failure.
+	 */
+	public function forgot_password_step_code( string $principal, string $code ) {
+		$error_message = '';
+
+		// Use the authentication service to request the password reset code step.
+		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
+		$cyclos_response = $cyclos_service->forgotten_password_data_for_change( $principal, $code );
+
+		// Set the error if we have an error situation.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$error_message = $this->handle_error( $cyclos_response );
+		}
+
+		// Fill the security question.
+		$sec_question = '';
+		if ( $cyclos_response->securityQuestion ) {
+			$sec_question = __( 'Please answer your security question', 'cyclos' ) . ': ' . $cyclos_response->securityQuestion;
+		}
+
+		return array(
+			'passwordHint'     => $cyclos_response->passwordType->description ?? '',
+			'securityQuestion' => $sec_question,
+			'errorMessage'     => $error_message,
+		);
+	}
+
+	/**
+	 * Method to handle the change step in a user request for a forgotten password reset.
+	 * This method handles step 3 of the wizard.
+	 *
+	 * @param string $principal        The principal (i.e. username, e-mail, ..) to identify the user with.
+	 * @param string $code             The verification code which was sent to the user.
+	 * @param string $new_password     The new password.
+	 * @param string $confirm_password The new password again as a way of confirmation.
+	 * @param string $security_answer  (Optional) The answer to the security question if one was used.
+	 * @return array                   Array containing a successmessage or an errormessage on failure.
+	 */
+	public function forgot_password_step_change( string $principal, string $code, string $new_password, string $confirm_password, string $security_answer = null ) {
+		$success_message = '';
+		$error_message   = '';
+
+		// Use the authentication service to reset the password.
+		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
+		$cyclos_response = $cyclos_service->forgotten_password( $principal, $code, $new_password, $confirm_password, $security_answer );
+
+		// Set the error message, depending on whether we have an error situation or not.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$error_message = $this->handle_error( $cyclos_response );
+		} else {
+			$success_message = __( 'Your password has been reset', 'cyclos' );
 		}
 
 		return array(
@@ -350,6 +460,9 @@ class CyclosAPI {
 				'pw-pending'                    => __( 'Your password is pending', 'cyclos' ),
 				'pw-reset'                      => __( 'Your password was reset', 'cyclos' ),
 				'pw-temporarilyBlocked'         => __( 'Your password is temporarily blocked by exceeding invalid login attempts', 'cyclos' ),
+				'keyInvalidated'                => __( 'The code received on the forgotten password reset request was invalidated because the maximum number of tries was reached', 'cyclos' ),
+				'invalidSecurityAnswer'         => __( 'The answer for the security question was incorrect', 'cyclos' ),
+				'unexpected'                    => __( 'An unexpected error has occurred', 'cyclos' ),
 			);
 
 			// Check the error information from Cyclos. The message contains the HTTP status code, the data contains the response.
@@ -417,6 +530,17 @@ class CyclosAPI {
 					// The response contains a "kind" property.
 					$code = $response->kind ?? '';
 
+					// Handle security question errors differentely.
+					if ( 'forgottenPassword' === $code ) {
+						// Check the code property in the response.
+						$forgotten_pw_error = $response->code ?? 'unexpected';
+						if ( 'invalidSecurityAnswer' === $forgotten_pw_error ) {
+							// Check if the key/code for requesting a password reset is invalid due to reaching the max nr of tries.
+							$is_invalid_key = $response->keyInvalidated ?? false;
+						}
+						// Use the proper code to look up the message in our error_codes table above.
+						$code = $is_invalid_key ? 'keyInvalidated' : $forgotten_pw_error;
+					}
 					// Look up the corresponding message in our error codes table.
 					$message = $error_codes[ $code ] ?? '';
 					break;

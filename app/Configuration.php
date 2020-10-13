@@ -136,6 +136,13 @@ class Configuration {
 				'forgot_pw_email'      => new Setting( 'login_form', __( 'Forgotten password user', 'cyclos' ), 'text', false, __( 'User', 'cyclos' ), __( 'The placeholder in the username field in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_captcha'    => new Setting( 'login_form', __( 'Forgotten password captcha', 'cyclos' ), 'text', false, __( 'Visual validation', 'cyclos' ), __( 'The placeholder in the captcha field in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_newcaptcha' => new Setting( 'login_form', __( 'Forgotten password new captcha', 'cyclos' ), 'text', false, __( 'New code', 'cyclos' ), __( 'The text for the new captcha link in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_medium'     => new Setting( 'login_form', __( 'Forgotten password send medium label', 'cyclos' ), 'text', false, __( 'Send verification code by', 'cyclos' ), __( 'The label near the (optional) send medium choice in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_mail'       => new Setting( 'login_form', __( 'Forgotten password e-mail', 'cyclos' ), 'text', false, __( 'E-mail', 'cyclos' ), __( 'The (optional) e-mail send medium choice in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_sms'        => new Setting( 'login_form', __( 'Forgotten password SMS', 'cyclos' ), 'text', false, __( 'SMS', 'cyclos' ), __( 'The (optional) SMS send medium choice in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_code'       => new Setting( 'login_form', __( 'Forgotten password code', 'cyclos' ), 'text', false, __( 'Verification code', 'cyclos' ), __( 'The placeholder in the verification code step in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_sec_answer' => new Setting( 'login_form', __( 'Forgotten password security answer', 'cyclos' ), 'text', false, __( 'Your answer', 'cyclos' ), __( 'The placeholder in the answer to the security question field in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_new_pw'     => new Setting( 'login_form', __( 'Forgotten password new password', 'cyclos' ), 'text', false, __( 'New password', 'cyclos' ), __( 'The placeholder in the new password field in the forgotten password form', 'cyclos' ) ),
+				'forgot_pw_confirm_pw' => new Setting( 'login_form', __( 'Forgotten password confirm password', 'cyclos' ), 'text', false, __( 'Confirm new password', 'cyclos' ), __( 'The placeholder in the confirmation field of the new password in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
 				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
@@ -414,6 +421,13 @@ class Configuration {
 			'forgot_newcaptcha' => $this->get_setting( 'forgot_pw_newcaptcha' ),
 			'forgot_submit'     => $this->get_setting( 'forgot_pw_submit' ),
 			'forgot_cancel'     => $this->get_setting( 'forgot_pw_cancel' ),
+			'forgot_medium'     => $this->get_setting( 'forgot_pw_medium' ),
+			'forgot_email'      => $this->get_setting( 'forgot_pw_mail' ),
+			'forgot_sms'        => $this->get_setting( 'forgot_pw_sms' ),
+			'forgot_code'       => $this->get_setting( 'forgot_pw_code' ),
+			'forgot_security'   => $this->get_setting( 'forgot_pw_sec_answer' ),
+			'forgot_new_pw'     => $this->get_setting( 'forgot_pw_new_pw' ),
+			'forgot_confirm_pw' => $this->get_setting( 'forgot_pw_confirm_pw' ),
 		);
 	}
 

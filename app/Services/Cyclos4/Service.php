@@ -43,6 +43,13 @@ class Service {
 	protected $authentication;
 
 	/**
+	 * The channel to use in the request. Defaults to empty, to follow the default channel per Cyclos route.
+	 *
+	 * @var array $channel The channel.
+	 */
+	protected $channel = array();
+
+	/**
 	 * The configuration with the plugin settings.
 	 *
 	 * @var Configuration $conf The configuration.
@@ -93,6 +100,15 @@ class Service {
 	}
 
 	/**
+	 * Configure the channel used in the request to be Main.
+	 */
+	protected function use_explicit_main_channel() {
+		$this->channel = array(
+			'Channel' => 'main',
+		);
+	}
+
+	/**
 	 * Execute a request to the Cyclos API.
 	 *
 	 * @param array $data      (Optional) The data to post to the Cyclos API.
@@ -106,7 +122,8 @@ class Service {
 				array(
 					'Content-Type' => 'application/json',
 				),
-				$this->authentication
+				$this->authentication,
+				$this->channel
 			),
 		);
 
