@@ -22,7 +22,6 @@
 .cyclos-user-list .cyclos-user {
 	padding: 0 0.5em;
 	margin-bottom: 1em;
-	max-height: 250px;
 }
 
 .cyclos-user-list .cyclos-user-item {
@@ -30,6 +29,7 @@
 	background-color: #fff;
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
 	height: 100%;
+	max-height: 250px;
 	cursor: pointer;
 	word-break: break-word;
 	word-wrap: break-word;
