@@ -146,6 +146,29 @@ export class UserData {
 		// Store the generated map.
 		this.fields = fields;
 	}
+
+	/**
+	 * Aggregate the users so users with multiple addresses are condensed to one user.
+	 */
+	aggregateUsers() {
+		this.users = this.users.reduce( ( aggregatedData, item ) => {
+			// Check if the current item has the same name as the previous item we stored.
+			const prevUser = aggregatedData[ aggregatedData.length - 1 ] ?? {};
+			const prevUserName = prevUser?.name ?? prevUser?.display ?? '';
+			const curUserName = item?.name ?? item?.display ?? '';
+			if ( prevUserName && prevUserName === curUserName ) {
+				// The current item belongs to the same user as the previous, so add the address of the current item to the previous,
+				// instead of pushing the current item itself to the aggregated data.
+				( prevUser.addresses = prevUser.addresses || [] ).push(
+					item.address
+				);
+			} else {
+				// The current item belongs to another user than the previous, so simply push the current item to the aggregated data.
+				aggregatedData.push( item );
+			}
+			return aggregatedData;
+		}, [] );
+	}
 }
 
 export async function initUsers() {

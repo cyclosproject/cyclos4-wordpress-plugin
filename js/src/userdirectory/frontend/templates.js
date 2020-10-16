@@ -36,7 +36,21 @@ export const userDetails = ( user, fields ) => {
 			continue;
 		}
 		if ( 'address' === field.type ) {
-			userInfo += address( user );
+			// A user might have more addresses in the separate 'addresses' property.
+			if ( user?.addresses ) {
+				// Show the address in the address property and those in the addresses property.
+				// Pass a customized list of fields to skip, to show the 'name' for each address.
+				const fieldsToSkip = [ 'id', 'location' ];
+				userInfo += address( user?.address, fieldsToSkip );
+				userInfo += user.addresses.reduce(
+					( extras, extraAddress ) =>
+						( extras += address( extraAddress, fieldsToSkip ) ),
+					''
+				);
+			} else {
+				// If the user has only one address, just show it.
+				userInfo += address( user?.address );
+			}
 			continue;
 		}
 
@@ -113,17 +127,15 @@ const logo = ( user ) => {
 	return `<div class="cyclos-user-logo"><img src="${ image.url }" width="${ width }" height="${ height }" alt="${ alt }" /></div>`;
 };
 
-const address = ( user ) => {
-	const addressVal = user?.address;
+const address = ( addressVal, fieldsToSkip = [ 'id', 'name', 'location' ] ) => {
 	if ( ! addressVal ) {
 		// This user has no address, so return an empty string.
 		return '';
 	}
 	// Loop through the address fields and show each one in a div with a class indicating which field it is.
 	// This way a webmaster can style them, for example putting zip and city next to eachother.
-	// We will skip some internal fields: id, name, location (containing lat/lng).
+	// We will skip some internal fields. By default (if not passed as an argument): id, name, location (containing lat/lng).
 	let result = '';
-	const fieldsToSkip = [ 'id', 'name', 'location' ];
 	for ( const key in addressVal ) {
 		if ( fieldsToSkip.includes( key ) ) {
 			continue;

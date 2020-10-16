@@ -17,13 +17,16 @@ const frontEnd = () => {
 	initUsers()
 		// Build the proper user view in each div or show an error if something is wrong.
 		.then( ( userData ) => {
-			userLists.forEach(
-				( listElement ) => new UserList( listElement, userData )
-			);
 			// Analogous code for when we start implementing the user map functionality.
 			// userMaps.forEach(
 			// 	( mapElement ) => new UserMap( mapElement, userData )
 			// );
+
+			// Before passing the userData to userLists, aggregate users with more than one address to be seen as one user.
+			userData.aggregateUsers();
+			userLists.forEach(
+				( listElement ) => new UserList( listElement, userData )
+			);
 		} )
 		.catch( ( err ) => {
 			const errorMsg =
