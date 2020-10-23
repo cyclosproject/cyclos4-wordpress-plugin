@@ -32,7 +32,7 @@ class UsersService extends Service {
 	 */
 	public function search_user_directory( string $group = null, string $order_by = null ) {
 		$this->method = 'GET';
-		$this->route  = '/users/map?fields=name&fields=display&fields=image&fields=address&fields=phone&fields=customValues';
+		$this->route  = '/users/map';
 		// Note: even though Cyclos allows the groups argument to be an array of multiple groups, we never pass more than one group.
 		if ( $group ) {
 			$this->route .= "&groups=$group";

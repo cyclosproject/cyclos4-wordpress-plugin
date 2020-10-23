@@ -239,6 +239,8 @@ class UserDirectory {
 					'noFilterOption'     => __( 'All users', 'cyclos' ),
 					'sortLabel'          => __( 'Sort', 'cyclos' ),
 					'noSortOption'       => __( 'Default', 'cyclos' ),
+					'asc'                => __( 'Asc', 'cyclos' ),
+					'desc'               => __( 'Desc', 'cyclos' ),
 				),
 			)
 		);
@@ -432,7 +434,7 @@ class UserDirectory {
 	 * Return the Cyclos user metadata, using a transient to limit the number of calls to the Cyclos server.
 	 *
 	 * @param  bool $force_new  (Optional) Whether the data should always be retrieved from Cyclos. Defaults to false.
-	 * @return array|\WP_Error  Array with user data or a WP_Error object on failure.
+	 * @return array|\WP_Error  Array with user metadata or a WP_Error object on failure.
 	 */
 	protected function get_cyclos_user_metadata( bool $force_new = false ) {
 		// If we can use the metadata from our transient, use that.
@@ -442,10 +444,43 @@ class UserDirectory {
 			$user_metadata = $this->cyclos->get_user_metadata();
 			// Store the data in the transient, but only if it is not an error.
 			if ( ! is_wp_error( $user_metadata ) ) {
+				$user_metadata = $this->decorate_user_metadata( $user_metadata );
 				set_transient( Configuration::USER_METADATA_TRANSIENT, $user_metadata, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
 			}
 		}
 		return $user_metadata;
 	}
 
+	/**
+	 * Add relevant information to the metadata, like data-type and (WP-translatable) label for basic fields.
+	 *
+	 * @param Object $user_metadata  Undecorated user metadata.
+	 * @return Object                Decorated user metadata.
+	 */
+	protected function decorate_user_metadata( $user_metadata ) {
+		// Build up the lists of possible basic fields, each with their visible name and type.
+		// Note: if we would need address fields in the future, we could add them here in a sub-array for 'address'.
+		// phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+		$basic_fields = array(
+			'name'          => array( 'name' => __( 'Name', 'cyclos' ), 'type' => 'text' ),
+			'image'         => array( 'name' => __( 'Logo', 'cyclos' ), 'type' => 'logo' ),
+			'username'      => array( 'name' => __( 'Username', 'cyclos' ), 'type' => 'text' ),
+			'accountNumber' => array( 'name' => __( 'Account Number', 'cyclos' ), 'type' => 'text' ),
+			'address'       => array( 'name' => __( 'Address', 'cyclos' ), 'type' => 'address' ),
+			'email'         => array( 'name' => __( 'E-mail', 'cyclos' ), 'type' => 'email' ),
+			'phone'         => array( 'name' => __( 'Phone', 'cyclos' ), 'type' => 'phone' ),
+		);
+		// phpcs:enable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
+
+		// Only keep basic fields that are enabled in Cyclos.
+		$enabled_fields = $user_metadata->fieldsInList; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		// The fieldsInList property unfortunately does not contain the address and logo fields, so include them first.
+		array_push( $enabled_fields, 'image', 'address' );
+		// Filter the basic fields so only enabled fields remain.
+		$basic_fields = array_intersect_key( $basic_fields, array_flip( $enabled_fields ) );
+
+		// Decorate the user metadata with the basic fields information.
+		$user_metadata->basicFields = $basic_fields; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		return $user_metadata;
+	}
 }

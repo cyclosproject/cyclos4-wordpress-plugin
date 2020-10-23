@@ -77,19 +77,24 @@ export class UserData {
 	 * 	{ value: '', label: 'Default' },
 	 * 	{ value: name-asc, label: 'Name ASC' },
 	 * 	{ value: name-desc, label: 'Name DESC' },
-	 * 	{ value: rating-asc, label: 'Rating ASC' },
-	 * 	{ value: rating-desc, label: 'Rating DESC' },
-	 * 	{ value: website-asc, label: 'Website ASC' },
-	 * 	{ value: website-desc, label: 'Website DESC' },
+	 * 	{ value: customValues.rating-asc, label: 'Rating ASC' },
+	 * 	{ value: customValues.rating-desc, label: 'Rating DESC' },
+	 * 	{ value: customValues.website-asc, label: 'Website ASC' },
+	 * 	{ value: customValues.website-desc, label: 'Website DESC' },
 	 * ]
 	 */
 	generateSortOptions() {
 		const val = { asc: '-asc', desc: '-desc' };
-		const label = { asc: ' ASC', desc: ' DESC' };
-		// If we want arrows instead of ASC/DESC in the labels, we could use:
-		// const labels = { asc: ' &#8595;', desc: ' &#8593;' };
+		const label = {
+			asc: ' ' + cyclosUserObj.l10n?.asc?.toUpperCase(),
+			desc: ' ' + cyclosUserObj.l10n?.desc?.toUpperCase(),
+		};
 		const optList = [];
 		this.fields.forEach( ( field, id ) => {
+			if ( id === 'image' || id === 'address' ) {
+				// The logo and address will not be a sort option, so skip those.
+				return;
+			}
 			optList.push( {
 				value: id + val.asc,
 				label: field.name + label.asc,
@@ -116,22 +121,23 @@ export class UserData {
 	 *
 	 * For example:
 	 * 	name -> { name: 'Name', type: 'text' }
+	 * 	email -> { name: 'E-mail', type: 'email' }
 	 * 	customValues.rating -> { name: 'Rating', type: 'integer'}
 	 * 	customValues.website -> { name: 'Website', type: 'url'}
 	 * 	customValues.category -> { name: 'Sector', type: 'singleSelection', possibleValues: [
-	 * 	{ value: 'bakeries', internalName: 'Bakeries' },
-	 * 	{ value: 'bikes', internalName: 'Bike shops' },
-	 * 	{ value: 'restaurants', internalName: 'Restaurants and pubs' },
+	 * 		{ value: 'Bakeries', internalName: 'bakeries' },
+	 * 		{ value: 'Bike shops', internalName: 'bikes' },
+	 * 		{ value: 'Restaurants and pubs', internalName: 'restaurants' },
 	 * ] }
 	 */
 	generateFieldMap() {
 		const fields = new Map();
 
-		// Add the name, logo and address fields.
-		// For the logo and address fields we only need the type - their display name is never needed.
-		fields.set( 'name', { name: 'Name', type: 'text' } );
-		fields.set( 'logo', { type: 'logo' } );
-		fields.set( 'address', { type: 'address' } );
+		// Add the basic fields.
+		const basicFieldInfo = this.userMeta.basicFields;
+		for ( const key in basicFieldInfo ) {
+			fields.set( key, basicFieldInfo[ key ] );
+		}
 
 		// Add the custom fields.
 		const customValue = 'customValues.';
@@ -221,12 +227,12 @@ export async function initUsers() {
  * 	  { value: '', label: '', disabled: true },
  * 	  { value: 'name-asc', label: 'Name ASC' },
  * 	  { value: 'name-desc', label: 'Name DESC' },
- * 	  { value: 'rating-desc', label: 'Rating DESC' },
+ * 	  { value: 'customValues.rating-desc', label: 'Rating DESC' },
  *  ]
  *
  * @param { UserData } userData The userData object containing the array of all possible sortOptions.
  * @param { string } initialSort The initial sorting, for example: name-asc.
- * @param { string } visibleSortOptions The visible sort options, for example: name-asc, name-desc, rating-desc.
+ * @param { string } visibleSortOptions The visible sort options, for example: name-asc, name-desc, customValues.rating-desc.
  * @return { Array } The array of value/label objects.
  */
 export const generateVisibleSortOptions = (
