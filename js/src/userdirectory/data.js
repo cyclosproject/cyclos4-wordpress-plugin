@@ -244,10 +244,21 @@ export const generateVisibleSortOptions = (
 		.split( ',' )
 		.map( ( item ) => item.trim() );
 
-	// Filter the sortOptions so we only show the ones that should be visible.
-	const sortList = userData.sortOptions.filter( ( option ) =>
-		visibleSortOptionsArray.includes( option.value )
-	);
+	// Create a list of sort options to show, containing the labels from the sortOptions in userData.
+	const sortList = visibleSortOptionsArray.reduce( ( list, option ) => {
+		// Find the option in the userData sortOptions (which contains the labels).
+		const sortOption = userData.sortOptions.find(
+			( item ) => item.value === option
+		);
+		// If the option is found, add it to the list, with its label (if not, the webmaster specified an non-existing fieldName).
+		if ( sortOption ) {
+			list.push( {
+				value: option,
+				label: sortOption.label,
+			} );
+		}
+		return list;
+	}, [] );
 
 	// Add an empty disabled value at the top when the webmaster sorts on a field that is not in the visitor sort list.
 	if ( visibleSortOptionsArray.indexOf( initialSort ) === -1 ) {
