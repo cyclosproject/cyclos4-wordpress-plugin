@@ -173,8 +173,8 @@ export default class UserList {
 	/**
 	 * Build up the HTML for a dropdown the visitor can use to sort the list.
 	 *
-	 * The visibleSortOptions are for example: name-asc, name-desc, rating-desc.
-	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), rating-desc (Rating).
+	 * The visibleSortOptions are for example: name-asc, name-desc, customValues.rating-desc.
+	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), customValues.rating-desc (Rating).
 	 * The initial sort property (for example name-asc) is used to make the corresponding option selected initially.
 	 */
 	sortElement() {

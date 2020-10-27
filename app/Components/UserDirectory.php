@@ -115,12 +115,18 @@ class UserDirectory {
 	 * @return string         The rendered list with the user data.
 	 */
 	public function render_user_list( $atts ) {
+		// For fields used in sorting, we must add the customValues prefix for custom fields.
+		// For example, if the webmaster uses 'rating' in one of the sort args, we must convert this to 'customValues.rating'.
+		$order_field          = $this->prefix_customfield_names( $atts['order_field'] );
+		$visible_sort_options = $this->prefix_customfield_names( $atts['visible_sort_options'] );
+
+		// Return a user-list div with the proper data attributes.
 		return sprintf(
 			'<div class="cyclos-user-list"%s%s%s%s></div>',
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
-			$atts['order_field'] ? $this->make_data_attribute( 'orderby', $atts['order_field'] . '-' . $atts['sort_order'] ) : '',
-			$this->make_data_attribute( 'sort-options', $atts['visible_sort_options'] )
+			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
+			$this->make_data_attribute( 'sort-options', $visible_sort_options )
 		);
 	}
 
@@ -141,7 +147,7 @@ class UserDirectory {
 	 * @param string $name    The id to use in the name of the data attribute. Used after the 'data-cyclos-' prefix.
 	 * @param string $value   The value.
 	 * @param string $type    (Optional) The type of the value. Can be string or boolean. Default: string.
-	 * @return $html          The HTML of the data attribute.
+	 * @return string          The HTML of the data attribute.
 	 */
 	protected function make_data_attribute( string $name, string $value, string $type = 'string' ) {
 		$html = '';
@@ -162,6 +168,39 @@ class UserDirectory {
 				break;
 		}
 		return $html;
+	}
+
+	/**
+	 * Convert customfield internalNames in the input string so the are prefixed with 'customValues.'.
+	 *
+	 * @param string $input   The string containing possible field names to convert.
+	 * @return string         The string with any custom field names converted to have the proper prefix.
+	 */
+	protected function prefix_customfield_names( $input ) {
+		// If the input is empty, there is nothing to do.
+		if ( empty( $input ) ) {
+			return $input;
+		}
+
+		// Retrieve the user metadata, since this contains the internalNames of all possible customfields.
+		$user_metadata = $this->get_cyclos_user_metadata();
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$custom_fields = array_map(
+			function ( $field ) {
+				return $field->internalName ?? '';
+			},
+			$user_metadata->customFields ?? array()
+		);
+		// phpcs:enable
+
+		// For each possible customfield, replace its internalName in the input with the prefixed internalName.
+		foreach ( $custom_fields as $field ) {
+			if ( empty( $field ) ) {
+				continue;
+			}
+			$input = str_replace( $field, 'customValues.' . $field, $input );
+		}
+		return $input;
 	}
 
 	/**
