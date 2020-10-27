@@ -68,6 +68,12 @@ export const userDetails = ( user, fields ) => {
 			case 'url':
 				userInfo += url( id, value );
 				break;
+			case 'email':
+				userInfo += email( id, value );
+				break;
+			case 'phone':
+				userInfo += phone( id, value );
+				break;
 			case 'singleSelection':
 				userInfo += selection( id, value, field.possibleValues );
 				break;
@@ -156,6 +162,14 @@ const image = ( id, value ) => {
 
 const url = ( id, value ) => {
 	return `<div class="${ id } cyclos-user-url"><a href="${ value }">${ value }</a></div>`;
+};
+
+const email = ( id, value ) => {
+	return `<div class="${ id } cyclos-user-email"><a href="mailto:${ value }">${ value }</a></div>`;
+};
+
+const phone = ( id, value ) => {
+	return `<div class="${ id } cyclos-user-phone"><a href="tel:${ value }">${ value }</a></div>`;
 };
 
 const selection = ( id, value, possibleValues ) => {
