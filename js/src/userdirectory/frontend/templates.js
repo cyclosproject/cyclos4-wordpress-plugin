@@ -114,23 +114,23 @@ const card = ( user ) => {
 	// Return the user div with the basic info.
 	return `
 	<div class="cyclos-user">
-		<div class="cyclos-user-item">
-			${ userName }
-			${ userLogo }
-		</div>
+		${ userName }
+		${ userLogo }
 	</div>`;
 };
 
 const logo = ( user ) => {
 	const image = user?.image;
+	let logoElement;
 	if ( ! image?.url ) {
-		// This user has no logo, so return an empty string.
-		return '';
+		// This user has no logo, so return an element with the username instead.
+		logoElement = `<div class="cyclos-no-logo"><span>${ user?.name }</span></div>`;
+	} else {
+		// This user has a logo, so return an image with the logo converted to maximum proportions if needed.
+		const alt = image.name ?? '';
+		logoElement = `<img src="${ image.url }?width=180&height=160" alt="${ alt }" />`;
 	}
-	const width = image.width ?? '';
-	const height = image.height ?? '';
-	const alt = image.name ?? '';
-	return `<div class="cyclos-user-logo"><img src="${ image.url }" width="${ width }" height="${ height }" alt="${ alt }" /></div>`;
+	return `<div class="cyclos-user-logo">${ logoElement }</div>`;
 };
 
 const address = ( addressVal, fieldsToSkip = [ 'id', 'name', 'location' ] ) => {

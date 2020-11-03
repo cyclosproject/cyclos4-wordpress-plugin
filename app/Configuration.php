@@ -145,6 +145,7 @@ class Configuration {
 				'forgot_pw_confirm_pw' => new Setting( 'login_form', __( 'Forgotten password confirm password', 'cyclos' ), 'text', false, __( 'Confirm new password', 'cyclos' ), __( 'The placeholder in the confirmation field of the new password in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
+				'user_style'           => new Setting( 'user_directory', __( 'Choose style', 'cyclos' ), 'user_style', false, 'ocean', __( 'You can choose different designs for the user directory. If you prefer to use your own custom style, choose \'None\' here and adjust your theme\'s CSS however you like.', 'cyclos' ) ),
 				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
 				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
 				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
@@ -456,6 +457,15 @@ class Configuration {
 	 */
 	public function get_user_data_sort( bool $use_default = true ) {
 		return $this->get_setting( 'user_data_sort', $use_default );
+	}
+
+	/**
+	 * Returns the style to use in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_style( bool $use_default = true ) {
+		return $this->get_setting( 'user_style', $use_default );
 	}
 
 }

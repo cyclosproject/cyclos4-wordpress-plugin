@@ -120,9 +120,17 @@ class UserDirectory {
 		$order_field          = $this->prefix_customfield_names( $atts['order_field'] );
 		$visible_sort_options = $this->prefix_customfield_names( $atts['visible_sort_options'] );
 
-		// Return a user-list div with the proper data attributes.
+		// Prepare the selector to use on the div, based on the selected style.
+		$selector = $this->conf->get_user_style();
+		if ( 'plain' === $selector || 'none' === $selector ) {
+			// The plain and empty styles don't need a specific selector.
+			$selector = '';
+		}
+
+		// Return a user-list div with the proper data attributes. Also set the selected style as an extra CSS class on the div.
 		return sprintf(
-			'<div class="cyclos-user-list"%s%s%s%s></div>',
+			'<div class="cyclos-user-list %s"%s%s%s%s></div>',
+			$selector,
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
@@ -221,17 +229,13 @@ class UserDirectory {
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
-		// phpcs:disable Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.SpacingBefore
-		// // Register the userdirectory style if this is configured.
-		// if ( $this->conf->add_styles_to_userdirectory() ) {
-			$file     = 'css/userdirectory.css';
-			$handle   = 'cyclos-userdirectory-style';
-			$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
-			$file_url = \Cyclos\PLUGIN_URL . $file;
-			$deps     = array();
-			wp_register_style( $handle, $file_url, $deps, $version );
-		// }
-		// phpcs:enable Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.SpacingBefore
+		// Register the userdirectory style.
+		$file     = 'css/userdirectory.css';
+		$handle   = 'cyclos-userdirectory-style';
+		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
+		$file_url = \Cyclos\PLUGIN_URL . $file;
+		$deps     = array();
+		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 
 	/**
@@ -241,12 +245,9 @@ class UserDirectory {
 	 * But this is not trivial (for example the content may be in an intro text on a category screen).
 	 */
 	public function enqueue_style() {
-		// phpcs:disable Squiz.PHP.CommentedOutCode.Found
-		// // Enqueue the userdirectory stylesheet if this is configured.
-		// if ( $this->conf->add_styles_to_userdirectory() ) {
+		if ( 'none' !== $this->conf->get_user_style() ) {
 			wp_enqueue_style( 'cyclos-userdirectory-style' );
-		// }
-		// phpcs:enable Squiz.PHP.CommentedOutCode.Found
+		}
 	}
 
 	/**
@@ -310,6 +311,8 @@ class UserDirectory {
 				return array( $this, 'render_user_data_transient' );
 			case 'user_data_sort':
 				return array( $this, 'render_user_data_sort' );
+			case 'user_style':
+				return array( $this, 'render_user_style' );
 			default:
 				return $callback;
 		}
@@ -355,6 +358,33 @@ class UserDirectory {
 			'alphabeticallyDesc' => __( 'Alphabetically Descending [z-a]', 'cyclos' ),
 			'creationDate'       => __( 'By Creation Date (newest first)', 'cyclos' ),
 			'random'             => __( 'Random', 'cyclos' ),
+		);
+		printf( '<select name="%s" id="%s">', esc_html( $name ), esc_html( $field_id ) );
+		foreach ( $options as $option => $name ) {
+			printf( '<option value="%s" %s>%s</option>', esc_attr( $option ), ( $value === $option ? 'selected' : '' ), esc_html( $name ) );
+		}
+		print( '</select>' );
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+	}
+
+	/**
+	 * Render a user style setting field.
+	 * This is a dropdown list, with options according to the different designs in the userdirectory CSS.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_user_style( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		$options  = array(
+			'ocean'    => __( 'Ocean', 'cyclos' ),
+			'material' => __( 'Material Design', 'cyclos' ),
+			'plain'    => __( 'Plain grid', 'cyclos' ),
+			'none'     => __( 'None', 'cyclos' ),
 		);
 		printf( '<select name="%s" id="%s">', esc_html( $name ), esc_html( $field_id ) );
 		foreach ( $options as $option => $name ) {

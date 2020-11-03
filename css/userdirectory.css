@@ -1,6 +1,18 @@
 /*
- * Default styles for the userdirectory views.
+ * Grid styles for the userdirectory view.
 */
+.cyclos-user-list {
+	--blue: #33c3f7;
+	--orange: #f77133;
+	--gray: #ededed;
+	--gray-2: #ddd;
+	--gray-dark: #666;
+	--white: #fff;
+	--white-2: #f9f9f9;
+	--gap: 2em;
+	--card-min-width: 250px;
+	--card-max-width: 400px;
+}
 
 .cyclos-user-list .filter,
 .cyclos-user-list .orderby {
@@ -15,43 +27,145 @@
 
 .cyclos-user-list .user-list {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(250px, 300px));
-	margin: 1em -0.5em;
+	grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+	gap: var(--gap);
+	margin: 1em 0;
 }
 
-.cyclos-user-list .cyclos-user {
-	padding: 0 0.5em;
-	margin-bottom: 1em;
-}
-
-.cyclos-user-list .cyclos-user-item {
-	border: 1px solid #dee2e6;
-	background-color: #fff;
-	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-	height: 100%;
-	max-height: 250px;
+.cyclos-user {
+	width: 100%;
+	max-width: var(--card-max-width);
+	margin: 0 auto;
 	cursor: pointer;
 	word-break: break-word;
 	word-wrap: break-word;
-	display: grid;
-	grid-template-rows: auto minmax(1px, 1fr);
-	gap: 0.5em;
+	hyphens: auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	border: 1px solid var(--gray-dark);
 }
 
-.cyclos-user-list .cyclos-user-item:hover {
-	box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
-}
-
-.cyclos-user-item .name {
+.cyclos-user .name {
 	padding: 0.3em;
 	line-height: 1.5;
 }
 
-.cyclos-user-list .cyclos-user-logo img {
-	display: block;
-	margin: 0 auto;
-	max-width: 100%;
-	height: auto;
-	max-height: 100%;
-	width: auto;
+.cyclos-user .cyclos-user-logo {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 200px;
+}
+
+.cyclos-user .cyclos-no-logo {
+	padding: 0.3em;
+	line-height: 1.5;
+}
+
+/*
+ * Ocean and material combined styles
+*/
+
+.cyclos-user-list.ocean .cyclos-no-logo,
+.cyclos-user-list.material .cyclos-no-logo {
+	width: 125px;
+	height: 125px;
+	background-color: var(--orange);
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.cyclos-user-list.ocean .cyclos-no-logo span,
+.cyclos-user-list.material .cyclos-no-logo span {
+	padding: 0;
+	line-height: inherit;
+	font-family: monospace;
+	font-size: 4em;
+	color: var(--white);
+	width: 2ch;
+	overflow: hidden;
+	white-space: nowrap;
+	transform: rotate(-35deg);
+	text-transform: uppercase;
+}
+
+/*
+ * Ocean design specific styles.
+*/
+
+.cyclos-user-list.ocean,
+.cyclos-user-list.ocean select {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+
+.cyclos-user-list.ocean .cyclos-user {
+	border: none;
+}
+
+.cyclos-user-list.ocean .cyclos-user:hover {
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.cyclos-user-list.ocean .name {
+	color: var(--white);
+	background-color: var(--blue);
+	border: 1px solid var(--blue);
+	font-size: 0.8em;
+	text-align: center;
+	line-height: 2.5;
+	padding: 0 2em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.cyclos-user-list.ocean .cyclos-user-logo {
+	border: 1px solid var(--gray-2);
+}
+
+/*
+ * Material design specific styles.
+*/
+
+.cyclos-user-list.material,
+.cyclos-user-list.material select {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+
+.cyclos-user-list.material {
+	background-color: var(--gray);
+	padding: 2em;
+}
+
+.cyclos-user-list.material .user-list {
+	--card-min-width: 400px;
+}
+
+/* Disable stylelint warning on specificity, see https://stylelint.io/user-guide/rules/no-descending-specificity#dom-limitations */
+/* stylelint-disable-next-line no-descending-specificity */
+.cyclos-user-list.material .cyclos-user {
+	border: none;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+	background-color: var(--white);
+	border-radius: 4px;
+}
+
+.cyclos-user-list.material .cyclos-user:hover {
+	box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+}
+
+.cyclos-user-list.material .name {
+	color: var(--gray-dark);
+	font-weight: 700;
+	text-align: center;
+	padding: 1em 2em 0;
+}
+
+.cyclos-user-list.material .cyclos-no-logo {
+	background-color: var(--blue);
 }
