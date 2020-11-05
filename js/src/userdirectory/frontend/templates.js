@@ -109,7 +109,7 @@ const card = ( user ) => {
 
 	// Create the html for the basic info of the user, being name and logo.
 	const userName = defaultField( 'name', nameValue, 'text' );
-	const userLogo = logo( user );
+	const userLogo = logo( user, 180, 160 );
 
 	// Return the user div with the basic info.
 	return `
@@ -119,7 +119,7 @@ const card = ( user ) => {
 	</div>`;
 };
 
-const logo = ( user ) => {
+const logo = ( user, maxWidth = 300, minWidth = 300 ) => {
 	const image = user?.image;
 	let logoElement;
 	if ( ! image?.url ) {
@@ -128,7 +128,7 @@ const logo = ( user ) => {
 	} else {
 		// This user has a logo, so return an image with the logo converted to maximum proportions if needed.
 		const alt = image.name ?? '';
-		logoElement = `<img src="${ image.url }?width=180&height=160" alt="${ alt }" />`;
+		logoElement = `<img src="${ image.url }?width=${ maxWidth }&height=${ minWidth }" alt="${ alt }" />`;
 	}
 	return `<div class="cyclos-user-logo">${ logoElement }</div>`;
 };
@@ -271,6 +271,7 @@ class Modal {
 			padding: 2em;
 			word-break: break-word;
 			word-wrap: break-word;
+			hyphens: auto;
 		}
 		.cyclos-modal-close {
 			line-height: 1;
@@ -286,9 +287,7 @@ class Modal {
 			background: none;
 		}
 		.cyclos-modal-content .cyclos-user-logo img {
-			max-width: 250px;
-			max-height: 250px;
-			width: auto;
+			max-width: 100%;
 			height: auto;
 		}
 		`;
