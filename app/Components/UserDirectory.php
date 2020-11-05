@@ -271,6 +271,7 @@ class UserDirectory {
 			array(
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
+				'design'   => $this->conf->get_user_style(),
 				'l10n'     => array(
 					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
 					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),

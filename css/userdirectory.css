@@ -1,7 +1,8 @@
 /*
  * Grid styles for the userdirectory view.
 */
-.cyclos-user-list {
+.cyclos-user-list,
+.cyclos-user-info-modal {
 	--blue: #33c3f7;
 	--orange: #f77133;
 	--gray: #ededed;
@@ -63,6 +64,25 @@
 	line-height: 1.5;
 }
 
+/* Hide customfields named 'featured', hide country, hide no-logo in popup. */
+.customvalues-featured,
+.cyclos-user-address .country,
+.cyclos-user-info-modal .cyclos-no-logo {
+	display: none;
+}
+
+/* Put zip and city next to eachother. */
+.cyclos-user-address .zip,
+.cyclos-user-address .city {
+	display: inline-block;
+	margin-right: 0.25em;
+}
+
+/* Capitalize city names. */
+.cyclos-user-address .city {
+	text-transform: capitalize;
+}
+
 /*
  * Ocean and material combined styles
 */
@@ -92,12 +112,20 @@
 	text-transform: uppercase;
 }
 
+.cyclos-user-info-modal.ocean .cyclos-user-address,
+.cyclos-user-info-modal.material .cyclos-user-address {
+	border: 1px solid var(--gray-2);
+	margin: 1em 0;
+	padding: 1em;
+}
+
 /*
  * Ocean design specific styles.
 */
 
 .cyclos-user-list.ocean,
-.cyclos-user-list.ocean select {
+.cyclos-user-list.ocean select,
+.cyclos-user-info-modal.ocean {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 18px;
 }
@@ -127,12 +155,21 @@
 	border: 1px solid var(--gray-2);
 }
 
+.cyclos-user-info-modal.ocean .name.cyclos-user-text {
+	margin-bottom: 1em;
+}
+
+.cyclos-user-info-modal.ocean .name {
+	font-weight: 700;
+}
+
 /*
  * Material design specific styles.
 */
 
 .cyclos-user-list.material,
-.cyclos-user-list.material select {
+.cyclos-user-list.material select,
+.cyclos-user-info-modal.material {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 18px;
 }
@@ -160,6 +197,7 @@
 	box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
 }
 
+/* stylelint-disable-next-line no-descending-specificity */
 .cyclos-user-list.material .name {
 	color: var(--gray-dark);
 	font-weight: 700;
@@ -169,4 +207,11 @@
 
 .cyclos-user-list.material .cyclos-no-logo {
 	background-color: var(--blue);
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.cyclos-user-info-modal.material .name {
+	color: var(--gray-dark);
+	font-weight: 700;
+	margin-bottom: 1em;
 }

@@ -1,3 +1,4 @@
+/* global cyclosUserObj */
 /**
  * The user templates.
  */
@@ -61,27 +62,28 @@ export const userDetails = ( user, fields ) => {
 		}
 
 		// Call the render method that fits the field type.
+		const className = makeClass( id );
 		switch ( field.type ) {
 			case 'image':
-				userInfo += image( id, value );
+				userInfo += image( className, value );
 				break;
 			case 'url':
-				userInfo += url( id, value );
+				userInfo += url( className, value );
 				break;
 			case 'email':
-				userInfo += email( id, value );
+				userInfo += email( className, value );
 				break;
 			case 'phone':
-				userInfo += phone( id, value );
+				userInfo += phone( className, value );
 				break;
 			case 'singleSelection':
-				userInfo += selection( id, value, field.possibleValues );
+				userInfo += selection( className, value, field.possibleValues );
 				break;
 			default:
-				userInfo += defaultField( id, value, field.type );
+				userInfo += defaultField( className, value, field.type );
 		}
 	}
-	return userInfo;
+	return `<div class="user-details">${ userInfo }</div>`;
 };
 
 /**
@@ -92,7 +94,7 @@ export const userDetails = ( user, fields ) => {
  */
 const showInfoWindow = ( user, fields ) => {
 	const userInfo = userDetails( user, fields );
-	Modal.open( userInfo );
+	Modal.open( userInfo, cyclosUserObj.design );
 };
 
 /**
@@ -151,7 +153,8 @@ const address = ( addressVal, fieldsToSkip = [ 'id', 'name', 'location' ] ) => {
 		if ( 'country' === key ) {
 			valueClass = `cyclos-value-${ addressVal[ key ] }`;
 		}
-		result += `<div class="${ key } ${ valueClass }">${ addressVal[ key ] }</div>`;
+		const className = makeClass( key );
+		result += `<div class="${ className } ${ valueClass }">${ addressVal[ key ] }</div>`;
 	}
 	return `<div class="cyclos-user-address">${ result }</div>`;
 };
@@ -191,9 +194,13 @@ const defaultField = ( id, value, type ) => {
 	return `<div class="${ id } cyclos-user-${ type } ${ valueClass }">${ value }</div>`;
 };
 
+const makeClass = ( input ) => {
+	return input.toLowerCase().replaceAll( '.', '-' );
+};
+
 class Modal {
-	static open( content ) {
-		this.create();
+	static open( content, style ) {
+		this.create( style );
 		this.modal.querySelector( '.cyclos-modal-content' ).innerHTML = content;
 		this.modal.style.display = 'block';
 		document.body.style.overflowY = 'hidden'; // Hide the scrollbar on the document behind our modal.
@@ -205,7 +212,7 @@ class Modal {
 		document.body.style.overflowY = this.overflow;
 	}
 
-	static create() {
+	static create( style ) {
 		// Only use one modal, even if we have more than one UserList on the screen.
 		if ( this.modal ) {
 			return;
@@ -216,7 +223,7 @@ class Modal {
 
 		// Add the modal element.
 		const modal = document.createElement( 'div' );
-		modal.className = 'cyclos-user-info-modal';
+		modal.className = `cyclos-user-info-modal ${ style }`;
 		this.modal = document.body.appendChild( modal );
 
 		// Add a close button and a content slot in the modal element.
