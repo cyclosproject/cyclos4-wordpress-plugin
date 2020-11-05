@@ -143,7 +143,8 @@
 }
 
 .cyclos-user-list.material .user-list {
-	--card-min-width: 400px;
+	--card-min-width: 200px; /* Fallback for browser that don't support min(). */
+	--card-min-width: min(100%, 350px);
 }
 
 /* Disable stylelint warning on specificity, see https://stylelint.io/user-guide/rules/no-descending-specificity#dom-limitations */
