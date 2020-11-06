@@ -1,0 +1,44 @@
+/*
+ * Ocean design specific styles.
+*/
+
+.cyclos-user-list.ocean {
+
+	// Show usernames in a blue bar and truncate them if needed.
+	.name {
+		color: var(--white);
+		background-color: var(--blue);
+		border: 1px solid var(--blue);
+		font-size: 0.8em;
+		text-align: center;
+		line-height: 2.5;
+		padding: 0 2em;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	// Use a different way to distinguish user cards: because the name
+	// has a blue bar, put the border on the logo instead of the entire card.
+	.cyclos-user {
+		border: none;
+
+		&:hover {
+			box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+		}
+
+		.cyclos-user-logo {
+			border: 1px solid var(--gray-2);
+		}
+	}
+}
+
+// Show bold names (usernames and optional names of addresses) in the popup.
+.cyclos-user-info-modal.ocean .name {
+	font-weight: 700;
+
+	&.cyclos-user-text {
+		margin-bottom: 1em;
+	}
+
+}

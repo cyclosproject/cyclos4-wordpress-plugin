@@ -1,0 +1,47 @@
+/*
+ * Material design specific styles.
+*/
+
+.cyclos-user-list.material {
+	// Show the entire list in a gray box.
+	background-color: var(--gray);
+	padding: 2em;
+
+	// Show cards wider.
+	.user-list {
+		--card-min-width: 200px; // Fallback for browser that don't support min().
+		--card-min-width: min(100%, 350px); // Never use a width wider than the container.
+	}
+
+	// Distinguish user cards with a box shadow.
+	.cyclos-user {
+		border: none;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+		background-color: var(--white);
+		border-radius: 4px;
+
+		&:hover {
+			box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+		}
+	}
+
+	// Show usernames as bold gray centered text.
+	.name {
+		color: var(--gray-dark);
+		font-weight: 700;
+		text-align: center;
+		padding: 1em 2em 0;
+	}
+
+	// Use a blue color for the circle used for users without a logo.
+	.cyclos-no-logo {
+		background-color: var(--blue);
+	}
+}
+
+// Show bold gray names (usernames and names of addresses) in the popup.
+.cyclos-user-info-modal.material .name {
+	color: var(--gray-dark);
+	font-weight: 700;
+	margin-bottom: 1em;
+}

@@ -1,0 +1,54 @@
+/*
+ * Ocean and material combined styles
+*/
+
+.cyclos-user-list.ocean,
+.cyclos-user-list.ocean select,
+.cyclos-user-info-modal.ocean,
+.cyclos-user-list.material,
+.cyclos-user-list.material select,
+.cyclos-user-info-modal.material {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 18px;
+}
+
+.cyclos-user-list.ocean,
+.cyclos-user-list.material {
+
+	// When the user has no logo, show the first two letters
+	// of the username in a colored circle.
+	// Note: the material design overrides the color of the circle.
+	.cyclos-no-logo {
+		width: 125px;
+		height: 125px;
+		background-color: var(--orange);
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		span {
+			padding: 0;
+			line-height: inherit;
+			font-family: monospace;
+			font-size: 4em;
+			color: var(--white);
+			width: 2ch;
+			overflow: hidden;
+			white-space: nowrap;
+			transform: rotate(-35deg);
+			text-transform: uppercase;
+		}
+	}
+}
+
+.cyclos-user-info-modal.ocean,
+.cyclos-user-info-modal.material {
+
+	// Put addresses in a bordered block.
+	.cyclos-user-address {
+		border: 1px solid var(--gray-2);
+		margin: 1em 0;
+		padding: 1em;
+	}
+}

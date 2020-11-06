@@ -1,0 +1,91 @@
+/*
+ * The general styles for the userlist.
+*/
+.cyclos-user-list,
+.cyclos-user-info-modal {
+	--blue: #33c3f7;
+	--orange: #f77133;
+	--gray: #ededed;
+	--gray-2: #ddd;
+	--gray-dark: #666;
+	--white: #fff;
+	--white-2: #f9f9f9;
+	--gap: 2em;
+	--card-min-width: 250px;
+	--card-max-width: 400px;
+}
+
+.cyclos-user-list .filter,
+.cyclos-user-list .orderby {
+	// Put the filter and sort dropdowns in one row.
+	display: inline-block;
+	margin: 0 1em 0.5em 0;
+
+	label {
+		display: block;
+	}
+}
+
+.cyclos-user-list .user-list {
+	// Use a grid display for the userlist.
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+	gap: var(--gap);
+	margin: 1em 0;
+}
+
+/* User card styles. */
+.cyclos-user {
+	// Make sure the card fills the entire grid column.
+	width: 100%;
+	max-width: var(--card-max-width);
+	margin: 0 auto;
+
+	// Distinguish user cards and indicate the visitor can click them.
+	border: 1px solid var(--gray-dark);
+	cursor: pointer;
+
+	// Try to avoid long words moving out of the card box.
+	word-break: break-word;
+	word-wrap: break-word;
+	hyphens: auto;
+
+	// Use flex box to show the card contents (name and logo). This way the logo's
+	// align to the bottom even if the name is lower than the name of a sibling.
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+
+	.name,
+	.cyclos-no-logo {
+		padding: 0.3em;
+		line-height: 1.5;
+	}
+
+	// Use flexbox to center the image inside the logo space.
+	.cyclos-user-logo {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 200px;
+	}
+}
+
+// Hide customfields named 'featured', hide country, hide no-logo when in popup.
+.customvalues-featured,
+.cyclos-user-address .country,
+.cyclos-user-info-modal .cyclos-no-logo {
+	display: none;
+}
+
+// Put zip and city next to eachother.
+.cyclos-user-address .zip,
+.cyclos-user-address .city {
+	display: inline-block;
+	margin-right: 0.25em;
+}
+
+// Capitalize city names.
+.cyclos-user-address .city {
+	text-transform: capitalize;
+}

@@ -16,13 +16,15 @@
 	"private": true,
 	"dependencies": {},
 	"devDependencies": {
-		"@wordpress/scripts": "12.3.0"
+		"@wordpress/scripts": "12.5.0",
+		"sass": "1.26.11"
 	},
 	"scripts": {
 		"build": "wp-scripts build js/src/admin.js js/src/cyclos_login.js js/src/cyclos_userdirectory.js --output-path=js/dist",
 		"build:admin": "wp-scripts build js/src/admin.js --output-path=js/dist",
 		"build:login": "wp-scripts build js/src/cyclos_login.js --output-path=js/dist",
 		"build:userdirectory": "wp-scripts build js/src/cyclos_userdirectory.js --output-path=js/dist",
+		"build:css": "sass -s compressed --no-source-map css/src/userdirectory.scss css/dist/userdirectory.min.css",
 		"check-engines": "wp-scripts check-engines",
 		"check-licenses": "wp-scripts check-licenses",
 		"format:js": "wp-scripts format-js ./js/src",

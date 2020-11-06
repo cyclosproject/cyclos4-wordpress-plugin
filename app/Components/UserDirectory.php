@@ -230,7 +230,7 @@ class UserDirectory {
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
 		// Register the userdirectory style.
-		$file     = 'css/userdirectory.css';
+		$file     = 'css/dist/userdirectory.min.css';
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
