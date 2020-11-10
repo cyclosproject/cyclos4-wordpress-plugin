@@ -384,7 +384,7 @@ class UserDirectory {
 		$options  = array(
 			'ocean'    => __( 'Ocean', 'cyclos' ),
 			'material' => __( 'Material Design', 'cyclos' ),
-			'plain'    => __( 'Plain grid', 'cyclos' ),
+			'plain'    => __( 'Plain', 'cyclos' ),
 			'none'     => __( 'None', 'cyclos' ),
 		);
 		printf( '<select name="%s" id="%s">', esc_html( $name ), esc_html( $field_id ) );
