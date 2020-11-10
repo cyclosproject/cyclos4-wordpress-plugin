@@ -158,11 +158,11 @@ export class UserData {
 	 */
 	aggregateUsers() {
 		this.users = this.users.reduce( ( aggregatedData, item ) => {
-			// Check if the current item has the same name as the previous item we stored.
+			// Check if the current item belongs to the same user as the previous item we stored.
 			const prevUser = aggregatedData[ aggregatedData.length - 1 ] ?? {};
-			const prevUserName = prevUser?.name ?? prevUser?.display ?? '';
-			const curUserName = item?.name ?? item?.display ?? '';
-			if ( prevUserName && prevUserName === curUserName ) {
+			const prevUserId = prevUser?.id ?? '';
+			const curUserId = item?.id ?? '';
+			if ( prevUserId && prevUserId === curUserId ) {
 				// The current item belongs to the same user as the previous, so add the address of the current item to the previous,
 				// instead of pushing the current item itself to the aggregated data.
 				( prevUser.addresses = prevUser.addresses || [] ).push(
