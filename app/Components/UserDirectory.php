@@ -221,7 +221,7 @@ class UserDirectory {
 		}
 
 		// Register the userdirectory script.
-		$file      = 'js/dist/cyclos_userdirectory.js';
+		$file      = 'js/dist/userdirectory.js';
 		$handle    = 'cyclos-userdirectory';
 		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
