@@ -246,6 +246,13 @@ class Modal {
 			}
 		};
 
+		// Add the trigger to close and empty the modal whenever the visitor hits the Escape key.
+		window.onkeydown = ( e ) => {
+			if ( 'Escape' === e.code ) {
+				this.close();
+			}
+		};
+
 		// Add the CSS for the modal.
 		const styles = `
 		.cyclos-user-info-modal {
