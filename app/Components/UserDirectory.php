@@ -354,11 +354,15 @@ class UserDirectory {
 		$setting  = $args['setting_info'];
 		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		$options  = array(
+		// Select the options the webmaster can choose to sort the data.
+		// These are the options for orderBy as defined by the REST API, except some options that don't make sense here:
+		// - distance - since there is no location.
+		// - random - this breaks the address aggregate algorithm in the JS which assumes items belonging to one user are next to eachother.
+		// - relevance - since there is no search field.
+		$options = array(
 			'alphabeticallyAsc'  => __( 'Alphabetically Ascending [a-z]', 'cyclos' ),
 			'alphabeticallyDesc' => __( 'Alphabetically Descending [z-a]', 'cyclos' ),
 			'creationDate'       => __( 'By Creation Date (newest first)', 'cyclos' ),
-			'random'             => __( 'Random', 'cyclos' ),
 		);
 		printf( '<select name="%s" id="%s">', esc_html( $name ), esc_html( $field_id ) );
 		foreach ( $options as $option => $name ) {
