@@ -71,6 +71,7 @@
 	}
 }
 
+/* Userdetail popup styles. */
 // Hide customfields named 'featured', hide country, hide no-logo when in popup.
 .customvalues-featured,
 .cyclos-user-address .country,
@@ -88,4 +89,36 @@
 // Capitalize city names.
 .cyclos-user-address .city {
 	text-transform: capitalize;
+}
+
+/* Show a spinner while loading the userlist. */
+.cyclos-loader {
+	margin: 1em auto;
+	width: 80%;
+	text-align: center;
+
+	&::after {
+		content: "";
+		display: block;
+		margin: 1em auto;
+		width: 50px;
+		height: 50px;
+		box-sizing: content-box;
+		border: 10px solid var(--gray-2);
+		border-radius: 50%;
+		border-top-color: var(--blue);
+		border-bottom-color: var(--blue);
+		animation: cyclos-spin 2s linear infinite;
+	}
+}
+
+@keyframes cyclos-spin {
+
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
 }

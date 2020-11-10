@@ -129,12 +129,13 @@ class UserDirectory {
 
 		// Return a user-list div with the proper data attributes. Also set the selected style as an extra CSS class on the div.
 		return sprintf(
-			'<div class="cyclos-user-list %s"%s%s%s%s></div>',
+			'<div class="cyclos-user-list %s"%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
 			$selector,
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
-			$this->make_data_attribute( 'sort-options', $visible_sort_options )
+			$this->make_data_attribute( 'sort-options', $visible_sort_options ),
+			esc_html__( 'Loading the userlist, this might take a couple of seconds', 'cyclos' )
 		);
 	}
 
