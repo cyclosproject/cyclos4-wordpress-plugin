@@ -186,10 +186,13 @@ const selection = ( id, value, possibleValues ) => {
 };
 
 const defaultField = ( id, value, type ) => {
-	// For boolean and integer fields also put the value in the class, to allow CSS styling for specific values.
 	let valueClass = '';
 	if ( 'boolean' === type || 'integer' === type ) {
+		// For boolean and integer fields also put the value in the class, to allow CSS styling for specific values.
 		valueClass = `cyclos-value-${ value }`;
+	} else {
+		// For text-like field types, replace linebreaks with br tags.
+		value = value.replaceAll( '\n', '<br>' );
 	}
 	return `<div class="${ id } cyclos-user-${ type } ${ valueClass }">${ value }</div>`;
 };
