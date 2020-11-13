@@ -343,15 +343,20 @@ const usersComparator = ( orderBy, sortOrder ) => ( a, b ) => {
 	// Now, compare the two values.
 	let comparison = 0;
 	// Check the property type, because this determines the way we should compare the values. Otherwise "12" would be seen as lower than "3".
-	if ( isNaN( parseInt( x, 10 ) ) ) {
+	// If the value can be parsed to a number and the result is the same as the original value, we consider the value a number.
+	// This way, strings starting with a digit are still seen as strings, because the parseInt result is not the same as the entire string value.
+	// So, for example "30ml Company" will be seen as lower than "company Y" by normal string comparison, although the result of parseInt() is 30.
+	const x2Nr = parseInt( x, 10 );
+	if ( isNaN( x2Nr ) || String( x2Nr ) !== x ) {
 		x = x ? x.toLowerCase() : '';
 	} else {
-		x = parseInt( x, 10 );
+		x = x2Nr;
 	}
-	if ( isNaN( parseInt( y, 10 ) ) ) {
+	const y2Nr = parseInt( y, 10 );
+	if ( isNaN( y2Nr ) || String( y2Nr ) !== y ) {
 		y = y ? y.toLowerCase() : '';
 	} else {
-		y = parseInt( y, 10 );
+		y = y2Nr;
 	}
 
 	// Put users with an empty orderBy property at the end.
