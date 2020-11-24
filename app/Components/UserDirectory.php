@@ -387,8 +387,10 @@ class UserDirectory {
 		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
 		$options  = array(
+			/* translators: 'Ocean' is used as the name of one of the design styles. You might leave it as-is. */
 			'ocean'    => __( 'Ocean', 'cyclos' ),
-			'material' => __( 'Material Design', 'cyclos' ),
+			/* translators: 'Material' is used as the name of one of the design styles and refers to Google's 'Material design'. You might leave it as-is. */
+			'material' => __( 'Material', 'cyclos' ),
 			'plain'    => __( 'Plain', 'cyclos' ),
 			'none'     => __( 'None', 'cyclos' ),
 		);
