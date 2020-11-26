@@ -15,6 +15,21 @@
 .cyclos-user-list.ocean,
 .cyclos-user-list.material {
 
+	// Put the filter and orderby one one line, pushed to left/right border.
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+
+	// Remove the right margin from the orderby element.
+	.orderby {
+		margin-right: 0;
+	}
+
+	// Make sure the list itself spans the full width of the container.
+	.user-list {
+		width: 100%;
+	}
+
 	// When the user has no logo, show the first two letters
 	// of the username in a colored circle.
 	// Note: the material design overrides the color of the circle.
