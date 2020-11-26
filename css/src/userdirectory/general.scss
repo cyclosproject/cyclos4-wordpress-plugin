@@ -5,11 +5,14 @@
 .cyclos-user-info-modal {
 	--blue: #33c3f7;
 	--orange: #f77133;
-	--gray: #ededed;
-	--gray-2: #ddd;
-	--gray-dark: #666;
 	--white: #fff;
 	--white-2: #f9f9f9;
+	--gray: #ededed;
+	--gray-2: #ddd;
+	--gray-3: #aaa;
+	--gray-4: #888;
+	--gray-dark: #666;
+	--gray-dark-2: #444;
 	--gap: 2em;
 	--card-min-width: 250px;
 	--card-max-width: 400px;
@@ -20,9 +23,21 @@
 	// Put the filter and sort dropdowns in one row.
 	display: inline-block;
 	margin: 0 1em 0.5em 0;
+	max-width: 100%; // Needed for the max-width of the select tag below to work.
 
 	label {
 		display: block;
+	}
+
+	// Don't let the select tag flow over the screen width.
+	select {
+		max-width: 100%;
+	}
+
+	// Try to avoid options flowing over the screen width on small screens.
+	// Unfortunately, the option tag can not be styled much with CSS.
+	option {
+		font-size: 90%;
 	}
 }
 

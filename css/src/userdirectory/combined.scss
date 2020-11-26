@@ -40,6 +40,37 @@
 			text-transform: uppercase;
 		}
 	}
+
+	// Basic styles for the select elements.
+	select {
+		// Replace the default arrow with a custom svg arrow.
+		appearance: none;
+		-webkit-appearance: none;
+		background-color: var(--white);
+		// Don't escape spaces/quotes but put the url in quotes & disable stylelint.
+		// stylelint-disable-next-line function-url-quotes
+		background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' fill='%23444' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'%3E%3C/path%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 0.5em top 55%;
+		padding: 0.5em 2em 0.5em 0.5em;
+
+		// Put a gray border on the select element.
+		border: 1px solid var(--gray-3);
+		border-radius: 3px;
+
+		// Use a nicer color and some other enhancements.
+		color: var(--gray-dark-2);
+		cursor: pointer;
+
+		&:hover {
+			border-color: var(--gray-4);
+		}
+	}
+
+	// Give the label element the same color as the select element it belongs to.
+	label {
+		color: var(--gray-dark-2);
+	}
 }
 
 .cyclos-user-info-modal.ocean,
