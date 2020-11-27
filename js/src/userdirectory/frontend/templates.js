@@ -159,6 +159,12 @@ const address = ( addressVal, fieldsToSkip = [ 'id', 'name', 'location' ] ) => {
 	return `<div class="cyclos-user-address">${ result }</div>`;
 };
 
+/*
+ * Renders image fields.
+ * Note: This is probably never used, because Cyclos does not seem to return customfields of type image in the /api/users/map route.
+ * And if Cyclos would return customfields of type image, they would probably be returned as an image object with the url as a property.
+ * Just left this function here, in case we might need it (and fix it) in the future.
+ */
 const image = ( id, value ) => {
 	return `<img class="${ id }" src="${ value }" />`;
 };
