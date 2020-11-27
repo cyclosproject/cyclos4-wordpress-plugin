@@ -110,7 +110,7 @@ const card = ( user ) => {
 	}
 
 	// Create the html for the basic info of the user, being name and logo.
-	const userName = defaultField( 'name', nameValue, 'text' );
+	const userName = nameValue ? defaultField( 'name', nameValue, 'text' ) : '';
 	const userLogo = logo( user, 180, 160 );
 
 	// Return the user div with the basic info.
@@ -198,7 +198,7 @@ const defaultField = ( id, value, type ) => {
 		valueClass = `cyclos-value-${ value }`;
 	} else {
 		// For text-like field types, replace linebreaks with br tags.
-		value = value.replaceAll( '\n', '<br>' );
+		value = value?.replaceAll( '\n', '<br>' );
 	}
 	return `<div class="${ id } cyclos-user-${ type } ${ valueClass }">${ value }</div>`;
 };

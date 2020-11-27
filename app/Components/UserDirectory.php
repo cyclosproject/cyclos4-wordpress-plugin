@@ -539,6 +539,7 @@ class UserDirectory {
 		// Note: if we would need address fields in the future, we could add them here in a sub-array for 'address'.
 		// phpcs:disable WordPress.Arrays.ArrayDeclarationSpacing.AssociativeArrayFound
 		$basic_fields = array(
+			'display'       => array( 'name' => __( 'Display', 'cyclos' ), 'type' => 'text' ),
 			'name'          => array( 'name' => __( 'Name', 'cyclos' ), 'type' => 'text' ),
 			'image'         => array( 'name' => __( 'Logo', 'cyclos' ), 'type' => 'logo' ),
 			'username'      => array( 'name' => __( 'Username', 'cyclos' ), 'type' => 'text' ),
@@ -551,8 +552,8 @@ class UserDirectory {
 
 		// Only keep basic fields that are enabled in Cyclos.
 		$enabled_fields = $user_metadata->fieldsInList; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		// The fieldsInList property unfortunately does not contain the address and logo fields, so include them first.
-		array_push( $enabled_fields, 'image', 'address' );
+		// The fieldsInList property does not contain all possible fields, so include the ones Cyclos leaves out.
+		array_push( $enabled_fields, 'display', 'image', 'address' );
 		// Filter the basic fields so only enabled fields remain.
 		$basic_fields = array_intersect_key( $basic_fields, array_flip( $enabled_fields ) );
 
