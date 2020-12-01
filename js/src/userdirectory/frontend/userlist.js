@@ -13,7 +13,7 @@ export default class UserList {
 	constructor( container, userData ) {
 		// If there are no users, show a message instead of a list.
 		if ( userData?.users.length <= 0 ) {
-			container.innerHTML = cyclosUserObj.l10n?.noUsers;
+			container.textContent = cyclosUserObj.l10n?.noUsers;
 			return;
 		}
 
@@ -64,14 +64,15 @@ export default class UserList {
 	 */
 	renderList() {
 		// Make sure we have a list element.
-		let userList = this.container.querySelector( '.user-list' );
-		if ( ! userList ) {
-			this.container.innerHTML = '<div class="user-list"></div>';
-			userList = this.container.querySelector( '.user-list' );
+		if ( ! this.userList ) {
+			this.userList = document.createElement( 'div' );
+			this.userList.className = 'user-list';
+			this.container.textContent = '';
+			this.container.append( this.userList );
 		}
 
 		// Empty the list element, in case this is a re-render.
-		userList.innerHTML = '';
+		this.userList.textContent = '';
 
 		// Get the users we should show.
 		const preparedUsers = prepareUsersForRender(
@@ -82,7 +83,7 @@ export default class UserList {
 
 		// Add a user element to the list for each user.
 		preparedUsers.forEach( ( user ) =>
-			renderUser( userList, user, this.userData.fields )
+			renderUser( this.userList, user, this.userData.fields )
 		);
 	}
 

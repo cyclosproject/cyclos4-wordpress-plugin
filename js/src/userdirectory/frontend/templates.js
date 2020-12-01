@@ -210,14 +210,16 @@ const makeClass = ( input ) => {
 class Modal {
 	static open( content, style ) {
 		this.create( style );
-		this.modal.querySelector( '.cyclos-modal-content' ).innerHTML = content;
+		// Note: The content should be safe, because the data comes from Cyclos.
+		// But maybe we should whitelist some html tags and encode anything else.
+		this.modalContent.innerHTML = content; // We cannot use textContent here, because content may contain html tags.
 		this.modal.style.display = 'block';
 		document.body.style.overflowY = 'hidden'; // Hide the scrollbar on the document behind our modal.
 	}
 
 	static close() {
 		this.modal.style.display = 'none';
-		this.modal.querySelector( '.cyclos-modal-content' ).innerHTML = '';
+		this.modalContent.textContent = '';
 		document.body.style.overflowY = this.overflow;
 	}
 
@@ -231,22 +233,24 @@ class Modal {
 		this.overflow = document.body.style.overflowY;
 
 		// Add the modal element.
-		const modal = document.createElement( 'div' );
-		modal.className = `cyclos-user-info-modal ${ style }`;
-		this.modal = document.body.appendChild( modal );
+		this.modal = document.createElement( 'div' );
+		this.modal.className = `cyclos-user-info-modal ${ style }`;
+		document.body.append( this.modal );
 
 		// Add a close button and a content slot in the modal element.
-		const modalContents = `
-			<div class="cyclos-modal-header">
-				<button class="cyclos-modal-close">&times;</button>
-			</div>
-			<div class="cyclos-modal-content"></div>
-		`;
-		this.modal.innerHTML = modalContents;
+		const closeBtn = document.createElement( 'button' );
+		closeBtn.className = 'cyclos-modal-close';
+		closeBtn.textContent = '\u00d7';
+		const modalHead = document.createElement( 'div' );
+		modalHead.className = 'cyclos-modal-header';
+		modalHead.append( closeBtn );
+		this.modalContent = document.createElement( 'div' );
+		this.modalContent.className = 'cyclos-modal-content';
+		this.modal.append( modalHead );
+		this.modal.append( this.modalContent );
 
 		// Add the trigger to close and empty the modal whenever the visitor clicks the close button.
-		this.modal.querySelector( '.cyclos-modal-close' ).onclick = () =>
-			this.close();
+		closeBtn.onclick = () => this.close();
 
 		// Add the trigger to close and empty the modal whenever the visitor clicks outside of it.
 		window.onclick = ( e ) => {

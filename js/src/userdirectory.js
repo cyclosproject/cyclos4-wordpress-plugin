@@ -28,13 +28,11 @@ const frontEnd = () => {
 				( listElement ) => new UserList( listElement, userData )
 			);
 		} )
-		.catch( ( err ) => {
-			const errorMsg =
+		.catch( () => {
+			const errMsg =
 				'There was an error retrieving the userdata from the server. Please ask your website administrator if this problem persists.';
-			// eslint-disable-next-line no-console
-			console.log( err );
-			userLists.forEach( ( listEl ) => ( listEl.innerHTML = errorMsg ) );
-			userMaps.forEach( ( mapEl ) => ( mapEl.innerHTML = errorMsg ) );
+			userLists.forEach( ( listEl ) => ( listEl.textContent = errMsg ) );
+			userMaps.forEach( ( mapEl ) => ( mapEl.textContent = errMsg ) );
 		} );
 };
 
