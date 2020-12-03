@@ -334,14 +334,18 @@ class UserDirectory {
 			return;
 		}
 		printf(
-			'<p class="cyclos-user-data-info">%s %s</p><p><button class="button" type="button" id="cyclos-user-data-refresh">%s</button></p>',
+			'<p class="cyclos-user-data-info">%s %s</p>',
 			esc_html( count( $user_data ) ),
-			esc_html__( 'Cyclos users', 'cyclos' ),
-			esc_html__( 'Refresh current user data', 'cyclos' )
+			esc_html__( 'Cyclos users (addresses)', 'cyclos' )
 		);
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
+		printf(
+			'<p><button class="button" type="button" id="cyclos-user-data-refresh">%s</button></p><p class="description">%s</p>',
+			esc_html__( 'Refresh current user data', 'cyclos' ),
+			esc_html__( 'Use this if you would like to retrieve fresh user data from Cyclos before the expiration time is over.', 'cyclos' )
+		);
 	}
 
 	/**
