@@ -142,6 +142,11 @@ class Admin {
 			.dashicons-warning { color: orange; }
 			.dashicons-no { color: red; }
 			.dashicons-yes { color: green; }
+			.dashicons-update { animation: cyclos-spin 2s linear infinite; }
+			@keyframes cyclos-spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
 		';
 		wp_add_inline_style( 'wp-admin', $custom_css );
 	}

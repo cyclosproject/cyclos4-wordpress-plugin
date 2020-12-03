@@ -45,6 +45,9 @@ jQuery( document ).ready( function ( $ ) {
 
 	// Handle click on the user data refresh button on the User Directory tab.
 	$( '#cyclos-user-data-refresh' ).click( function () {
+		$( '.cyclos-user-data-info' ).html(
+			'<span class="dashicons dashicons-update"></span>'
+		);
 		// Make an AJAX call to the UserDirectory component to refresh the Cyclos user data.
 		// Note: since we are in the admin, we can use the global WP variable ajaxurl.
 		const data = {
@@ -55,11 +58,11 @@ jQuery( document ).ready( function ( $ ) {
 			.done( function ( response ) {
 				// Show the result.
 				response = response || '';
-				$( '.cyclos-user-data-info' ).text( response );
+				$( '.cyclos-user-data-info' ).html( response );
 			} )
 			.fail( function () {
 				// Something went wrong, show an error message.
-				$( '.cyclos-user-data-info' ).text( 'Something went wrong.' );
+				$( '.cyclos-user-data-info' ).html( 'Something went wrong.' );
 			} );
 	} );
 } );
