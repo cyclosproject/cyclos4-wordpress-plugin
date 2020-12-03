@@ -424,15 +424,7 @@ class UserDirectory {
 		if ( is_wp_error( $user_data ) ) {
 			$response = $user_data->get_error_message();
 		} else {
-			// Also refresh the metadata, because both data belong together.
-			$user_metadata = $this->get_cyclos_user_metadata( true );
-
-			// Return either the number of users found, or an error message if something is wrong.
-			if ( is_wp_error( $user_metadata ) ) {
-				$response = $user_metadata->get_error_message();
-			} else {
-				$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users', 'cyclos' ) );
-			}
+			$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users (addresses)', 'cyclos' ) );
 		}
 		wp_send_json( $response );
 	}
@@ -506,6 +498,8 @@ class UserDirectory {
 			// Store the data in the transient, but only if it is not an error.
 			if ( ! is_wp_error( $user_data ) ) {
 				set_transient( Configuration::USER_DATA_TRANSIENT, $user_data, $this->conf->get_user_data_expiration_time() * MINUTE_IN_SECONDS );
+				// Also refresh the metadata, because both data belong together.
+				$this->get_cyclos_user_metadata( true );
 			}
 		}
 		return $user_data;
