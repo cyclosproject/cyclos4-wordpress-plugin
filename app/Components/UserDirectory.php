@@ -327,20 +327,16 @@ class UserDirectory {
 	 * @param array $args Contains the key and Settings object of the field to render.
 	 */
 	public function render_user_data_transient( $args ) {
-		$setting   = $args['setting_info'];
-		$user_data = $this->get_cyclos_user_data();
-		if ( is_wp_error( $user_data ) ) {
-			echo esc_html( $user_data->get_error_message() );
-			return;
-		}
-		printf(
-			'<p class="cyclos-user-data-info">%s %s</p>',
-			esc_html( count( $user_data ) ),
-			esc_html__( 'Cyclos users (addresses)', 'cyclos' )
-		);
+		$setting       = $args['setting_info'];
+		$user_data     = $this->get_cyclos_user_data();
+		$userdata_info = $this->cyclos_userdata_info( $user_data );
+		$class         = $userdata_info['is_error'] ? 'error' : '';
+		printf( '<p class="cyclos-user-data-info %s">%s</p>', esc_attr( $class ), esc_html( $userdata_info['message'] ) );
+
 		if ( ! empty( $setting->get_description() ) ) {
-			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+			printf( '<p class="description %s">%s</p>', esc_attr( $class ), esc_html( $setting->get_description() ) );
 		}
+
 		printf(
 			'<p><button class="button" type="button" id="cyclos-user-data-refresh">%s</button></p><p class="description">%s</p>',
 			esc_html__( 'Refresh current user data', 'cyclos' ),
@@ -409,6 +405,28 @@ class UserDirectory {
 	}
 
 	/**
+	 * Returns a status information text about the userdata, given the userdata object.
+	 *
+	 * @param array|WP_Error $user_data  Array with user data or a WP_Error object on failure.
+	 * @return array                     Array with status message and error flag.
+	 */
+	protected function cyclos_userdata_info( $user_data ) {
+		$message  = '';
+		$is_error = false;
+		if ( is_wp_error( $user_data ) ) {
+			$message  = $user_data->get_error_message();
+			$is_error = true;
+		} else {
+			$message = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users (addresses)', 'cyclos' ) );
+		}
+		$response = array(
+			'message'  => $message,
+			'is_error' => $is_error,
+		);
+		return $response;
+	}
+
+	/**
 	 * Handle the AJAX request to refresh the Cyclos user data.
 	 */
 	public function handle_refresh_user_data_ajax_request() {
@@ -420,12 +438,8 @@ class UserDirectory {
 
 		// Get the Cyclos user data, forcing new retrieval from Cyclos.
 		$user_data = $this->get_cyclos_user_data( true );
-		$response  = '';
-		if ( is_wp_error( $user_data ) ) {
-			$response = $user_data->get_error_message();
-		} else {
-			$response = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users (addresses)', 'cyclos' ) );
-		}
+		$response  = $this->cyclos_userdata_info( $user_data );
+
 		wp_send_json( $response );
 	}
 

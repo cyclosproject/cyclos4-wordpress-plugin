@@ -147,6 +147,7 @@ class Admin {
 				0% { transform: rotate(0deg); }
 				100% { transform: rotate(360deg); }
 			}
+			.description.error { display: none; }
 		';
 		wp_add_inline_style( 'wp-admin', $custom_css );
 	}
@@ -192,7 +193,7 @@ class Admin {
 						if ( array_key_exists( $id, $optional_components ) ) {
 							$extra_css_class = $this->conf->is_active( $id ) ? '' : ' disabled';
 						}
-						printf( '<a href="#" class="nav-tab%1$s">%2$s</a>', esc_attr( $extra_css_class ), esc_html( $section['label'] ) );
+						printf( '<a href="#" id="nav-tab-%1$s" class="nav-tab%2$s">%3$s</a>', esc_attr( $id ), esc_attr( $extra_css_class ), esc_html( $section['label'] ) );
 					}
 					?>
 				</nav>

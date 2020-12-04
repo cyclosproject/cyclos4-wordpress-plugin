@@ -45,9 +45,9 @@ jQuery( document ).ready( function ( $ ) {
 
 	// Handle click on the user data refresh button on the User Directory tab.
 	$( '#cyclos-user-data-refresh' ).click( function () {
-		$( '.cyclos-user-data-info' ).html(
-			'<span class="dashicons dashicons-update"></span>'
-		);
+		const output = $( '.cyclos-user-data-info' );
+		output.html( '<span class="dashicons dashicons-update"></span>' );
+		output.removeClass( 'error' );
 		// Make an AJAX call to the UserDirectory component to refresh the Cyclos user data.
 		// Note: since we are in the admin, we can use the global WP variable ajaxurl.
 		const data = {
@@ -57,12 +57,42 @@ jQuery( document ).ready( function ( $ ) {
 		$.post( ajaxurl, data )
 			.done( function ( response ) {
 				// Show the result.
-				response = response || '';
-				$( '.cyclos-user-data-info' ).html( response );
+				response = response || {};
+				output.html( response.message );
+				if ( response.is_error ) {
+					output.addClass( 'error' );
+				}
+				showUserDataNotification();
 			} )
 			.fail( function () {
 				// Something went wrong, show an error message.
-				$( '.cyclos-user-data-info' ).html( 'Something went wrong.' );
+				output.html( 'Something went wrong.' );
+				output.addClass( 'error' );
+				showUserDataNotification();
 			} );
 	} );
+
+	/**
+	 * Shows a notification on the UserDirectory tab and near the data info field
+	 * if there is a problem with the data.
+	 */
+	function showUserDataNotification() {
+		// Remove any notification that might still be on the tab or near the field.
+		$( '#nav-tab-user_directory span' )?.remove( '.dashicons' );
+		$( '.cyclos-user-data-info span' )?.remove( '.dashicons' );
+		$( '.cyclos-user-data-info + .description' )?.removeClass( 'error' );
+
+		// Check whether the cyclos userdata info field is flagged with an error.
+		if ( $( '.cyclos-user-data-info' )?.hasClass( 'error' ) ) {
+			const warning = '<span class="dashicons dashicons-warning"></span>';
+			// Put a notification icon on the UserDirectory tab.
+			$( '#nav-tab-user_directory' )?.append( warning );
+			// And also near the data info field itself.
+			$( '.cyclos-user-data-info' )?.append( warning );
+			// And flag the description with an error, so the CSS will hide it.
+			$( '.cyclos-user-data-info + .description' )?.addClass( 'error' );
+		}
+	}
+
+	showUserDataNotification();
 } );
