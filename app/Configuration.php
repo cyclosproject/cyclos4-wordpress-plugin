@@ -237,6 +237,7 @@ class Configuration {
 				$fields[ $field ] = $old_value;
 			}
 		}
+		$this->validate_userdata( $fields );
 		return $this->validate_connection_fields( $fields );
 	}
 
@@ -273,6 +274,31 @@ class Configuration {
 				break;
 		}
 		return '';
+	}
+
+	/**
+	 * Validates the userdata transients when fields that effect the userdata are being changed.
+	 * Note: we are not actually validating the input fields themselves here. But the validation phase is
+	 * a handy place to check whether the userdata should be refreshed.
+	 *
+	 * @param array $fields Array of fields, containing key-value pairs.
+	 */
+	protected function validate_userdata( array $fields ) {
+		// The fields that should trigger a data refresh when changed.
+		$relevant_fields = array( 'user_data_sort', 'user_group', 'user_expiration' );
+		foreach ( $relevant_fields as $field ) {
+			// Check if the field value is being changed.
+			$old_value = $this->get_setting( $field );
+			$new_value = $fields[ $field ] ?? null;
+			if ( $old_value !== $new_value ) {
+				// Delete the user data, so next time it will be fetched from Cyclos.
+				delete_transient( self::USER_DATA_TRANSIENT );
+				delete_transient( self::USER_METADATA_TRANSIENT );
+
+				// The transients are deleted, no need to check the other fields for changes.
+				return;
+			}
+		}
 	}
 
 	/**
