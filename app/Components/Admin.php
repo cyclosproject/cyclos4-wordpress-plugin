@@ -386,10 +386,12 @@ class Admin {
 			$setting = $settings[ $field ];
 			$type    = $setting->get_type();
 			$default = $setting->get_default();
-			if ( 'checkbox' !== $type && (string) $value === (string) $default ) {
-				// Don't store values that equal the default value. Except for checkbox field types.
-				unset( $input[ $field ] );
-				continue;
+			// Don't store values that equal the default value. Except for checkbox field types or array values.
+			if ( 'checkbox' !== $type && ! is_array( $value ) ) {
+				if ( (string) $value === (string) $default ) {
+					unset( $input[ $field ] );
+					continue;
+				}
 			}
 			$old_value       = $this->conf->get_setting( $field, false );
 			$input[ $field ] = apply_filters( "cyclos_sanitize_{$type}", $value, $field, $setting, $old_value );
