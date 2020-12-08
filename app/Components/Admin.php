@@ -216,9 +216,9 @@ class Admin {
 	public function render_text( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		printf( '<input type="text" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		printf( '<input type="text" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_example() ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -232,9 +232,9 @@ class Admin {
 	public function render_number( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		printf( '<input type="number" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		printf( '<input type="number" name="%s" id="%s" class="regular-text" value="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -248,9 +248,9 @@ class Admin {
 	public function render_password( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		printf( '<input type="password" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		printf( '<input type="password" name="%s" id="%s" class="regular-text" value="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -259,12 +259,16 @@ class Admin {
 	/**
 	 * Render the setting field for fields of type checkbox.
 	 *
+	 * Note: the case where a checkbox has a default value of true would not work correctly. When the webmaster unchecks the box, the posted array does not contain the field.
+	 * Therefore, the plugin would not save the field and at next render would show the default value (true -> checked) again.
+	 * Because we don't have any checkbox fields with a default value of true, this bug was not fixed yet.
+	 *
 	 * @param array $args Contains the key and Settings object of the field to render.
 	 */
 	public function render_checkbox( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
 		printf( '<input type="checkbox" name="%s" id="%s" value="1" %s />', esc_html( $name ), esc_html( $field_id ), checked( 1, esc_attr( $value ), false ) );
 		if ( ! empty( $setting->get_description() ) ) {
@@ -280,7 +284,7 @@ class Admin {
 	public function render_components( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
 		printf( '<fieldset><legend class="screen-reader-text"><span>%s</span></legend>', esc_html( $setting->get_label() ) );
 		// Get the components that are selectable by the webmaster and create a checkbox for each of them.
@@ -352,7 +356,7 @@ class Admin {
 		$setting  = $args['setting_info'];
 		$value    = $this->conf->get_setting( $field_id, false );
 		if ( empty( $value ) ) {
-			// If the setting is not found, fallback to the default, telling us the setting is not configured yet.
+			// If the setting is not found, fallback to the default of the read_field, telling us the setting is not configured yet.
 			$value = $setting->get_default();
 		}
 		printf( '<p>%s</p>', esc_attr( $value ) );
@@ -379,14 +383,16 @@ class Admin {
 
 		$settings = $this->conf->get_settings();
 		foreach ( $input as $field => $value ) {
-			if ( empty( $value ) ) {
-				// Don't store empty values. This way the default value is used if needed.
+			$setting = $settings[ $field ];
+			$type    = $setting->get_type();
+			$default = $setting->get_default();
+			if ( 'checkbox' !== $type && (string) $value === (string) $default ) {
+				// Don't store values that equal the default value. Except for checkbox field types.
 				unset( $input[ $field ] );
 				continue;
 			}
-			$setting         = $settings[ $field ];
 			$old_value       = $this->conf->get_setting( $field, false );
-			$input[ $field ] = apply_filters( "cyclos_sanitize_{$setting->get_type()}", $value, $field, $setting, $old_value );
+			$input[ $field ] = apply_filters( "cyclos_sanitize_{$type}", $value, $field, $setting, $old_value );
 		}
 		return $this->conf->validate( $input );
 	}

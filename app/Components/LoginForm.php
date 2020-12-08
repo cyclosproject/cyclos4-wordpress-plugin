@@ -299,7 +299,7 @@ class LoginForm {
 	public static function get_component_info() {
 		return array(
 			'tab'   => __( 'Login Form', 'cyclos' ),
-			'intro' => __( 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode on one of your Posts or Pages.<br>Below, you can configure your own label texts for the login form. If you are fine with the default texts, you can leave any field empty here.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>If your Cyclos server uses a custom frontend, you can fill in the URL of your frontend. Leave this field blank if you use the default Cyclos frontend.', 'cyclos' ),
+			'intro' => __( 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode on one of your Posts or Pages.<br>Below, you can configure your own label texts for the login form.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>If your Cyclos server uses a custom frontend, you can fill in the URL of your frontend. Leave this field blank if you use the default Cyclos frontend.', 'cyclos' ),
 		);
 	}
 }

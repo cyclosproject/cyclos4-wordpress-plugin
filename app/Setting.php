@@ -48,6 +48,13 @@ class Setting {
 	protected $default;
 
 	/**
+	 * Example value of the setting.
+	 *
+	 * @var string $example Example value of the setting.
+	 */
+	protected $example;
+
+	/**
 	 * Indicates whether the setting is required.
 	 *
 	 * @var bool $is_required Whether the setting is required.
@@ -63,14 +70,16 @@ class Setting {
 	 * @param bool   $is_required (optional) Whether the setting is required. Defaults to true.
 	 * @param string $default     (optional) Default value of the setting. Defaults to null.
 	 * @param string $description (optional) The description of the setting. Defaults to null.
+	 * @param string $example     (optional) Example value of the setting. Defaults to null.
 	 */
-	public function __construct( string $section, string $label, string $type = 'text', bool $is_required = true, $default = null, $description = null ) {
+	public function __construct( string $section, string $label, string $type = 'text', bool $is_required = true, $default = null, $description = null, $example = null ) {
 		$this->section     = $section;
 		$this->label       = $label;
 		$this->type        = $type;
 		$this->is_required = $is_required;
 		$this->default     = $default;
 		$this->description = $description;
+		$this->example     = $example;
 	}
 
 	/**
@@ -113,6 +122,13 @@ class Setting {
 	 */
 	public function get_description() {
 		return $this->description;
+	}
+
+	/**
+	 * Returns the example value of the setting.
+	 */
+	public function get_example() {
+		return $this->example;
 	}
 
 }
