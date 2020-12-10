@@ -125,4 +125,8 @@ function plugin_uninstall() {
 	// Delete the plugin options records.
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
 	delete_option( 'cyclos_version' );
+
+	// Delete any transient data of our plugin.
+	delete_transient( Configuration::USER_DATA_TRANSIENT );
+	delete_transient( Configuration::USER_METADATA_TRANSIENT );
 }
