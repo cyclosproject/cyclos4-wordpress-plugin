@@ -134,14 +134,24 @@ class CyclosAPI {
 			// This happens when the REST API does not contain a property yet in older Cyclos versions.
 			$can_login        = $cyclos_response->permissions->sessions->login ?? true;
 			$can_view_profile = $cyclos_response->permissions->users->viewProfile ?? true;
+			$can_view_map     = $cyclos_response->permissions->users->map ?? true;
+
+			// Check for problems for the active components.
+			$login_problem        = $this->conf->is_active( 'login_form' ) && ! $can_login;
+			$view_profile_problem = $this->conf->is_active( 'login_form' ) && ! $can_view_profile;
+			$view_map_problem     = $this->conf->is_active( 'user_directory' ) && ! $can_view_map;
 			// If one of the required permissions is not set correctly, set the status to 'warning' and set the error message to indicate the problem.
-			if ( ! $can_login ) {
+			if ( $login_problem ) {
 				/* translators: 'Login users via web services' is a string in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.loginUsers from the Cyclos crowdin project. This text may have a custom translation in Cyclos however. */
-				$message = __( "The Cyclos user needs permission to login other users. Please correct the configuration of the user group in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
+				$message = __( "The Cyclos user needs permission to login other users. Please correct its group permission in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
 				$status  = 'warning';
-			} elseif ( ! $can_view_profile ) {
+			} elseif ( $view_profile_problem ) {
 				/* translators: 'Accessible user groups' and 'All groups' are strings in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.userGroupAccessibility and USERS.PRODUCTS.userGroupAccessibility.ALL from the Cyclos crowdin project. These texts may have a custom translation in Cyclos however. */
-				$message = __( "The Cyclos user needs permission to access user groups. Please correct the configuration of the user group in Cyclos: set the 'Accessible user groups' to 'All groups'.", 'cyclos' );
+				$message = __( "The Cyclos user needs permission to access user groups. Please correct its group permission in Cyclos: set the 'Accessible user groups' permission to 'All groups'.", 'cyclos' );
+				$status  = 'warning';
+			} elseif ( $view_map_problem ) {
+				/* translators: 'View user directory (map) on groups, 'Accessible user groups' and 'All groups' are strings in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.userDirectoryOnGroups, USERS.PRODUCTS.userGroupAccessibility and USERS.PRODUCTS.userGroupAccessibility.ALL from the Cyclos crowdin project. These texts may have a custom translation in Cyclos however. */
+				$message = __( "The Cyclos user needs permission to view the user map directory. Please correct its group permission in Cyclos: set the 'View user directory (map) on groups' permission to 'All groups', possibly setting 'Accessible user groups' to 'All groups' first, otherwise the 'View user directory (map) on groups' permission can not be set.", 'cyclos' );
 				$status  = 'warning';
 			} else {
 				// Everything is fine. Set the status to 'success' and set a success message.
