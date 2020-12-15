@@ -32,7 +32,7 @@ class UsersService extends Service {
 	 */
 	public function search_user_directory( string $group = null, string $order_by = null ) {
 		$this->method = 'GET';
-		$this->route  = '/users/map';
+		$this->route  = '/users/map?skipTotalCount=true';
 		$query_args   = array();
 
 		if ( $group ) {
