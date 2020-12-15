@@ -45,9 +45,11 @@ jQuery( document ).ready( function ( $ ) {
 
 	// Handle click on the user data refresh button on the User Directory tab.
 	$( '#cyclos-user-data-refresh' ).click( function () {
-		const output = $( '.cyclos-user-data-info' );
+		const output = $( '.cyclos-user-data-info' ) ?? {};
+		const note = $( '.cyclos-user-data-info + .description' ) ?? {};
 		output.html( '<span class="dashicons dashicons-update"></span>' );
 		output.removeClass( 'error' );
+		note.html( '' );
 		// Make an AJAX call to the UserDirectory component to refresh the Cyclos user data.
 		// Note: since we are in the admin, we can use the global WP variable ajaxurl.
 		const data = {
@@ -61,6 +63,8 @@ jQuery( document ).ready( function ( $ ) {
 				output.html( response.message );
 				if ( response.is_error ) {
 					output.addClass( 'error' );
+				} else {
+					note.html( response.note );
 				}
 				showUserDataNotification();
 			} )
@@ -80,7 +84,6 @@ jQuery( document ).ready( function ( $ ) {
 		// Remove any notification that might still be on the tab or near the field.
 		$( '#nav-tab-user_directory span' )?.remove( '.dashicons' );
 		$( '.cyclos-user-data-info span' )?.remove( '.dashicons' );
-		$( '.cyclos-user-data-info + .description' )?.removeClass( 'error' );
 
 		// Check whether the cyclos userdata info field is flagged with an error.
 		if ( $( '.cyclos-user-data-info' )?.hasClass( 'error' ) ) {
@@ -89,8 +92,6 @@ jQuery( document ).ready( function ( $ ) {
 			$( '#nav-tab-user_directory' )?.append( warning );
 			// And also near the data info field itself.
 			$( '.cyclos-user-data-info' )?.append( warning );
-			// And flag the description with an error, so the CSS will hide it.
-			$( '.cyclos-user-data-info + .description' )?.addClass( 'error' );
 		}
 	}
 

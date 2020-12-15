@@ -329,13 +329,12 @@ class UserDirectory {
 	public function render_user_data_transient( $args ) {
 		$setting       = $args['setting_info'];
 		$user_data     = $this->get_cyclos_user_data();
-		$userdata_info = $this->cyclos_userdata_info( $user_data );
+		$user_metadata = $this->get_cyclos_user_metadata();
+		$userdata_info = $this->cyclos_userdata_info( $user_data, $user_metadata );
 		$class         = $userdata_info['is_error'] ? 'error' : '';
+		$note          = $userdata_info['note'] ?? '';
 		printf( '<p class="cyclos-user-data-info %s">%s</p>', esc_attr( $class ), esc_html( $userdata_info['message'] ) );
-
-		if ( ! empty( $setting->get_description() ) ) {
-			printf( '<p class="description %s">%s</p>', esc_attr( $class ), esc_html( $setting->get_description() ) );
-		}
+		printf( '<p class="description %s">%s</p>', esc_attr( $class ), $note ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		printf(
 			'<p><button class="button" type="button" id="cyclos-user-data-refresh">%s</button></p><p class="description">%s</p>',
@@ -407,20 +406,62 @@ class UserDirectory {
 	/**
 	 * Returns a status information text about the userdata, given the userdata object.
 	 *
-	 * @param array|WP_Error $user_data  Array with user data or a WP_Error object on failure.
-	 * @return array                     Array with status message and error flag.
+	 * @param array|WP_Error $user_data      Array with user data or a WP_Error object on failure.
+	 * @param array|WP_Error $user_metadata  Array with user metadata or a WP_Error object on failure.
+	 * @return array                         Array with status message and error flag.
 	 */
-	protected function cyclos_userdata_info( $user_data ) {
+	protected function cyclos_userdata_info( $user_data, $user_metadata ) {
 		$message  = '';
 		$is_error = false;
-		if ( is_wp_error( $user_data ) ) {
-			$message  = $user_data->get_error_message();
+		$note     = '';
+		if ( is_wp_error( $user_data ) || is_wp_error( $user_metadata ) ) {
+			$message  = is_wp_error( $user_data ) ? $user_data->get_error_message() : $user_metadata->get_error_message();
 			$is_error = true;
 		} else {
 			$message = sprintf( '%s %s', count( $user_data ), __( 'Cyclos users (addresses)', 'cyclos' ) );
+
+			// Add notes for specific situations.
+			$notes = array();
+
+			// When there are users (not zero) explain that the number of users may differ from that in Cyclos because we don't aggregate addresses here.
+			if ( count( $user_data ) > 0 ) {
+				$notes[] = __( 'If your Cyclos users can have more than one address, the number above indicates the number of addresses of your users, not the number of unique users. The user map will show each address as a separate pointer. The user list will only show each user once.', 'cyclos' );
+			}
+
+			// The properties in metadata follow the REST API names, which do not always adhere to the WP naming conventions.
+			// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+			// When no filter field is configured, explain that filtering is not possible.
+			$filter_field = $user_metadata->mapDirectoryField ?? '';
+			if ( empty( $filter_field ) ) {
+				$notes[] = __( 'You can not use the filter functionality, because the \'Default filter for map directory\' setting in your Cyclos configuration is currently not set to a selection field.', 'cyclos' );
+			} else {
+				// When the filter field is set but not visible in the Map result for our Cyclos user, add a warning.
+				$visible_fields = $user_metadata->fieldsInList;
+				if ( ! in_array( $filter_field, $visible_fields, true ) ) {
+					/* translators: 1: The name of the filter field. */
+					$notes[] = sprintf( __( 'The \'Default filter for map directory\' setting in your Cyclos configuration is set to \'%1$s\', but this field is currently not visible for the Cyclos user. If you would like to use filtering, please set \'Map result\' to Yes for this field in the group permission \'Profile fields of other users\' in Cyclos.', 'cyclos' ), $filter_field );
+				}
+			}
+
+			// When the users in our dataset are only a subset of the users that exist in Cyclos, explain that filtering/sorting the subset may not be useful.
+			$max_nr_of_users = $user_metadata->query->pageSize ?? null;
+			if ( count( $user_data ) === $max_nr_of_users ) {
+				/* translators: 1: The maximum number of users to show on maps, as set in the Cyclos configuration. */
+				$notes[] = sprintf( __( 'There are more users (addresses) in Cyclos than the maximum to show on a user map/list. The Cyclos setting \'Maximum users / advertisements on map\' in your Cyclos configuration is currently set to %1$s. Therefore, the users shown in your WordPress site are only a subset of the total set of Cyclos users. Please note that using a filter or sort within this subset may not be useful.', 'cyclos' ), $max_nr_of_users );
+			}
+
+			// phpcs:enable
+
+			// If there are notes, show them, each on a separate line.
+			if ( count( $notes ) > 0 ) {
+				$separator = '<br />* ';
+				$note      = sprintf( '%1$s:%2$s%3$s', __( 'Note', 'cyclos' ), $separator, implode( $separator, $notes ) );
+			}
 		}
 		$response = array(
 			'message'  => $message,
+			'note'     => $note,
 			'is_error' => $is_error,
 		);
 		return $response;
@@ -437,8 +478,9 @@ class UserDirectory {
 		check_ajax_referer( Admin::SETTINGS_PAGE . '-options' );
 
 		// Get the Cyclos user data, forcing new retrieval from Cyclos.
-		$user_data = $this->get_cyclos_user_data( true );
-		$response  = $this->cyclos_userdata_info( $user_data );
+		$user_data     = $this->get_cyclos_user_data( true );
+		$user_metadata = $this->get_cyclos_user_metadata();
+		$response      = $this->cyclos_userdata_info( $user_data, $user_metadata );
 
 		wp_send_json( $response );
 	}
