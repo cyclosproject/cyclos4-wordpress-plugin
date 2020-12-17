@@ -16,8 +16,7 @@
 	"private": true,
 	"dependencies": {},
 	"devDependencies": {
-		"@wordpress/scripts": "12.5.0",
-		"sass": "1.26.11"
+		"@wordpress/scripts": "12.6.0"
 	},
 	"scripts": {
 		"build": "npm run build:js && npm run build:css",
