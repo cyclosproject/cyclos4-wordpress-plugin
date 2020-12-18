@@ -160,13 +160,14 @@ export default class UserList {
 		}
 		const currentFilter = this.state.currentFilter;
 		let dropdown = '<div class="filter">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:</label>`;
+		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:`;
 		dropdown += '<select>';
 		catList.forEach( ( { value, label } ) => {
 			const selected = currentFilter === value ? ' selected' : '';
 			dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
 		} );
 		dropdown += '</select>';
+		dropdown += '</label>';
 		dropdown += '</div>';
 		return dropdown;
 	}
@@ -184,7 +185,7 @@ export default class UserList {
 			return '';
 		}
 		let dropdown = '<div class="orderby">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }:</label>`;
+		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }:`;
 		dropdown += `<select>`;
 		const optionList = generateVisibleSortOptions(
 			this.userData,
@@ -198,6 +199,7 @@ export default class UserList {
 			dropdown += `<option value="${ value }"${ selectedAttr }${ disabledAttr }>${ label }</option>`;
 		} );
 		dropdown += '</select>';
+		dropdown += '</label>';
 		dropdown += '</div>';
 		return dropdown;
 	}

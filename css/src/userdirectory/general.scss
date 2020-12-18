@@ -25,13 +25,11 @@
 	margin: 0 1em 0.5em 0;
 	max-width: 100%; // Needed for the max-width of the select tag below to work.
 
-	label {
-		display: block;
-	}
-
 	// Don't let the select tag flow over the screen width.
+	// And put the select under the label instead of next to it.
 	select {
 		max-width: 100%;
+		display: block;
 	}
 
 	// Try to avoid options flowing over the screen width on small screens.
