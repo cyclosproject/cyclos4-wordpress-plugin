@@ -223,10 +223,11 @@ class UserDirectory {
 
 		// Register the userdirectory script.
 		$file      = 'js/dist/userdirectory.js';
+		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
-		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'wp-polyfill' );
+		$deps      = $asset['dependencies'];
+		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 

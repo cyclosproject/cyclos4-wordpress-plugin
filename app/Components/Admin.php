@@ -125,10 +125,11 @@ class Admin {
 
 		// Enqueue our admin script.
 		$js_file   = 'js/dist/admin.js';
+		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/admin.asset.php';
 		$js_handle = 'cyclos-settings';
-		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $js_file );
 		$file_url  = \Cyclos\PLUGIN_URL . $js_file;
-		$deps      = array( 'jquery' );
+		$deps      = array_merge( $asset['dependencies'], array( 'jquery' ) );
+		$version   = $asset['version'];
 		$in_footer = true;
 		wp_enqueue_script( $js_handle, $file_url, $deps, $version, $in_footer );
 

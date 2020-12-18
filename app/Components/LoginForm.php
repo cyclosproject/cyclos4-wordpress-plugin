@@ -139,10 +139,11 @@ class LoginForm {
 
 		// Register the login script.
 		$file      = 'js/dist/cyclos_login.js';
+		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/cyclos_login.asset.php';
 		$handle    = 'cyclos-loginform';
-		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'jquery' );
+		$deps      = array_merge( $asset['dependencies'], array( 'jquery' ) );
+		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
