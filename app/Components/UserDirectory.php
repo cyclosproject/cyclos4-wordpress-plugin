@@ -449,7 +449,7 @@ class UserDirectory {
 			$max_nr_of_users = $user_metadata->query->pageSize ?? null;
 			if ( count( $user_data ) === $max_nr_of_users ) {
 				/* translators: 1: The maximum number of users to show on maps, as set in the Cyclos configuration. */
-				$notes[] = sprintf( __( 'There are more users (addresses) in Cyclos than the maximum to show on a user map/list. The Cyclos setting \'Maximum users / advertisements on map\' in your Cyclos configuration is currently set to %1$s. Therefore, the users shown in your WordPress site are only a subset of the total set of Cyclos users. Please note that using a filter or sort within this subset may not be useful.', 'cyclos' ), $max_nr_of_users );
+				$notes[] = sprintf( __( 'There are more users (addresses) in Cyclos than the maximum to show on a user map/list. The Cyclos setting \'Maximum users / advertisements on map\' in your Cyclos configuration is currently set to %1$s. Therefore, the users shown in your WordPress site are only a subset of the total set of Cyclos users. Please note that using a filter or sort within this subset may not be useful. Also, if your users can have more than one address, it might even mean that for the last user not all addresses are shown, when the plugin just reached the maximum to show.', 'cyclos' ), $max_nr_of_users );
 			}
 
 			// phpcs:enable
