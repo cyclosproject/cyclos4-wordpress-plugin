@@ -37,13 +37,13 @@ class UsersService extends Service {
 
 		if ( $group ) {
 			// Note: even though Cyclos allows the groups argument to be an array of multiple groups, we never pass more than one group.
-			$query_args['groups'] = $group;
+			$query_args['groups'] = rawurlencode( $group );
 		}
 
 		if ( $order_by ) {
 			// Note: if the given order_by is not one of the possible values, the REST API will simply default to ordering by creationDate.
 			// So we don't need to check whether the given order_by value is correct.
-			$query_args['orderBy'] = $order_by;
+			$query_args['orderBy'] = rawurlencode( $order_by );
 		}
 
 		if ( count( $query_args ) > 0 ) {
