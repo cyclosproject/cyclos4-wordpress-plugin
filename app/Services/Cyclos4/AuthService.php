@@ -74,7 +74,7 @@ class AuthService extends Service {
 	public function forgotten_password_data_for_change( string $principal, string $code ) {
 		$this->method = 'GET';
 		$this->route  = '/auth/forgotten-password/data-for-change';
-		$this->route .= '?user=' . $principal . '&code=' . $code;
+		$this->route .= '?user=' . rawurlencode( $principal ) . '&code=' . rawurlencode( $code );
 		$this->authenticate_as_guest();
 		return $this->run();
 	}

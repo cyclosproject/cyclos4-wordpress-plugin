@@ -78,12 +78,14 @@ class Admin {
 			if ( is_callable( array( $this, "render_{$type}" ) ) ) {
 				$render_method = "render_{$type}";
 			}
+			$callback = apply_filters( 'cyclos_render_setting', array( $this, $render_method ), $type );
+
 			$section = $setting_info->get_section();
 			$args    = array(
 				'label_for'    => $key,
 				'setting_info' => $setting_info,
 			);
-			add_settings_field( $key, $setting_info->get_label(), array( $this, $render_method ), self::SETTINGS_PAGE, $section, $args );
+			add_settings_field( $key, $setting_info->get_label(), $callback, self::SETTINGS_PAGE, $section, $args );
 
 			// Add the validation hook for this field type if not already added before.
 			$hook      = "cyclos_sanitize_{$type}";
@@ -123,15 +125,17 @@ class Admin {
 
 		// Enqueue our admin script.
 		$js_file   = 'js/dist/admin.js';
+		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/admin.asset.php';
 		$js_handle = 'cyclos-settings';
-		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $js_file );
 		$file_url  = \Cyclos\PLUGIN_URL . $js_file;
-		$deps      = array( 'jquery' );
+		$deps      = array_merge( $asset['dependencies'], array( 'jquery' ) );
+		$version   = $asset['version'];
 		$in_footer = true;
 		wp_enqueue_script( $js_handle, $file_url, $deps, $version, $in_footer );
 
 		// Add our css inline - it is too little to put in a file and enqueue that for now.
 		$custom_css = '
+			.nav-tab.disabled { pointer-events: none; opacity: .4;}
 			.wrap h2, .wrap .intro, .wrap .form-table { display: none; }
 			.wrap h2.active, .wrap .intro.active, .wrap .form-table.active { display: block; }
 			.form-table td p.dashicons { font-size: 24px; }
@@ -139,6 +143,11 @@ class Admin {
 			.dashicons-warning { color: orange; }
 			.dashicons-no { color: red; }
 			.dashicons-yes { color: green; }
+			.dashicons-update { animation: cyclos-spin 2s linear infinite; }
+			@keyframes cyclos-spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
 		';
 		wp_add_inline_style( 'wp-admin', $custom_css );
 	}
@@ -177,8 +186,14 @@ class Admin {
 
 				<nav class="nav-tab-wrapper">
 					<?php
-					foreach ( $this->conf->get_sections() as $section ) {
-						printf( '<a href="#" class="nav-tab">%1$s</a>', esc_html( $section['label'] ) );
+					$optional_components = $this->conf->get_components();
+					foreach ( $this->conf->get_sections() as $id => $section ) {
+						$extra_css_class = '';
+						// If the section is optional, check whether it is currently active. If it is not active, add the disabled class.
+						if ( array_key_exists( $id, $optional_components ) ) {
+							$extra_css_class = $this->conf->is_active( $id ) ? '' : ' disabled';
+						}
+						printf( '<a href="#" id="nav-tab-%1$s" class="nav-tab%2$s">%3$s</a>', esc_attr( $id ), esc_attr( $extra_css_class ), esc_html( $section['label'] ) );
 					}
 					?>
 				</nav>
@@ -201,9 +216,25 @@ class Admin {
 	public function render_text( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		printf( '<input type="text" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		printf( '<input type="text" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_example() ) );
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+	}
+
+	/**
+	 * Render the setting field for fields of type number.
+	 *
+	 * @param array $args Contains the field id and Settings object of the field to render.
+	 */
+	public function render_number( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		printf( '<input type="number" name="%s" id="%s" class="regular-text" value="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -217,9 +248,9 @@ class Admin {
 	public function render_password( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
-		printf( '<input type="password" name="%s" id="%s" class="regular-text" value="%s" placeholder="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ), esc_html( $setting->get_default() ) );
+		printf( '<input type="password" name="%s" id="%s" class="regular-text" value="%s" />', esc_html( $name ), esc_html( $field_id ), esc_attr( $value ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
@@ -228,17 +259,52 @@ class Admin {
 	/**
 	 * Render the setting field for fields of type checkbox.
 	 *
+	 * Note: the case where a checkbox has a default value of true would not work correctly. When the webmaster unchecks the box, the posted array does not contain the field.
+	 * Therefore, the plugin would not save the field and at next render would show the default value (true -> checked) again.
+	 * Because we don't have any checkbox fields with a default value of true, this bug was not fixed yet.
+	 *
 	 * @param array $args Contains the key and Settings object of the field to render.
 	 */
 	public function render_checkbox( $args ) {
 		$field_id = $args['label_for'];
 		$setting  = $args['setting_info'];
-		$value    = $this->conf->get_setting( $field_id, false );
+		$value    = $this->conf->get_setting( $field_id );
 		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
 		printf( '<input type="checkbox" name="%s" id="%s" value="1" %s />', esc_html( $name ), esc_html( $field_id ), checked( 1, esc_attr( $value ), false ) );
 		if ( ! empty( $setting->get_description() ) ) {
 			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
 		}
+	}
+
+	/**
+	 * Render the setting field for fields of type components.
+	 *
+	 * @param array $args Contains the key and Settings object of the field to render.
+	 */
+	public function render_components( $args ) {
+		$field_id = $args['label_for'];
+		$setting  = $args['setting_info'];
+		$value    = $this->conf->get_setting( $field_id );
+		$name     = $this->conf::CYCLOS_OPTION_NAME . '[' . $field_id . ']';
+		printf( '<fieldset><legend class="screen-reader-text"><span>%s</span></legend>', esc_html( $setting->get_label() ) );
+		// Get the components that are selectable by the webmaster and create a checkbox for each of them.
+		$components = $this->conf->get_components();
+		foreach ( $components as $id => $component_class ) {
+			$field_name  = $name . '[' . $id . ']';
+			$field_value = $value ? ( $value[ $id ] ?? '' ) : '';
+			$field_label = $component_class::get_component_info()['tab'];
+			printf(
+				'<label for="%1$s"><input type="checkbox" name="%2$s" id="%1$s" value="1" %3$s />%4$s</label><br>',
+				esc_html( $id ),
+				esc_html( $field_name ),
+				checked( 1, esc_attr( $field_value ), false ),
+				esc_html( $field_label )
+			);
+		}
+		if ( ! empty( $setting->get_description() ) ) {
+			printf( '<p class="description">%s</p>', esc_html( $setting->get_description() ) );
+		}
+		print( '</fieldset>' );
 	}
 
 	/**
@@ -290,7 +356,7 @@ class Admin {
 		$setting  = $args['setting_info'];
 		$value    = $this->conf->get_setting( $field_id, false );
 		if ( empty( $value ) ) {
-			// If the setting is not found, fallback to the default, telling us the setting is not configured yet.
+			// If the setting is not found, fallback to the default of the read_field, telling us the setting is not configured yet.
 			$value = $setting->get_default();
 		}
 		printf( '<p>%s</p>', esc_attr( $value ) );
@@ -317,14 +383,18 @@ class Admin {
 
 		$settings = $this->conf->get_settings();
 		foreach ( $input as $field => $value ) {
-			if ( empty( $value ) ) {
-				// Don't store empty values. This way the default value is used if needed.
-				unset( $input[ $field ] );
-				continue;
+			$setting = $settings[ $field ];
+			$type    = $setting->get_type();
+			$default = $setting->get_default();
+			// Don't store values that equal the default value. Except for checkbox field types or array values.
+			if ( 'checkbox' !== $type && ! is_array( $value ) ) {
+				if ( (string) $value === (string) $default ) {
+					unset( $input[ $field ] );
+					continue;
+				}
 			}
-			$setting         = $settings[ $field ];
 			$old_value       = $this->conf->get_setting( $field, false );
-			$input[ $field ] = apply_filters( "cyclos_sanitize_{$setting->get_type()}", $value, $field, $setting, $old_value );
+			$input[ $field ] = apply_filters( "cyclos_sanitize_{$type}", $value, $field, $setting, $old_value );
 		}
 		return $this->conf->validate( $input );
 	}

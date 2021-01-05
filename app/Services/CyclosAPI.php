@@ -134,14 +134,24 @@ class CyclosAPI {
 			// This happens when the REST API does not contain a property yet in older Cyclos versions.
 			$can_login        = $cyclos_response->permissions->sessions->login ?? true;
 			$can_view_profile = $cyclos_response->permissions->users->viewProfile ?? true;
+			$can_view_map     = $cyclos_response->permissions->users->map ?? true;
+
+			// Check for problems for the active components.
+			$login_problem        = $this->conf->is_active( 'login_form' ) && ! $can_login;
+			$view_profile_problem = $this->conf->is_active( 'login_form' ) && ! $can_view_profile;
+			$view_map_problem     = $this->conf->is_active( 'user_directory' ) && ! $can_view_map;
 			// If one of the required permissions is not set correctly, set the status to 'warning' and set the error message to indicate the problem.
-			if ( ! $can_login ) {
+			if ( $login_problem ) {
 				/* translators: 'Login users via web services' is a string in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.loginUsers from the Cyclos crowdin project. This text may have a custom translation in Cyclos however. */
-				$message = __( "The Cyclos user needs permission to login other users. Please correct the configuration of the user group in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
+				$message = __( "The Cyclos user needs permission to login other users. Please correct its group permission in Cyclos: set the 'Login users via web services' permission to 'Yes'.", 'cyclos' );
 				$status  = 'warning';
-			} elseif ( ! $can_view_profile ) {
+			} elseif ( $view_profile_problem ) {
 				/* translators: 'Accessible user groups' and 'All groups' are strings in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.userGroupAccessibility and USERS.PRODUCTS.userGroupAccessibility.ALL from the Cyclos crowdin project. These texts may have a custom translation in Cyclos however. */
-				$message = __( "The Cyclos user needs permission to access user groups. Please correct the configuration of the user group in Cyclos: set the 'Accessible user groups' to 'All groups'.", 'cyclos' );
+				$message = __( "The Cyclos user needs permission to access user groups. Please correct its group permission in Cyclos: set the 'Accessible user groups' permission to 'All groups'.", 'cyclos' );
+				$status  = 'warning';
+			} elseif ( $view_map_problem ) {
+				/* translators: 'View user directory (map) on groups, 'Accessible user groups' and 'All groups' are strings in Cyclos. Leave as-is or use the default translation for USERS.PRODUCTS.userDirectoryOnGroups, USERS.PRODUCTS.userGroupAccessibility and USERS.PRODUCTS.userGroupAccessibility.ALL from the Cyclos crowdin project. These texts may have a custom translation in Cyclos however. */
+				$message = __( "The Cyclos user needs permission to view the user map directory. Please correct its group permission in Cyclos: set the 'View user directory (map) on groups' permission to 'All groups', possibly setting 'Accessible user groups' to 'All groups' first, otherwise the 'View user directory (map) on groups' permission can not be set.", 'cyclos' );
 				$status  = 'warning';
 			} else {
 				// Everything is fine. Set the status to 'success' and set a success message.
@@ -368,6 +378,48 @@ class CyclosAPI {
 			'successMessage' => $success_message,
 			'errorMessage'   => $error_message,
 		);
+	}
+
+	/**
+	 * Returns configuration data for searching Cyclos users. Used for the user directory (map/list).
+	 *
+	 * @return array|\WP_Error     Array with user metadata or a WP_Error object on failure.
+	 */
+	public function get_user_metadata() {
+		// Use the users service to request the user metadata.
+		$cyclos_service  = new Cyclos4\UsersService( $this->conf );
+		$cyclos_response = $cyclos_service->get_data_for_search();
+
+		// If the request failed, return a WP_Error object with the error message.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$message = $this->handle_error( $cyclos_response );
+			return new \WP_Error( 'CYCLOS_EXCEPTION', $message );
+		}
+
+		// If we have no error, return the response containing the user metadata array.
+		return $cyclos_response;
+	}
+
+	/**
+	 * Returns data of Cyclos users. Used for the user directory (map/list).
+	 *
+	 * @return array|\WP_Error     Array with user data or a WP_Error object on failure.
+	 */
+	public function get_user_data() {
+		// Use the users service to request the user data.
+		$cyclos_service  = new Cyclos4\UsersService( $this->conf );
+		$group           = $this->conf->get_user_group();
+		$order_by        = $this->conf->get_user_data_sort( false );
+		$cyclos_response = $cyclos_service->search_user_directory( $group, $order_by );
+
+		// If the request failed, return a WP_Error object with the error message.
+		if ( is_wp_error( $cyclos_response ) ) {
+			$message = $this->handle_error( $cyclos_response );
+			return new \WP_Error( 'CYCLOS_EXCEPTION', $message );
+		}
+
+		// If we have no error, return the response containing the user data array.
+		return $cyclos_response;
 	}
 
 	/**

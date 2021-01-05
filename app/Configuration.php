@@ -8,6 +8,8 @@
 namespace Cyclos;
 
 use Cyclos\Components\Admin;
+use Cyclos\Components\LoginForm;
+use Cyclos\Components\UserDirectory;
 use Cyclos\Services\CyclosAPI;
 
 /**
@@ -19,6 +21,12 @@ class Configuration {
 	 * The unique key for our option record.
 	 */
 	const CYCLOS_OPTION_NAME = 'cyclos';
+
+	/**
+	 * The unique keys for our user data transient records.
+	 */
+	const USER_METADATA_TRANSIENT = 'cyclos_user_metadata';
+	const USER_DATA_TRANSIENT     = 'cyclos_user_data';
 
 	/**
 	 * The unique instance of this class.
@@ -49,6 +57,13 @@ class Configuration {
 	protected static $settings;
 
 	/**
+	 * Array containing the plugin components a webmaster can turn on/off. This never includes the Admin component.
+	 *
+	 * @var Setting[] $settings Array of plugin components.
+	 */
+	protected static $components;
+
+	/**
 	 * Returns the unique instance of this class.
 	 */
 	public static function get_instance() {
@@ -63,6 +78,14 @@ class Configuration {
 	 */
 	protected function initialize_settings() {
 		if ( ! isset( self::$settings ) ) {
+
+			// Initialize the components a webmaster can turn on/off.
+			self::$components = array(
+				'login_form'     => LoginForm::class,
+				'user_directory' => UserDirectory::class,
+			);
+
+			// Initialize the sections (= tabs). These are the general and connection tabs and a tab for each of the optional components.
 			self::$sections = array(
 				'general'    => array(
 					'label' => __( 'General', 'cyclos' ),
@@ -82,23 +105,30 @@ class Configuration {
 						'</a>'
 					),
 				),
-				'login_form' => array(
-					'label' => __( 'Login Form', 'cyclos' ),
-					'intro' => __( 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode on one of your Posts or Pages.<br>Below, you can configure your own label texts for the login form. If you are fine with the default texts, you can leave any field empty here.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>If your Cyclos server uses a custom frontend, you can fill in the URL of your frontend. Leave this field blank if you use the default Cyclos frontend.', 'cyclos' ),
-				),
 			);
+			// Add a section for each of the optional components.
+			$components = $this->get_components();
+			foreach ( $components as $id => $component_class ) {
+				self::$sections[ $id ] = array(
+					'label' => $component_class::get_component_info()['tab'],
+					'intro' => $component_class::get_component_info()['intro'],
+				);
+			}
+
+			// Initialize the settings. They are divided per section (= tab).
 			/* translators: The %s and %p are placeholders, please leave them in. */
 			$custom_url_description = __( 'Custom frontend URL. Please leave blank unless you use a custom Cyclos frontend. You can use %s and/or %p for the token and return path variables.', 'cyclos' );
 			self::$settings         = array(
 				'connection_status'    => new Setting( 'general', __( 'Connection status', 'cyclos' ), 'connection_status' ),
 				'read_cyclos_url'      => new Setting( 'general', __( 'Cyclos URL', 'cyclos' ), 'read_field', false, __( '(not configured yet)', 'cyclos' ), __( 'The URL of your Cyclos server', 'cyclos' ) ),
 				'read_username'        => new Setting( 'general', __( 'Cyclos user', 'cyclos' ), 'read_field', false, __( '(not configured yet)', 'cyclos' ), __( 'The Cyclos user used to communicate with your Cyclos server', 'cyclos' ) ),
-				'cyclos_url'           => new Setting( 'connection', __( 'Cyclos URL', 'cyclos' ), 'url', true, 'https://demo.cyclos.org', __( 'The Cyclos URL. The required REST API methods via /api/* are always enabled in Cyclos, but please make sure to control access in the Cyclos Web services channel according to the instructions.', 'cyclos' ) ),
-				'username'             => new Setting( 'connection', __( 'Username', 'cyclos' ), 'text', true, 'wp_admin_user', __( 'The Cyclos user to connect with. Important: Always use a dedicated Cyclos user, with only the permissions needed for the Cyclos plugin to work!', 'cyclos' ) ),
+				'active_components'    => new Setting( 'general', __( 'Active plugin parts', 'cyclos' ), 'components', false, false, __( 'The functionality you would like to use. You can use the plugin to create a Login Form, a User Directory (a map or list with Cyclos Members), or both if you like.', 'cyclos' ) ),
+				'cyclos_url'           => new Setting( 'connection', __( 'Cyclos URL', 'cyclos' ), 'url', true, '', __( 'The Cyclos URL. The required REST API methods via /api/* are always enabled in Cyclos, but please make sure to control access in the Cyclos Web services channel according to the instructions.', 'cyclos' ), 'https://demo.cyclos.org' ),
+				'username'             => new Setting( 'connection', __( 'Username', 'cyclos' ), 'text', true, '', __( 'The Cyclos user to connect with. Important: Always use a dedicated Cyclos user, with only the permissions needed for the Cyclos plugin to work!', 'cyclos' ), 'wp_admin_user' ),
 				'password'             => new Setting( 'connection', __( 'Password', 'cyclos' ), 'password', true, '', __( 'The password of the Cyclos user to connect with. The password is not stored anywhere. It is only used once, together with the activation code below, to activate the accessclient for you. The accessclient token is used for all further requests to your Cyclos server by this plugin.', 'cyclos' ) ),
 				'activation_code'      => new Setting( 'connection', __( 'Activation code', 'cyclos' ), 'text', true, '', __( 'One-time 4-digit activation code generated by Cyclos.', 'cyclos' ) ),
 				'style_loginform'      => new Setting( 'login_form', __( 'Use Cyclos styling?', 'cyclos' ), 'checkbox', false, false ),
-				'custom_cyclos_url'    => new Setting( 'login_form', __( 'Custom Cyclos frontend URL', 'cyclos' ), 'url', true, 'https://demo-ui.cyclos.org%p?sessionToken=%s', $custom_url_description ),
+				'custom_cyclos_url'    => new Setting( 'login_form', __( 'Custom Cyclos frontend URL', 'cyclos' ), 'url', true, '', $custom_url_description, 'https://demo-ui.cyclos.org%p?sessionToken=%s' ),
 				'name_label'           => new Setting( 'login_form', __( 'Username field', 'cyclos' ), 'text', false, __( 'User', 'cyclos' ), __( 'The placeholder in the username field', 'cyclos' ) ),
 				'password_label'       => new Setting( 'login_form', __( 'Password field', 'cyclos' ), 'text', false, __( 'Password', 'cyclos' ), __( 'The placeholder in the password field', 'cyclos' ) ),
 				'submit_button'        => new Setting( 'login_form', __( 'Submit button', 'cyclos' ), 'text', false, __( 'Login', 'cyclos' ), __( 'The text on the submit button', 'cyclos' ) ),
@@ -115,6 +145,17 @@ class Configuration {
 				'forgot_pw_confirm_pw' => new Setting( 'login_form', __( 'Forgotten password confirm password', 'cyclos' ), 'text', false, __( 'Confirm new password', 'cyclos' ), __( 'The placeholder in the confirmation field of the new password in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
+				'user_style'           => new Setting( 'user_directory', __( 'Choose style', 'cyclos' ), 'user_style', false, 'ocean', __( 'You can choose different designs for the user directory. If you prefer to use your own custom style, choose \'None\' here and adjust your theme\'s CSS however you like.', 'cyclos' ) ),
+				'user_filter_label'    => new Setting( 'user_directory', __( 'Filter label', 'cyclos' ), 'text', false, __( 'Filter', 'cyclos' ), __( 'The label of the filter dropdown', 'cyclos' ) ),
+				'user_sort_label'      => new Setting( 'user_directory', __( 'Sort label', 'cyclos' ), 'text', false, __( 'Sort', 'cyclos' ), __( 'The label of the sort dropdown', 'cyclos' ) ),
+				'user_nofilter_option' => new Setting( 'user_directory', __( 'Unfiltered option', 'cyclos' ), 'text', false, __( 'All users', 'cyclos' ), __( 'The filter option when users are shown without filtering', 'cyclos' ) ),
+				'user_nosort_option'   => new Setting( 'user_directory', __( 'Initial sort option when invisible', 'cyclos' ), 'text', false, __( 'Default', 'cyclos' ), __( 'The sort option when users are sorted initially on a non-visible sorting option', 'cyclos' ) ),
+				'user_sort_asc'        => new Setting( 'user_directory', __( 'Ascending sort option indicator', 'cyclos' ), 'text', false, __( 'ASC', 'cyclos' ), __( 'The indicator for ascending sorting', 'cyclos' ) ),
+				'user_sort_desc'       => new Setting( 'user_directory', __( 'Descending sort option indicator', 'cyclos' ), 'text', false, __( 'DESC', 'cyclos' ), __( 'The indicator for descending sorting', 'cyclos' ) ),
+				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
+				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
+				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
+				'user_data_info'       => new Setting( 'user_directory', __( 'Current user data', 'cyclos' ), 'user_data_transient', false, null ),
 			);
 		}
 	}
@@ -137,6 +178,16 @@ class Configuration {
 			$this->initialize_settings();
 		}
 		return self::$settings;
+	}
+
+	/**
+	 * Returns the array of components a webmaster can turn on/off.
+	 */
+	public function get_components() {
+		if ( ! isset( self::$components ) ) {
+			$this->initialize_settings();
+		}
+		return self::$components;
 	}
 
 	/**
@@ -192,6 +243,7 @@ class Configuration {
 				$fields[ $field ] = $old_value;
 			}
 		}
+		$this->validate_userdata( $fields );
 		return $this->validate_connection_fields( $fields );
 	}
 
@@ -204,6 +256,11 @@ class Configuration {
 	 */
 	protected function validator( $field, $value ) {
 		switch ( $field ) {
+			case 'user_expiration':
+				if ( $value < 0 ) {
+					return __( 'The expiration time must be 0 or higher', 'cyclos' );
+				}
+				break;
 			case 'latitude':
 				if ( -90 > $value || $value > 90 ) {
 					return __( 'The latitude must be between -90 and 90', 'cyclos' );
@@ -223,6 +280,31 @@ class Configuration {
 				break;
 		}
 		return '';
+	}
+
+	/**
+	 * Validates the userdata transients when fields that effect the userdata are being changed.
+	 * Note: we are not actually validating the input fields themselves here. But the validation phase is
+	 * a handy place to check whether the userdata should be refreshed.
+	 *
+	 * @param array $fields Array of fields, containing key-value pairs.
+	 */
+	protected function validate_userdata( array $fields ) {
+		// The fields that should trigger a data refresh when changed.
+		$relevant_fields = array( 'user_data_sort', 'user_group', 'user_expiration' );
+		foreach ( $relevant_fields as $field ) {
+			// Check if the field value is being changed.
+			$old_value = $this->get_setting( $field );
+			$new_value = $fields[ $field ] ?? null;
+			if ( $old_value !== $new_value ) {
+				// Delete the user data, so next time it will be fetched from Cyclos.
+				delete_transient( self::USER_DATA_TRANSIENT );
+				delete_transient( self::USER_METADATA_TRANSIENT );
+
+				// The transients are deleted, no need to check the other fields for changes.
+				return;
+			}
+		}
 	}
 
 	/**
@@ -329,6 +411,15 @@ class Configuration {
 	}
 
 	/**
+	 * Returns whether the given component is active or not.
+	 *
+	 * @param string $component_id The id of the component.
+	 */
+	public function is_active( string $component_id ) {
+		return $this->get_setting( 'active_components' )[ $component_id ] ?? false;
+	}
+
+	/**
 	 * Returns the Custom Cyclos frontend URL.
 	 *
 	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
@@ -371,6 +462,96 @@ class Configuration {
 			'forgot_new_pw'     => $this->get_setting( 'forgot_pw_new_pw' ),
 			'forgot_confirm_pw' => $this->get_setting( 'forgot_pw_confirm_pw' ),
 		);
+	}
+
+	/**
+	 * Returns the user group to filter the user data.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_group( bool $use_default = true ) {
+		return $this->get_setting( 'user_group', $use_default );
+	}
+
+	/**
+	 * Returns the expiration time for user data in minutes.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_data_expiration_time( bool $use_default = true ) {
+		return $this->get_setting( 'user_expiration', $use_default );
+	}
+
+	/**
+	 * Returns the field to use as orderby when retrieving the Cyclos user data.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_data_sort( bool $use_default = true ) {
+		return $this->get_setting( 'user_data_sort', $use_default );
+	}
+
+	/**
+	 * Returns the style to use in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_style( bool $use_default = true ) {
+		return $this->get_setting( 'user_style', $use_default );
+	}
+
+	/**
+	 * Returns the label to use near the filter dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_filter_label( bool $use_default = true ) {
+		return $this->get_setting( 'user_filter_label', $use_default );
+	}
+
+	/**
+	 * Returns the label to use near the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_label( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_label', $use_default );
+	}
+
+	/**
+	 * Returns the non-filtering option in the filter dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_nofilter_option( bool $use_default = true ) {
+		return $this->get_setting( 'user_nofilter_option', $use_default );
+	}
+
+	/**
+	 * Returns the initial invisible option in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_nosort_option( bool $use_default = true ) {
+		return $this->get_setting( 'user_nosort_option', $use_default );
+	}
+
+	/**
+	 * Returns the ascending sort indicator in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_asc( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_asc', $use_default );
+	}
+
+	/**
+	 * Returns the descending sort indicator in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_desc( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_desc', $use_default );
 	}
 
 }

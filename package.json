@@ -16,21 +16,19 @@
 	"private": true,
 	"dependencies": {},
 	"devDependencies": {
-		"@wordpress/scripts": "12.3.0"
+		"@wordpress/scripts": "12.6.0"
 	},
 	"scripts": {
-		"build": "wp-scripts build js/src/admin.js js/src/cyclos_login.js --output-path=js/dist",
-		"build:admin": "wp-scripts build js/src/admin.js --output-path=js/dist",
-		"build:login": "wp-scripts build js/src/cyclos_login.js --output-path=js/dist",
+		"build": "npm run build:js && npm run build:css",
+		"build:js": "wp-scripts build js/src/admin.js js/src/cyclos_login.js js/src/userdirectory.js --output-path=js/dist",
+		"build:css": "sass -s compressed --no-source-map css/src/userdirectory.scss css/dist/userdirectory.min.css",
 		"check-engines": "wp-scripts check-engines",
-		"check-licenses": "wp-scripts check-licenses",
 		"format:js": "wp-scripts format-js ./js/src",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js ./js/src",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"lint:php": "composer wpcs:check",
-		"start": "wp-scripts start",
-		"start:login": "wp-scripts start js/src/cyclos_login.js --output-path=js/dist",
+		"start": "wp-scripts start js/src/admin.js js/src/cyclos_login.js js/src/userdirectory.js --output-path=js/dist",
 		"autoload:dev": "composer dump-autoload"
 	}
 }

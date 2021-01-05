@@ -27,11 +27,11 @@ class CaptchaService extends Service {
 	 * Returns the captcha image content of the given id.
 	 *
 	 * @param string $id        The id identifying the captcha image.
-	 * @return object|\WP_Error       The body from the Cyclos server response or a WP_Error object on failure.
+	 * @return object|\WP_Error The body from the Cyclos server response or a WP_Error object on failure.
 	 */
 	public function get_captcha_content( $id ) {
 		$this->method = 'GET';
-		$this->route  = '/captcha/' . $id;
+		$this->route  = '/captcha/' . rawurlencode( $id );
 		return $this->run();
 	}
 

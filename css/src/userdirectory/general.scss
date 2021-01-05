@@ -1,0 +1,137 @@
+/*
+ * The general styles for the userlist.
+*/
+.cyclos-user-list,
+.cyclos-user-info-modal {
+	--blue: #33c3f7;
+	--orange: #f77133;
+	--white: #fff;
+	--white-2: #f9f9f9;
+	--gray: #ededed;
+	--gray-2: #ddd;
+	--gray-3: #aaa;
+	--gray-4: #888;
+	--gray-dark: #666;
+	--gray-dark-2: #444;
+	--gap: 2em;
+	--card-min-width: 250px;
+	--card-max-width: 400px;
+}
+
+.cyclos-user-list .filter,
+.cyclos-user-list .orderby {
+	// Put the filter and sort dropdowns in one row.
+	display: inline-block;
+	margin: 0 1em 0.5em 0;
+	max-width: 100%; // Needed for the max-width of the select tag below to work.
+
+	// Don't let the select tag flow over the screen width.
+	// And put the select under the label instead of next to it.
+	select {
+		max-width: 100%;
+		display: block;
+	}
+
+	// Try to avoid options flowing over the screen width on small screens.
+	// Unfortunately, the option tag can not be styled much with CSS.
+	option {
+		font-size: 90%;
+	}
+}
+
+.cyclos-user-list .user-list {
+	// Use a grid display for the userlist.
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+	gap: var(--gap);
+	margin: 1em 0;
+}
+
+/* User card styles. */
+.cyclos-user {
+	// Make sure the card fills the entire grid column.
+	width: 100%;
+	max-width: var(--card-max-width);
+	margin: 0 auto;
+
+	// Distinguish user cards and indicate the visitor can click them.
+	border: 1px solid var(--gray-dark);
+	cursor: pointer;
+
+	// Try to avoid long words moving out of the card box.
+	word-break: break-word;
+	word-wrap: break-word;
+	hyphens: auto;
+
+	// Use flex box to show the card contents (name and logo). This way the logo's
+	// align to the bottom even if the name is lower than the name of a sibling.
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+
+	.name,
+	.cyclos-no-logo {
+		padding: 0.3em;
+		line-height: 1.5;
+	}
+
+	// Use flexbox to center the image inside the logo space.
+	.cyclos-user-logo {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 200px;
+	}
+}
+
+/* Userdetail popup styles. */
+// Hide customfields named 'featured', hide country, hide no-logo when in popup.
+.customvalues-featured,
+.cyclos-user-address .country,
+.cyclos-user-info-modal .cyclos-no-logo {
+	display: none;
+}
+
+// Put zip and city next to eachother.
+.cyclos-user-address .zip,
+.cyclos-user-address .city {
+	display: inline-block;
+	margin-right: 0.25em;
+}
+
+// Capitalize city names.
+.cyclos-user-address .city {
+	text-transform: capitalize;
+}
+
+/* Show a spinner while loading the userlist. */
+.cyclos-loader {
+	margin: 1em auto;
+	width: 80%;
+	text-align: center;
+
+	&::after {
+		content: "";
+		display: block;
+		margin: 1em auto;
+		width: 50px;
+		height: 50px;
+		box-sizing: content-box;
+		border: 10px solid var(--gray-2);
+		border-radius: 50%;
+		border-top-color: var(--blue);
+		border-bottom-color: var(--blue);
+		animation: cyclos-spin 2s linear infinite;
+	}
+}
+
+@keyframes cyclos-spin {
+
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}

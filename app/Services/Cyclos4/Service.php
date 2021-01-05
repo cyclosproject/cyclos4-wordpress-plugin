@@ -116,7 +116,7 @@ class Service {
 	 */
 	protected function run( array $data = array() ) {
 		$response = null;
-		$url      = trailingslashit( $this->root_url ) . 'api' . $this->route;
+		$url      = esc_url_raw( trailingslashit( $this->root_url ) . 'api' . $this->route );
 		$args     = array(
 			'headers' => array_merge(
 				array(

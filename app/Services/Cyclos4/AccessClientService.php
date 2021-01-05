@@ -24,7 +24,7 @@ class AccessClientService extends Service {
 	public function activate( string $url, string $username, string $password, string $activation_code ) {
 		$this->root_url = $url;
 		$this->method   = 'POST';
-		$this->route    = '/clients/activate?code=' . $activation_code;
+		$this->route    = '/clients/activate?code=' . rawurlencode( $activation_code );
 		$this->authenticate_with_basic_login( $username, $password );
 		return $this->run();
 	}

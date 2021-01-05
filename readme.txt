@@ -5,7 +5,7 @@ Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
 Tested up to: 5.5
 Requires PHP: 7.2
-Stable tag: 2.1.0
+Stable tag: 2.1.0-plus
 License: GPLv2
 
 This plugin enables you to easily add a Cyclos login form to your WordPress website.

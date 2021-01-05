@@ -8,7 +8,7 @@
  * Plugin Name:       Cyclos
  * Plugin URI:        https://www.cyclos.org/wordpress-plugins/
  * Description:       Integrates the Cyclos login form into your WordPress blog.
- * Version:           2.1.0
+ * Version:           2.1.0-plus
  * Requires at least: 5.0
  * Requires PHP:      7.2
  * Author:            The Cyclos team
@@ -44,7 +44,7 @@ namespace Cyclos;
 // Block people to access the script directly (against malicious attempts).
 defined( 'ABSPATH' ) || exit;
 
-define( 'Cyclos\\PLUGIN_VERSION', '2.1.0' );
+define( 'Cyclos\\PLUGIN_VERSION', '2.1.0-plus' );
 define( 'Cyclos\\MINIMUM_PHP_REQUIRED', '7.2' );
 define( 'Cyclos\\MINIMUM_WP_REQUIRED', '5.0' );
 define( 'Cyclos\\PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -90,15 +90,19 @@ function load_plugin_parts() {
 	$config     = Configuration::get_instance();
 	$cyclos_api = new Services\CyclosAPI( $config );
 
+	// Load the admin component.
 	if ( is_admin() ) {
-		// Load the admin component.
 		$admin = new Components\Admin( $config );
 		$admin->init();
 	}
 
-	// Load the login component.
-	$login_component = new Components\LoginComponent( $config, $cyclos_api );
-	$login_component->init();
+	// Load the optional components.
+	$components = $config->get_components();
+	foreach ( $components as $id => $component_class ) {
+		if ( $config->is_active( $id ) ) {
+			( new $component_class( $config, $cyclos_api ) )->init();
+		}
+	}
 
 	// Include the template functions.
 	require_once 'template-functions.php';
@@ -121,4 +125,8 @@ function plugin_uninstall() {
 	// Delete the plugin options records.
 	delete_option( Configuration::CYCLOS_OPTION_NAME );
 	delete_option( 'cyclos_version' );
+
+	// Delete any transient data of our plugin.
+	delete_transient( Configuration::USER_DATA_TRANSIENT );
+	delete_transient( Configuration::USER_METADATA_TRANSIENT );
 }

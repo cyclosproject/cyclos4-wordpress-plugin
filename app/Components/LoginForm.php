@@ -1,6 +1,6 @@
 <?php
 /**
- * The Login component enables the Cyclos login form.
+ * The LoginForm component enables the Cyclos login form.
  *
  * @package Cyclos
  */
@@ -12,9 +12,9 @@ use Cyclos\Services\CyclosAPI;
 use Cyclos\Widgets\LoginWidget;
 
 /**
- * LoginComponent class
+ * LoginForm class
  */
-class LoginComponent {
+class LoginForm {
 
 	/**
 	 * The Cyclos API.
@@ -139,10 +139,11 @@ class LoginComponent {
 
 		// Register the login script.
 		$file      = 'js/dist/cyclos_login.js';
+		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/cyclos_login.asset.php';
 		$handle    = 'cyclos-loginform';
-		$version   = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array( 'jquery' );
+		$deps      = array_merge( $asset['dependencies'], array( 'jquery' ) );
+		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
@@ -291,5 +292,15 @@ class LoginComponent {
 				);
 		}
 		wp_send_json( $response );
+	}
+
+	/**
+	 * Return information about this component.
+	 */
+	public static function get_component_info() {
+		return array(
+			'tab'   => __( 'Login Form', 'cyclos' ),
+			'intro' => __( 'You can put a login form on your website using the Cyclos widget or using the <code>[cycloslogin]</code> shortcode on one of your Posts or Pages.<br>Below, you can configure your own label texts for the login form.<br>You can also choose if you want to use the Cyclos styling of the login form. If you disable this, the login form will look just like other forms in your theme.<br>If your Cyclos server uses a custom frontend, you can fill in the URL of your frontend. Leave this field blank if you use the default Cyclos frontend.', 'cyclos' ),
+		);
 	}
 }
