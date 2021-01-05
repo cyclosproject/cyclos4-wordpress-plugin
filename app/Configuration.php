@@ -146,6 +146,12 @@ class Configuration {
 				'forgot_pw_submit'     => new Setting( 'login_form', __( 'Forgotten password submit', 'cyclos' ), 'text', false, __( 'Submit', 'cyclos' ), __( 'The text on the submit button in the forgotten password form', 'cyclos' ) ),
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
 				'user_style'           => new Setting( 'user_directory', __( 'Choose style', 'cyclos' ), 'user_style', false, 'ocean', __( 'You can choose different designs for the user directory. If you prefer to use your own custom style, choose \'None\' here and adjust your theme\'s CSS however you like.', 'cyclos' ) ),
+				'user_filter_label'    => new Setting( 'user_directory', __( 'Filter label', 'cyclos' ), 'text', false, __( 'Filter', 'cyclos' ), __( 'The label of the filter dropdown', 'cyclos' ) ),
+				'user_sort_label'      => new Setting( 'user_directory', __( 'Sort label', 'cyclos' ), 'text', false, __( 'Sort', 'cyclos' ), __( 'The label of the sort dropdown', 'cyclos' ) ),
+				'user_nofilter_option' => new Setting( 'user_directory', __( 'Unfiltered option', 'cyclos' ), 'text', false, __( 'All users', 'cyclos' ), __( 'The filter option when users are shown without filtering', 'cyclos' ) ),
+				'user_nosort_option'   => new Setting( 'user_directory', __( 'Initial sort option when invisible', 'cyclos' ), 'text', false, __( 'Default', 'cyclos' ), __( 'The sort option when users are sorted initially on a non-visible sorting option', 'cyclos' ) ),
+				'user_sort_asc'        => new Setting( 'user_directory', __( 'Ascending sort option indicator', 'cyclos' ), 'text', false, __( 'ASC', 'cyclos' ), __( 'The indicator for ascending sorting', 'cyclos' ) ),
+				'user_sort_desc'       => new Setting( 'user_directory', __( 'Descending sort option indicator', 'cyclos' ), 'text', false, __( 'DESC', 'cyclos' ), __( 'The indicator for descending sorting', 'cyclos' ) ),
 				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
 				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
 				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
@@ -492,6 +498,60 @@ class Configuration {
 	 */
 	public function get_user_style( bool $use_default = true ) {
 		return $this->get_setting( 'user_style', $use_default );
+	}
+
+	/**
+	 * Returns the label to use near the filter dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_filter_label( bool $use_default = true ) {
+		return $this->get_setting( 'user_filter_label', $use_default );
+	}
+
+	/**
+	 * Returns the label to use near the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_label( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_label', $use_default );
+	}
+
+	/**
+	 * Returns the non-filtering option in the filter dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_nofilter_option( bool $use_default = true ) {
+		return $this->get_setting( 'user_nofilter_option', $use_default );
+	}
+
+	/**
+	 * Returns the initial invisible option in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_nosort_option( bool $use_default = true ) {
+		return $this->get_setting( 'user_nosort_option', $use_default );
+	}
+
+	/**
+	 * Returns the ascending sort indicator in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_asc( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_asc', $use_default );
+	}
+
+	/**
+	 * Returns the descending sort indicator in the sort dropdown in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_sort_desc( bool $use_default = true ) {
+		return $this->get_setting( 'user_sort_desc', $use_default );
 	}
 
 }

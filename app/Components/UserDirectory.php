@@ -278,12 +278,12 @@ class UserDirectory {
 					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
 					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),
 					'noUsers'            => __( 'No users found', 'cyclos' ),
-					'filterLabel'        => __( 'Filter', 'cyclos' ),
-					'noFilterOption'     => __( 'All users', 'cyclos' ),
-					'sortLabel'          => __( 'Sort', 'cyclos' ),
-					'noSortOption'       => __( 'Default', 'cyclos' ),
-					'asc'                => __( 'Asc', 'cyclos' ),
-					'desc'               => __( 'Desc', 'cyclos' ),
+					'filterLabel'        => $this->conf->get_user_filter_label(),
+					'noFilterOption'     => $this->conf->get_user_nofilter_option(),
+					'sortLabel'          => $this->conf->get_user_sort_label(),
+					'noSortOption'       => $this->conf->get_user_nosort_option(),
+					'asc'                => $this->conf->get_user_sort_asc(),
+					'desc'               => $this->conf->get_user_sort_desc(),
 				),
 			)
 		);

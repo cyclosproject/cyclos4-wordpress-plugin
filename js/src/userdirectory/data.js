@@ -86,8 +86,8 @@ export class UserData {
 	generateSortOptions() {
 		const val = { asc: '-asc', desc: '-desc' };
 		const label = {
-			asc: ' ' + cyclosUserObj.l10n?.asc?.toUpperCase(),
-			desc: ' ' + cyclosUserObj.l10n?.desc?.toUpperCase(),
+			asc: ' ' + cyclosUserObj.l10n?.asc,
+			desc: ' ' + cyclosUserObj.l10n?.desc,
 		};
 		const optList = [];
 		this.fields.forEach( ( field, id ) => {

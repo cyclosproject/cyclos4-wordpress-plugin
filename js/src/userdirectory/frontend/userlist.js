@@ -160,7 +160,7 @@ export default class UserList {
 		}
 		const currentFilter = this.state.currentFilter;
 		let dropdown = '<div class="filter">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }:`;
+		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
 		dropdown += '<select>';
 		catList.forEach( ( { value, label } ) => {
 			const selected = currentFilter === value ? ' selected' : '';
@@ -185,7 +185,7 @@ export default class UserList {
 			return '';
 		}
 		let dropdown = '<div class="orderby">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }:`;
+		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
 		dropdown += `<select>`;
 		const optionList = generateVisibleSortOptions(
 			this.userData,
