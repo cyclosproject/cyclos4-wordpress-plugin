@@ -152,7 +152,9 @@ class Configuration {
 				'user_nosort_option'   => new Setting( 'user_directory', __( 'Initial sort option when invisible', 'cyclos' ), 'text', false, __( 'Default', 'cyclos' ), __( 'The sort option when users are sorted initially on a non-visible sorting option', 'cyclos' ) ),
 				'user_sort_asc'        => new Setting( 'user_directory', __( 'Ascending sort option indicator', 'cyclos' ), 'text', false, __( 'ASC', 'cyclos' ), __( 'The indicator for ascending sorting', 'cyclos' ) ),
 				'user_sort_desc'       => new Setting( 'user_directory', __( 'Descending sort option indicator', 'cyclos' ), 'text', false, __( 'DESC', 'cyclos' ), __( 'The indicator for descending sorting', 'cyclos' ) ),
-				'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
+				// Temporarily remove the setting to sort data via the API, until Cyclos (4.15 probably) does case-insensitive sorting of users on full name. See Jira CYCLOS-8639.
+				// phpcs:ignore Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.InvalidEndChar
+				// 'user_data_sort'       => new Setting( 'user_directory', __( 'Cyclos user data ordering', 'cyclos' ), 'user_data_sort', false, 'creationDate', __( 'Use this if you would like to retrieve the user data from Cyclos ordered in a specific way.', 'cyclos' ) ),
 				'user_group'           => new Setting( 'user_directory', __( 'Cyclos user group', 'cyclos' ), 'text', false, '', __( 'The internal name of the Cyclos group to filter the users to show. Use this if you only want to show users from a certain group instead of all Cyclos users in the network.', 'cyclos' ) ),
 				'user_expiration'      => new Setting( 'user_directory', __( 'Expiration time of user data', 'cyclos' ), 'number', false, 30, __( 'The number of minutes to keep user data in cache. By default, user data is only retrieved from Cyclos if the current data is older than 30 minutes. If you like, you can change this here.', 'cyclos' ) ),
 				'user_data_info'       => new Setting( 'user_directory', __( 'Current user data', 'cyclos' ), 'user_data_transient', false, null ),
@@ -291,7 +293,10 @@ class Configuration {
 	 */
 	protected function validate_userdata( array $fields ) {
 		// The fields that should trigger a data refresh when changed.
-		$relevant_fields = array( 'user_data_sort', 'user_group', 'user_expiration' );
+		// Temporarily remove the setting to sort data via the API, until Cyclos (4.15 probably) does case-insensitive sorting of users on full name. See Jira CYCLOS-8639.
+		// phpcs:ignore Squiz.PHP.CommentedOutCode.Found, Squiz.Commenting.InlineComment.InvalidEndChar
+		// $relevant_fields = array( 'user_data_sort', 'user_group', 'user_expiration' );
+		$relevant_fields = array( 'user_group', 'user_expiration' );
 		foreach ( $relevant_fields as $field ) {
 			// Check if the field value is being changed.
 			$old_value = $this->get_setting( $field );
@@ -488,7 +493,12 @@ class Configuration {
 	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
 	 */
 	public function get_user_data_sort( bool $use_default = true ) {
-		return $this->get_setting( 'user_data_sort', $use_default );
+		// Temporarily remove the setting to sort data via the API, until Cyclos (4.15 probably) does case-insensitive sorting of users on full name. See Jira CYCLOS-8639.
+		// phpcs:ignore Generic.CodeAnalysis.UnconditionalIfStatement.Found
+		if ( false ) {
+			return $this->get_setting( 'user_data_sort', $use_default );
+		}
+		return 'creationDate';
 	}
 
 	/**
