@@ -325,20 +325,19 @@ class CyclosAPI {
 	 */
 	public function forgot_password_step_code( string $principal, string $code ) {
 		$error_message = '';
+		$sec_question  = '';
 
 		// Use the authentication service to request the password reset code step.
 		$cyclos_service  = new Cyclos4\AuthService( $this->conf );
 		$cyclos_response = $cyclos_service->forgotten_password_data_for_change( $principal, $code );
 
-		// Set the error if we have an error situation.
+		// Set the error if we have an error situation or fill the security question if available.
 		if ( is_wp_error( $cyclos_response ) ) {
 			$error_message = $this->handle_error( $cyclos_response );
-		}
-
-		// Fill the security question.
-		$sec_question = '';
-		if ( $cyclos_response->securityQuestion ) {
-			$sec_question = __( 'Please answer your security question', 'cyclos' ) . ': ' . $cyclos_response->securityQuestion;
+		} else {
+			if ( $cyclos_response->securityQuestion ) {
+				$sec_question = __( 'Please answer your security question', 'cyclos' ) . ': ' . $cyclos_response->securityQuestion;
+			}
 		}
 
 		return array(
