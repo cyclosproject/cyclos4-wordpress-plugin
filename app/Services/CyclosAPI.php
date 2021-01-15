@@ -335,7 +335,7 @@ class CyclosAPI {
 		if ( is_wp_error( $cyclos_response ) ) {
 			$error_message = $this->handle_error( $cyclos_response );
 		} else {
-			if ( $cyclos_response->securityQuestion ) {
+			if ( isset( $cyclos_response->securityQuestion ) ) {
 				$sec_question = __( 'Please answer your security question', 'cyclos' ) . ': ' . $cyclos_response->securityQuestion;
 			}
 		}
