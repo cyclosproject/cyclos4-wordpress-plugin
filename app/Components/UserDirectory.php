@@ -275,15 +275,14 @@ class UserDirectory {
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
 				'design'   => $this->conf->get_user_style(),
 				'l10n'     => array(
-					'invalidDataMessage' => __( 'Invalid data received from server', 'cyclos' ),
-					'setupMessage'       => __( 'Something is wrong with the user directory setup', 'cyclos' ),
-					'noUsers'            => __( 'No users found', 'cyclos' ),
-					'filterLabel'        => $this->conf->get_user_filter_label(),
-					'noFilterOption'     => $this->conf->get_user_nofilter_option(),
-					'sortLabel'          => $this->conf->get_user_sort_label(),
-					'noSortOption'       => $this->conf->get_user_nosort_option(),
-					'asc'                => $this->conf->get_user_sort_asc(),
-					'desc'               => $this->conf->get_user_sort_desc(),
+					'setupMessage'   => __( 'There was an error retrieving the userdata from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
+					'noUsers'        => __( 'No users found', 'cyclos' ),
+					'filterLabel'    => $this->conf->get_user_filter_label(),
+					'noFilterOption' => $this->conf->get_user_nofilter_option(),
+					'sortLabel'      => $this->conf->get_user_sort_label(),
+					'noSortOption'   => $this->conf->get_user_nosort_option(),
+					'asc'            => $this->conf->get_user_sort_asc(),
+					'desc'           => $this->conf->get_user_sort_desc(),
 				),
 			)
 		);

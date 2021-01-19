@@ -1,3 +1,4 @@
+/* global cyclosUserObj */
 /**
  * Internal dependencies
  */
@@ -29,8 +30,7 @@ const frontEnd = () => {
 			);
 		} )
 		.catch( () => {
-			const errMsg =
-				'There was an error retrieving the userdata from the server. Please ask your website administrator if this problem persists.';
+			const errMsg = cyclosUserObj.l10n?.setupMessage;
 			userLists.forEach( ( listEl ) => ( listEl.textContent = errMsg ) );
 			userMaps.forEach( ( mapEl ) => ( mapEl.textContent = errMsg ) );
 		} );
