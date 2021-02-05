@@ -1,19 +1,19 @@
 === Cyclos ===
 Contributors: Cyclos, luisfpg, rleon.uy, augusto1995, rozijntje
-Tags: Cyclos, Cyclos login, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
+Tags: Cyclos, Cyclos login, Cyclos users, Cyclos user directory, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
 Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
 Tested up to: 5.6
 Requires PHP: 7.2
-Stable tag: 2.1.0-plus
+Stable tag: 3.0.0
 License: GPLv2
 
-This plugin enables you to easily add a Cyclos login form to your WordPress website.
+This plugin enables you to add a Cyclos login form and/or show a list of Cyclos users on your WordPress website.
 
 == Description ==
 
 ### Cyclos WordPress Plugin ###
-This plugin enables you to easily add a Cyclos login form to your WordPress website.
+This plugin enables you to add a Cyclos login form and/or show a list of Cyclos users on your WordPress website.
 
 == Installation ==
 
@@ -36,7 +36,7 @@ Detailed instructions for the configuration of both Cyclos and WordPress setting
 == Frequently Asked Questions ==
 
 = What does the plugin do? =
-The plugin allows your Cyclos users to login to Cyclos using a WordPress front-end site.
+With the plugin you can allow your Cyclos users to login to Cyclos using a WordPress front-end site. And/or you can show a list of your Cyclos users in your WordPress site.
 
 = What is Cyclos? =
 Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
@@ -49,6 +49,7 @@ Please read the dedicated page in our [Wiki](https://wiki4.cyclos.org/index.php/
 2. Login form (closeup).
 3. Cyclos plugin settings.
 4. Customizing labels of the form.
+5. User list example with filter option.
 
 == Changelog ==
 Please see the [Changelog](https://wiki4.cyclos.org/index.php/WordPress#Changelog) in our Wiki.
