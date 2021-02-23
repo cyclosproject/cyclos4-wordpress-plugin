@@ -135,7 +135,7 @@ class UserDirectory {
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
 			$this->make_data_attribute( 'sort-options', $visible_sort_options ),
-			esc_html__( 'Loading the userlist, this might take a couple of seconds', 'cyclos' )
+			esc_html__( 'Loading the user list, this might take a couple of seconds', 'cyclos' )
 		);
 	}
 
@@ -275,7 +275,7 @@ class UserDirectory {
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
 				'design'   => $this->conf->get_user_style(),
 				'l10n'     => array(
-					'setupMessage'   => __( 'There was an error retrieving the userdata from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
+					'setupMessage'   => __( 'There was an error retrieving the user data from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
 					'noUsers'        => __( 'No users found', 'cyclos' ),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
 					'noFilterOption' => $this->conf->get_user_nofilter_option(),
