@@ -172,6 +172,8 @@ class CyclosAPI {
 	 *
 	 * @return array {
 	 *     @type boolean $is_forgot_password_enabled  Whether the forgotten password functionality is enabled in Cyclos or not.
+	 *     @type string $captcha_provider             The captcha provider as configured in Cyclos ('internal' or 'recaptchaV2'), or 'disabled' if no captcha is configured.
+	 *     @type string $recaptchav2_sitekey          The site key for Google recaptcha V2 if this is used as the captcha provider, or empty string if not.
 	 *     @type boolean $is_captcha_enabled          Whether the captcha functionality is enabled in Cyclos or not.
 	 *     @type boolean $has_complex_forgot_password Whether the current Cyclos version uses a more complex forgot password wizard.
 	 *     @type Array $forgot_password_mediums       List of mediums the user can choose to receive the forgot password verification code.
@@ -195,9 +197,13 @@ class CyclosAPI {
 		// The password type must be manual and there must be a medium to reset it. Otherwise we can not do a forgotten password request.
 		$login_pw_mode        = $cyclos_response->loginPasswordInput->mode ?? '';
 		$is_forgot_pw_allowed = ( 'manual' === $login_pw_mode ) && ! empty( $cyclos_response->forgotPasswordMediums );
+		$captcha_provider     = $cyclos_response->forgotPasswordCaptchaInput->provider ?? $cyclos_response->forgotPasswordCaptchaProvider ?? 'disabled';
+		$is_captcha_enabled   = ( 'internal' === $captcha_provider );
 		return array(
 			'is_forgot_password_enabled'  => $is_forgot_pw_allowed,
-			'is_captcha_enabled'          => isset( $cyclos_response->forgotPasswordCaptchaProvider ),
+			'captcha_provider'            => $captcha_provider,
+			'recaptchav2_sitekey'         => $cyclos_response->forgotPasswordCaptchaInput->recaptchaKey ?? '',
+			'is_captcha_enabled'          => $is_captcha_enabled,
 			'has_complex_forgot_password' => isset( $cyclos_response->identityProviders ),
 			'forgot_password_mediums'     => $cyclos_response->forgotPasswordMediums,
 		);

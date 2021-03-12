@@ -1,4 +1,4 @@
-/* global jQuery, cyclosLoginObj */
+/* global jQuery, cyclosLoginObj, grecaptcha */
 /**
  * The Login module script.
  */
@@ -121,6 +121,7 @@ jQuery( document ).ready( function ( $ ) {
 		const loginForm = $( box ).find( '.cyclos-login-form' );
 		const notice = $( box ).find( '.notice' );
 		const data = { _ajax_nonce: cyclosLoginObj.id };
+		let grecaptchav2ID;
 
 		// Find the step we are in and add the relevant information to the data we will post.
 		const stepField = $( forgotForm ).find(
@@ -147,6 +148,13 @@ jQuery( document ).ready( function ( $ ) {
 				if ( $( forgotForm ).find( '.cyclos-captcha' ).length ) {
 					data.captcha_id = $( forgotForm ).data( 'captchaID' );
 					data.captcha_response = fieldVal( forgotForm, 'captcha' );
+				}
+				grecaptchav2ID = $( forgotForm ).data( 'grecaptchav2' );
+				if ( undefined !== grecaptchav2ID ) {
+					// Google recaptchaV2 is used as a captcha provider. Set its response in the data object.
+					data.captcha_response = grecaptcha.getResponse(
+						grecaptchav2ID
+					);
 				}
 				// The medium must not be sent in the simple form, so first check if it is there.
 				const sendMedium = fieldVal( forgotForm, 'send-medium' );
@@ -185,6 +193,10 @@ jQuery( document ).ready( function ( $ ) {
 					case 'request':
 						// Go to the next step.
 						showNextStep( forgotForm, step, stepField );
+						if ( undefined !== grecaptchav2ID ) {
+							// Reset the recaptchaV2.
+							grecaptcha.reset( grecaptchav2ID );
+						}
 
 						// Show where the verification code is sent to.
 						showMsg( notice, response.successMessage );
@@ -287,9 +299,9 @@ jQuery( document ).ready( function ( $ ) {
 		// Reset the captcha field.
 		$( forgotForm ).removeData( 'captchaID' );
 
-		// Hide all divs except the first step div.
-		$( forgotForm ).find( 'div' )?.hide();
-		$( forgotForm ).find( '.cyclos-wizard-step-request' )?.show();
+		// Hide all step divs except the first step div.
+		$( forgotForm ).children( 'div' )?.hide();
+		$( forgotForm ).children( '.cyclos-wizard-step-request' )?.show();
 
 		// Reset the hidden step field to the first step, if this field exists.
 		const stepField = $( forgotForm ).find(
@@ -335,3 +347,24 @@ jQuery( document ).ready( function ( $ ) {
 			} );
 	}
 } );
+
+/**
+ * Callback for Google's recaptcha.
+ * Renders a recaptchaV2 widget on each element that needs it, then stores the widget ID in the parent form.
+ */
+function onloadCallback() {
+	cyclosLoginObj = cyclosLoginObj || {};
+	// Render Google's captcha on each recaptchav2 element we have.
+	document
+		.querySelectorAll( '.cyclos-google-recaptchav2' )
+		.forEach( ( el ) => {
+			const widgetID = grecaptcha.render( el, {
+				sitekey: cyclosLoginObj.sitekey,
+				size: 'compact',
+			} );
+			// Store the widget id in the form data, so we can later determine which response to retrieve (in case there are several login forms on the screen).
+			el.closest( 'form' ).dataset.grecaptchav2 = widgetID;
+		} );
+}
+// Make our callback function available in the global window object, otherwise the external Google api JS can not call it.
+window.cyclos_grecaptchav2_callback = onloadCallback;
