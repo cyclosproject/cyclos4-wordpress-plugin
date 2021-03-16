@@ -309,7 +309,7 @@ class CyclosAPI {
 		} else {
 			$sent_to = $cyclos_response->sentTo; // phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			if ( is_array( $sent_to ) && count( $sent_to ) > 0 ) {
-				$success_message = __( 'A verification code has been sent to ', 'cyclos' ) . $sent_to[0];
+				$success_message = __( 'A verification code has been sent to', 'cyclos' ) . ' ' . $sent_to[0];
 			} else {
 				$error_message = __( 'Something went wrong while trying to send you the verification code. Please contact the administration.', 'cyclos' );
 			}
