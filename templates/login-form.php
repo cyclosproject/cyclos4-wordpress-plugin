@@ -7,7 +7,8 @@
  *
  * Available variables:
  * $cyclos_is_forgot_password_enabled indicates whether the functionality to recover a forgotten password is enabled in Cyclos.
- * $cyclos_is_captcha_enabled indicates whether Cyclos requires a captcha to request a forgotten password reset.
+ * $cyclos_is_captcha_enabled indicates whether Cyclos requires an internal captcha to request a forgotten password reset. Deprecated as from Cyclos 4.15. Use the new $cyclos_captcha_provider instead.
+ * $cyclos_captcha_provider indicates the captcha mechanism as from Cyclos 4.15. Can be either: disabled, internal, or recaptchaV2.
  * $cyclos_use_forgot_password_wizard whether we should handle forgotten password requests via a wizard, or via a simple request (for older Cyclos versions).
  * $cyclos_forgot_password_mediums contains an array of the mediums the user can choose to receive the confirmation key or code. Empty when forgot password is disabled.
  * $cyclos_return_to contains the Cyclos request parameter indicating where to go within Cyclos after logging in. Can be empty.
@@ -38,12 +39,16 @@
 
 						<p><input placeholder="<?php cyclos_loginform_label( 'forgot_principal' ); ?>" name='principal' type='text' autocomplete="username"></p>
 
-						<?php if ( $cyclos_is_captcha_enabled ) : ?>
+						<?php if ( 'internal' === $cyclos_captcha_provider ) : ?>
 							<p class="cyclos-line">
 								<input placeholder="<?php cyclos_loginform_label( 'forgot_captcha' ); ?>" name='captcha' type='text'>
 								<a class="cyclos-newcaptcha" href='#'><?php cyclos_loginform_label( 'forgot_newcaptcha' ); ?></a>
 							</p>
 							<p><img class="cyclos-captcha" alt='captcha' style='display:none'></p>
+						<?php endif; ?>
+
+						<?php if ( 'recaptchaV2' === $cyclos_captcha_provider ) : ?>
+							<div class="cyclos-google-recaptchav2"></div>
 						<?php endif; ?>
 
 						<?php if ( count( $cyclos_forgot_password_mediums ) > 1 ) : ?>
