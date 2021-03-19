@@ -409,15 +409,6 @@ class Admin {
 	}
 
 	/**
-	 * Returns the sanitized value of a password field.
-	 *
-	 * @param string $value The password value to sanitize.
-	 */
-	public function sanitize_password( $value ) {
-		return sanitize_text_field( $value );
-	}
-
-	/**
 	 * Returns the sanitized value of a number field.
 	 *
 	 * @param string $value The number value to sanitize.
