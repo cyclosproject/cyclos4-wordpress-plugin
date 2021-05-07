@@ -4,6 +4,7 @@
  */
 import { initUsers } from './userdirectory/data';
 import UserList from './userdirectory/frontend/userlist';
+import UserMap from './userdirectory/frontend/usermap';
 
 const frontEnd = () => {
 	const userLists = document.querySelectorAll( '.cyclos-user-list' );
@@ -18,11 +19,12 @@ const frontEnd = () => {
 	initUsers()
 		// Build the proper user view in each div or show an error if something is wrong.
 		.then( ( userData ) => {
-			// Analogous code for when we start implementing the user map functionality.
-			// userMaps.forEach(
-			// 	( mapElement ) => new UserMap( mapElement, userData )
-			// );
+			// For each map div on the page, show a user map.
+			userMaps.forEach(
+				( mapElement ) => new UserMap( mapElement, userData )
+			);
 
+			// For each list div on the page, show a user list.
 			// Before passing the userData to userLists, aggregate users with more than one address to be seen as one user.
 			userData.aggregateUsers();
 			userLists.forEach(

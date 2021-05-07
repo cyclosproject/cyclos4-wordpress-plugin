@@ -145,7 +145,10 @@ class UserDirectory {
 	 * @return string           The rendered map with the user data.
 	 */
 	public function render_user_map() {
-		return '<div class="cyclos-user-map">The map view is not implemented yet. Please use the list view for now.</div>';
+		return sprintf(
+			'<div class="cyclos-user-map"><div class="cyclos-loader">%s...</div></div>',
+			esc_html__( 'Loading the user map, this might take a couple of seconds', 'cyclos' )
+		);
 	}
 
 	/**
@@ -221,12 +224,16 @@ class UserDirectory {
 			return;
 		}
 
+		// Register the leaflet map style and script.
+		wp_register_style( 'leaflet-style', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1' );
+		wp_register_script( 'leaflet-script', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true );
+
 		// Register the userdirectory script.
 		$file      = 'js/dist/userdirectory.js';
 		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = $asset['dependencies'];
+		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script' ) );
 		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
@@ -236,7 +243,7 @@ class UserDirectory {
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
-		$deps     = array();
+		$deps     = array( 'leaflet-style' );
 		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 
@@ -245,9 +252,15 @@ class UserDirectory {
 	 * Note: we always enqueue the userdirectory stylesheet, regardless of whether the userdirectory is on the screen.
 	 * This could be improved by checking if the screen actually contains the userdirectory shortcode.
 	 * But this is not trivial (for example the content may be in an intro text on a category screen).
+	 * Note: since adding the map functionality, we always load the leaflet stylesheet, even when the webmaster is only showing
+	 * a user list and no user map. Maybe this could be optimized, so the leaflet stylesheet would only load when there is actually a map on the page.
 	 */
 	public function enqueue_style() {
-		if ( 'none' !== $this->conf->get_user_style() ) {
+		if ( 'none' === $this->conf->get_user_style() ) {
+			// The webmaster choose to not include our userdirectory CSS. Still we should load the leaflet CSS which would otherwise load as a dependency of our CSS.
+			wp_enqueue_style( 'leaflet-style' );
+		} else {
+			// Load our userdirectory CSS, which includes a dependency to the leaflet CSS.
 			wp_enqueue_style( 'cyclos-userdirectory-style' );
 		}
 	}
