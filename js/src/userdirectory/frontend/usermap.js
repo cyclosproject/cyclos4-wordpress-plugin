@@ -24,13 +24,6 @@ export default class UserMap {
 	 * Render the map.
 	 */
 	renderMap() {
-		// Make sure the temporary loader is the only visible thing while we try to load the map.
-		const loader = this.container.querySelector( '.cyclos-loader' );
-		this.container
-			.querySelectorAll( 'div' )
-			.forEach( ( el ) => ( el.style.display = 'none' ) );
-		loader.style.display = 'block';
-
 		// Initialize the map.
 		this.container.style.height = '500px';
 		this.container.style.width = '100%';
@@ -62,10 +55,10 @@ export default class UserMap {
 			}
 		} );
 
-		// We are done loading the map, so show it and remove the loader.
-		this.container
-			.querySelectorAll( 'div' )
-			.forEach( ( el ) => ( el.style.display = 'block' ) );
-		this.container.removeChild( loader );
+		// We are done loading the map, so remove the loader.
+		const loader = this.container.querySelector( '.cyclos-loader' );
+		if ( loader ) {
+			this.container.removeChild( loader );
+		}
 	}
 }
