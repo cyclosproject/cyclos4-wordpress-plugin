@@ -60,5 +60,21 @@ export default class UserMap {
 		if ( loader ) {
 			this.container.removeChild( loader );
 		}
+
+		// Let the popup update itself after the image it might contain is loaded, because we don't know the dimensions in advance.
+		// This corrects the popup dimensions so it does not go outside the map area the first time a new image is loaded.
+		this.container.querySelector( '.leaflet-popup-pane' ).addEventListener(
+			'load',
+			( event ) => {
+				const tagName = event.target.tagName;
+				const popup = map._popup; // Last open Popup.
+
+				if ( tagName === 'IMG' && popup && ! popup._updated ) {
+					popup._updated = true; // Assumes only 1 image per Popup.
+					popup.update();
+				}
+			},
+			true // Capture the load event, because it does not bubble.
+		);
 	}
 }
