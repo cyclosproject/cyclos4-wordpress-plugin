@@ -84,6 +84,13 @@ class UserDirectory {
 				'order_field'          => '',
 				'sort_order'           => 'asc',
 				'visible_sort_options' => '',
+				'map_width'            => '',
+				'map_height'           => '',
+				'fit_users'            => true,
+				'home_longitude'       => '',
+				'home_latitude'        => '',
+				'zoom'                 => '',
+				'max_zoom'             => '',
 			),
 			$atts,
 			$tag
@@ -142,11 +149,19 @@ class UserDirectory {
 	/**
 	 * Render the user directory map view.
 	 *
+	 * @param array $atts       The shortcode attributes relevant for list views.
 	 * @return string           The rendered map with the user data.
 	 */
-	public function render_user_map() {
+	public function render_user_map( $atts ) {
 		return sprintf(
-			'<div class="cyclos-user-map"><div class="cyclos-loader">%s...</div></div>',
+			'<div class="cyclos-user-map"%s%s%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			$this->make_data_attribute( 'width', $atts['map_width'] ),
+			$this->make_data_attribute( 'height', $atts['map_height'] ),
+			$this->make_data_attribute( 'fit-users', $atts['fit_users'], 'boolean' ),
+			$this->make_data_attribute( 'lon', $atts['home_longitude'] ),
+			$this->make_data_attribute( 'lat', $atts['home_latitude'] ),
+			$this->make_data_attribute( 'zoom', $atts['zoom'] ),
+			$this->make_data_attribute( 'max-zoom', $atts['max_zoom'] ),
 			esc_html__( 'Loading the user map, this might take a couple of seconds', 'cyclos' )
 		);
 	}
