@@ -3,7 +3,7 @@
  * UserMap class representing a frontend usermap.
  */
 import { UserData } from '../data';
-import { userDetails } from './templates';
+import { userDetails, userNameValue } from './templates';
 import { getPropByPath } from '../utils';
 
 export default class UserMap {
@@ -77,7 +77,12 @@ export default class UserMap {
 			if ( lat && lon ) {
 				const userInfo = userDetails( user, this.userData.fields );
 				markers.push(
-					L.marker( { lon, lat } ).bindPopup( userInfo, {
+					L.marker(
+						{ lon, lat },
+						{
+							title: userNameValue( user ),
+						}
+					).bindPopup( userInfo, {
 						maxHeight: maxPopupHeight,
 						maxWidth: maxPopupWidth,
 						minWidth: minPopupWidth,
@@ -89,9 +94,12 @@ export default class UserMap {
 		// Either show the map so all markers are visible, or use the given home and zoom.
 		const group = L.featureGroup( markers ).addTo( map );
 		if ( this.props.fit ) {
-			setTimeout( function () {
-				map.fitBounds( group.getBounds() );
-			}, 1000 );
+			const bounds = group.getBounds();
+			if ( Object.keys( bounds ).length > 0 ) {
+				setTimeout( function () {
+					map.fitBounds( bounds );
+				}, 1000 );
+			}
 		} else {
 			map.setView(
 				{ lon: this.props.lon, lat: this.props.lat },
