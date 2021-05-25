@@ -67,9 +67,6 @@ export default class UserMap {
 		} ).addTo( map );
 
 		// Add a marker to the map for each user, showing a popup with user details when clicked.
-		const maxPopupWidth = this.container.clientWidth - 50;
-		const minPopupWidth = this.container.clientWidth / 2;
-		const maxPopupHeight = this.container.clientHeight / 2;
 		const markers = [];
 		this.userData.users.forEach( ( user ) => {
 			const lat = getPropByPath( user, 'address.location.latitude' );
@@ -83,9 +80,9 @@ export default class UserMap {
 							title: userNameValue( user ),
 						}
 					).bindPopup( userInfo, {
-						maxHeight: maxPopupHeight,
-						maxWidth: maxPopupWidth,
-						minWidth: minPopupWidth,
+						maxHeight: this.container.clientHeight - 50,
+						className:
+							'cyclos-user-info-modal ' + cyclosUserObj.design,
 					} )
 				);
 			}
