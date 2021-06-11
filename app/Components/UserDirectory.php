@@ -16,6 +16,14 @@ use Cyclos\Services\CyclosAPI;
 class UserDirectory {
 
 	/**
+	 * Leaflet map asset sources.
+	 */
+	const LEAFLET_VERSION = '1.7.1';
+	const LEAFLET_CSS     = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+	const LEAFLET_JS      = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+	const LEAFLET_ICON    = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+
+	/**
 	 * The Cyclos API.
 	 *
 	 * @var CyclosAPI $cyclos The Cyclos API.
@@ -240,8 +248,8 @@ class UserDirectory {
 		}
 
 		// Register the leaflet map style and script.
-		wp_register_style( 'leaflet-style', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css', array(), '1.7.1' );
-		wp_register_script( 'leaflet-script', 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', array(), '1.7.1', true );
+		wp_register_style( 'leaflet-style', self::LEAFLET_CSS, array(), self::LEAFLET_VERSION );
+		wp_register_script( 'leaflet-script', self::LEAFLET_JS, array(), self::LEAFLET_VERSION, true );
 
 		// Register the userdirectory script.
 		$file      = 'js/dist/userdirectory.js';
@@ -297,7 +305,7 @@ class UserDirectory {
 		// Pass the necessary information to the userdirectory script.
 		$map_icon = $this->conf->get_map_icon();
 		if ( empty( $map_icon ) ) {
-			$map_icon = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+			$map_icon = self::LEAFLET_ICON;
 		}
 		wp_localize_script(
 			'cyclos-userdirectory',
