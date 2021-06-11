@@ -66,6 +66,22 @@ export default class UserMap {
 			attribution: this.props.copyright,
 		} ).addTo( map );
 
+		// Prepare an icon for each category option with its internal name as the className.
+		const cats = this.userData.filterOptions;
+		const catIcons = {};
+		cats.forEach( ( cat ) => {
+			if ( cat.value ) {
+				catIcons[ cat.value ] = L.icon( {
+					iconUrl: cyclosUserObj.map_icon,
+					className: cat.value ?? '',
+				} );
+			}
+		} );
+		// For users with no category, use an icon with no specific className.
+		const defaultIcon = L.icon( {
+			iconUrl: cyclosUserObj.map_icon,
+		} );
+
 		// Add a marker to the map for each user, showing a popup with user details when clicked.
 		const markers = [];
 		this.userData.users.forEach( ( user ) => {
@@ -73,11 +89,13 @@ export default class UserMap {
 			const lon = getPropByPath( user, 'address.location.longitude' );
 			if ( lat && lon ) {
 				const userInfo = userDetails( user, this.userData.fields );
+				const userCat = getPropByPath( user, 'customValues.category' );
 				markers.push(
 					L.marker(
 						{ lon, lat },
 						{
 							title: userNameValue( user ),
+							icon: catIcons[ userCat ] ?? defaultIcon,
 						}
 					).bindPopup( userInfo, {
 						maxHeight: this.container.clientHeight - 50,

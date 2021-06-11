@@ -295,6 +295,10 @@ class UserDirectory {
 		wp_enqueue_script( 'cyclos-userdirectory' );
 
 		// Pass the necessary information to the userdirectory script.
+		$map_icon = $this->conf->get_map_icon();
+		if ( empty( $map_icon ) ) {
+			$map_icon = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+		}
 		wp_localize_script(
 			'cyclos-userdirectory',
 			'cyclosUserObj',
@@ -302,6 +306,7 @@ class UserDirectory {
 				'ajax_url' => admin_url( 'admin-ajax.php' ),
 				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
 				'design'   => $this->conf->get_user_style(),
+				'map_icon' => $map_icon,
 				'l10n'     => array(
 					'setupMessage'   => __( 'There was an error retrieving the user data from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
 					'noUsers'        => __( 'No users found', 'cyclos' ),
