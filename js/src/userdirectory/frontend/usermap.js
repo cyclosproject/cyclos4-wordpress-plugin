@@ -4,7 +4,7 @@
  */
 import { UserData } from '../data';
 import { userDetails, userNameValue } from './templates';
-import { getPropByPath } from '../utils';
+import { getPropByPath, getPropsByPath } from '../utils';
 
 export default class UserMap {
 	constructor( container, userData ) {
@@ -88,13 +88,18 @@ export default class UserMap {
 			const lat = getPropByPath( user, 'address.location.latitude' );
 			const lon = getPropByPath( user, 'address.location.longitude' );
 			if ( lat && lon ) {
+				// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
+				// This way, users with multiple addresses turn up with their different addresses in the search control.
+				const title =
+					userNameValue( user ) +
+					getPropsByPath( user, cyclosUserObj.map_marker_title );
 				const userInfo = userDetails( user, this.userData.fields );
 				const userCat = getPropByPath( user, 'customValues.category' );
 				markers.push(
 					L.marker(
 						{ lon, lat },
 						{
-							title: userNameValue( user ),
+							title,
 							icon: catIcons[ userCat ] ?? defaultIcon,
 						}
 					).bindPopup( userInfo, {
@@ -121,7 +126,23 @@ export default class UserMap {
 				this.props.zoom
 			);
 		}
-		L.markerClusterGroup().addLayer( group ).addTo( map );
+		const clusters = L.markerClusterGroup().addLayer( group );
+		map.addLayer( clusters );
+
+		// Add the search control.
+		const searchControl = new L.Control.Search( {
+			layer: clusters,
+			initial: false, // Also find letters in the middle of a word, not just from the beginning.
+			marker: false, // Hide the red circle around a hit.
+		} );
+		searchControl.on( 'search:locationfound', ( e ) => {
+			// When a user is found, close the search control and open the user popup.
+			searchControl.collapse();
+			clusters.zoomToShowLayer( e.layer, () => {
+				e.layer.openPopup();
+			} );
+		} );
+		map.addControl( searchControl );
 
 		// We are done loading the map, so remove the loader.
 		const loader = this.container.querySelector( '.cyclos-loader' );

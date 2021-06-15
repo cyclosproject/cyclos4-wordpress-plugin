@@ -32,6 +32,13 @@ class UserDirectory {
 	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js';
 
 	/**
+	 * Leaflet seach plugin asset sources.
+	 */
+	const LEAFLET_SEARCH_VERSION = '2.9.9';
+	const LEAFLET_SEARCH_CSS     = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css';
+	const LEAFLET_SEARCH_JS      = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js';
+
+	/**
 	 * The Cyclos API.
 	 *
 	 * @var CyclosAPI $cyclos The Cyclos API.
@@ -259,15 +266,17 @@ class UserDirectory {
 		wp_register_style( 'leaflet-style', self::LEAFLET_CSS, array(), self::LEAFLET_VERSION );
 		wp_register_style( 'leaflet-cluster-style', self::LEAFLET_CLUSTER_CSS, array( 'leaflet-style' ), self::LEAFLET_CLUSTER_VERSION );
 		wp_register_style( 'leaflet-cluster-icon-style', self::LEAFLET_CLUSTER_ICON_CSS, array( 'leaflet-cluster-style' ), self::LEAFLET_CLUSTER_VERSION );
+		wp_register_style( 'leaflet-search-style', self::LEAFLET_SEARCH_CSS, array( 'leaflet-style' ), self::LEAFLET_SEARCH_VERSION );
 		wp_register_script( 'leaflet-script', self::LEAFLET_JS, array(), self::LEAFLET_VERSION, true );
 		wp_register_script( 'leaflet-cluster-script', self::LEAFLET_CLUSTER_JS, array( 'leaflet-script' ), self::LEAFLET_CLUSTER_VERSION, true );
+		wp_register_script( 'leaflet-search-script', self::LEAFLET_SEARCH_JS, array( 'leaflet-script' ), self::LEAFLET_SEARCH_VERSION, true );
 
 		// Register the userdirectory script.
 		$file      = 'js/dist/userdirectory.js';
 		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script' ) );
+		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script', 'leaflet-search-script' ) );
 		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
@@ -277,7 +286,7 @@ class UserDirectory {
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
-		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style' );
+		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style', 'leaflet-search-style' );
 		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 
@@ -322,11 +331,12 @@ class UserDirectory {
 			'cyclos-userdirectory',
 			'cyclosUserObj',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
-				'design'   => $this->conf->get_user_style(),
-				'map_icon' => $map_icon,
-				'l10n'     => array(
+				'ajax_url'         => admin_url( 'admin-ajax.php' ),
+				'id'               => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
+				'design'           => $this->conf->get_user_style(),
+				'map_icon'         => $map_icon,
+				'map_marker_title' => apply_filters( 'cyclos_map_marker_title', 'address.addressLine1 + address.city' ),
+				'l10n'             => array(
 					'setupMessage'   => __( 'There was an error retrieving the user data from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
 					'noUsers'        => __( 'No users found', 'cyclos' ),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
