@@ -24,6 +24,14 @@ class UserDirectory {
 	const LEAFLET_ICON    = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
 
 	/**
+	 * Leaflet markercluster plugin asset sources.
+	 */
+	const LEAFLET_CLUSTER_VERSION  = '1.5.0';
+	const LEAFLET_CLUSTER_CSS      = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css';
+	const LEAFLET_CLUSTER_ICON_CSS = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css';
+	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js';
+
+	/**
 	 * The Cyclos API.
 	 *
 	 * @var CyclosAPI $cyclos The Cyclos API.
@@ -247,16 +255,19 @@ class UserDirectory {
 			return;
 		}
 
-		// Register the leaflet map style and script.
+		// Register the leaflet map styles and scripts.
 		wp_register_style( 'leaflet-style', self::LEAFLET_CSS, array(), self::LEAFLET_VERSION );
+		wp_register_style( 'leaflet-cluster-style', self::LEAFLET_CLUSTER_CSS, array( 'leaflet-style' ), self::LEAFLET_CLUSTER_VERSION );
+		wp_register_style( 'leaflet-cluster-icon-style', self::LEAFLET_CLUSTER_ICON_CSS, array( 'leaflet-cluster-style' ), self::LEAFLET_CLUSTER_VERSION );
 		wp_register_script( 'leaflet-script', self::LEAFLET_JS, array(), self::LEAFLET_VERSION, true );
+		wp_register_script( 'leaflet-cluster-script', self::LEAFLET_CLUSTER_JS, array( 'leaflet-script' ), self::LEAFLET_CLUSTER_VERSION, true );
 
 		// Register the userdirectory script.
 		$file      = 'js/dist/userdirectory.js';
 		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script' ) );
+		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script' ) );
 		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
@@ -266,7 +277,7 @@ class UserDirectory {
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
-		$deps     = array( 'leaflet-style' );
+		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style' );
 		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 

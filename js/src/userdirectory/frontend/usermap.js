@@ -107,7 +107,7 @@ export default class UserMap {
 		} );
 
 		// Either show the map so all markers are visible, or use the given home and zoom.
-		const group = L.featureGroup( markers ).addTo( map );
+		const group = L.featureGroup( markers );
 		if ( this.props.fit ) {
 			const bounds = group.getBounds();
 			if ( Object.keys( bounds ).length > 0 ) {
@@ -121,6 +121,7 @@ export default class UserMap {
 				this.props.zoom
 			);
 		}
+		L.markerClusterGroup().addLayer( group ).addTo( map );
 
 		// We are done loading the map, so remove the loader.
 		const loader = this.container.querySelector( '.cyclos-loader' );
