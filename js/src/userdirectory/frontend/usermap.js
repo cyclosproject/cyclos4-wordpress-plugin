@@ -70,6 +70,13 @@ export default class UserMap {
 				zoomOutTitle: cyclosUserObj.l10n.zoomOutTitle,
 			} )
 			.addTo( map );
+		// Add a fullscreen control.
+		L.control
+			.fullscreen( {
+				title: cyclosUserObj.l10n.fullScreen,
+				titleCancel: cyclosUserObj.l10n.exitFullscreen,
+			} )
+			.addTo( map );
 		// Add the tiles layer.
 		L.tileLayer( this.props.tilesURLTemplate, {
 			maxZoom: this.props.maxZoom,
