@@ -339,6 +339,10 @@ class UserDirectory {
 				'l10n'             => array(
 					'setupMessage'   => __( 'There was an error retrieving the user data from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
 					'noUsers'        => __( 'No users found', 'cyclos' ),
+					'cancel'         => __( 'Cancel', 'cyclos' ),
+					'search'         => __( 'Search', 'cyclos' ),
+					'zoomInTitle'    => __( 'Zoom in', 'cyclos' ),
+					'zoomOutTitle'   => __( 'Zoom out', 'cyclos' ),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
 					'noFilterOption' => $this->conf->get_user_nofilter_option(),
 					'sortLabel'      => $this->conf->get_user_sort_label(),

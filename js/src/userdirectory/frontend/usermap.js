@@ -60,7 +60,17 @@ export default class UserMap {
 		// Initialize the map.
 		this.container.style.width = this.props.width;
 		this.container.style.height = this.props.height;
-		const map = L.map( this.container );
+		const map = L.map( this.container, {
+			zoomControl: false,
+		} );
+		// Add a custom zoom control so we can pass translated hover texts.
+		L.control
+			.zoom( {
+				zoomInTitle: cyclosUserObj.l10n.zoomInTitle,
+				zoomOutTitle: cyclosUserObj.l10n.zoomOutTitle,
+			} )
+			.addTo( map );
+		// Add the tiles layer.
 		L.tileLayer( this.props.tilesURLTemplate, {
 			maxZoom: this.props.maxZoom,
 			attribution: this.props.copyright,
@@ -134,6 +144,9 @@ export default class UserMap {
 			layer: clusters,
 			initial: false, // Also find letters in the middle of a word, not just from the beginning.
 			marker: false, // Hide the red circle around a hit.
+			textErr: cyclosUserObj.l10n?.noUsers,
+			textCancel: cyclosUserObj.l10n?.cancel,
+			textPlaceholder: cyclosUserObj.l10n?.search,
 		} );
 		searchControl.on( 'search:locationfound', ( e ) => {
 			// When a user is found, close the search control and open the user popup.
