@@ -60,6 +60,13 @@ class UserDirectory {
 	private $conf;
 
 	/**
+	 * Keep track of wether we have prepared the scripts for a map already or not.
+	 *
+	 * @var boolean $has_map Whether the userdirectory is shown in a map or not (i.e. in a list only).
+	 */
+	private $has_map;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param Configuration $conf   The configuration.
@@ -76,6 +83,7 @@ class UserDirectory {
 	public function init() {
 		add_action( 'init', array( $this, 'register_stuff' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
+		add_action( 'wp_footer', array( $this, 'localize_script' ) );
 		add_shortcode( 'cyclosusers', array( $this, 'handle_users_shortcode' ) );
 		add_filter( 'cyclos_render_setting', array( $this, 'render_user_settings' ), 10, 2 );
 		add_action( 'wp_ajax_cyclos_refresh_user_data', array( $this, 'handle_refresh_user_data_ajax_request' ) );
@@ -104,8 +112,6 @@ class UserDirectory {
 	 * @return string          The rendered user data.
 	 */
 	public function handle_users_shortcode( $atts = array(), $content = null, $tag = '' ) {
-		$this->enqueue_script();
-
 		$atts = shortcode_atts(
 			array(
 				'views'                => 'list',
@@ -133,9 +139,11 @@ class UserDirectory {
 		foreach ( $views as $view ) {
 			switch ( trim( $view ) ) {
 				case 'map':
+					$this->enqueue_script( 'map' );
 					$output .= $this->render_user_map( $atts );
 					break;
 				case 'list':
+					$this->enqueue_script( 'list' );
 					$output .= $this->render_user_list( $atts );
 					break;
 				default:
@@ -280,14 +288,18 @@ class UserDirectory {
 		wp_register_script( 'leaflet-search-script', self::LEAFLET_SEARCH_JS, array( 'leaflet-script' ), self::LEAFLET_SEARCH_VERSION, true );
 		wp_register_script( 'leaflet-fullscreen-script', self::LEAFLET_FULLSCREEN_JS, array( 'leaflet-script' ), self::LEAFLET_FULLSCREEN_VERSION, true );
 
-		// Register the userdirectory script.
+		// Register the userdirectory script variant for the list.
 		$file      = 'js/dist/userdirectory.js';
 		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
 		$file_url  = \Cyclos\PLUGIN_URL . $file;
-		$deps      = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script', 'leaflet-search-script', 'leaflet-fullscreen-script' ) );
+		$deps      = $asset['dependencies'];
 		$version   = $asset['version'];
 		$in_footer = true;
+		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
+		// Register the userdirectory script variant for the map (including leaflet deps).
+		$handle = 'cyclos-userdirectory-map';
+		$deps   = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script', 'leaflet-search-script', 'leaflet-fullscreen-script' ) );
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
 		// Register the userdirectory style.
@@ -305,12 +317,14 @@ class UserDirectory {
 	 * This could be improved by checking if the screen actually contains the userdirectory shortcode.
 	 * But this is not trivial (for example the content may be in an intro text on a category screen).
 	 * Note: since adding the map functionality, we always load the leaflet stylesheet, even when the webmaster is only showing
-	 * a user list and no user map. Maybe this could be optimized, so the leaflet stylesheet would only load when there is actually a map on the page.
+	 * a user list and no user map. The webmaster can dequeue these styles on all pages or on all pages except where they show the map.
 	 */
 	public function enqueue_style() {
 		if ( 'none' === $this->conf->get_user_style() ) {
 			// The webmaster choose to not include our userdirectory CSS. Still we should load the leaflet CSS which would otherwise load as a dependency of our CSS.
-			wp_enqueue_style( 'leaflet-style' );
+			wp_enqueue_style( 'leaflet-cluster-icon-style' );
+			wp_enqueue_style( 'leaflet-search-style' );
+			wp_enqueue_style( 'leaflet-fullscreen-style' );
 		} else {
 			// Load our userdirectory CSS, which includes a dependency to the leaflet CSS.
 			wp_enqueue_style( 'cyclos-userdirectory-style' );
@@ -319,25 +333,41 @@ class UserDirectory {
 
 	/**
 	 * Enqueue frontend javascript for the userdirectory.
+	 *
+	 * @param string $view   The view to enqueue scripts for, being either 'list' or 'map'.
 	 */
-	public function enqueue_script() {
-		// Keep track of wether we have prepared the scripts already or not.
-		// If we call wp_localize_script more than once, the resulting javascript object is also put on the html several times.
-		static $scripts_ready = false;
-		if ( $scripts_ready ) {
-			// We have done the enqueue and localize script work already before, so just return.
+	public function enqueue_script( $view ) {
+		if ( $this->has_map ) {
+			// We have already enqueued the map script. This contains list functionality as well, so there is nothing left to do.
 			return;
 		}
-		// Enqueue the userdirectory script.
-		wp_enqueue_script( 'cyclos-userdirectory' );
+		switch ( $view ) {
+			case 'map':
+				// First remove the list script that might be enqueued.
+				wp_dequeue_script( 'cyclos-userdirectory' );
+				// Next, enqueue the map script, which contains list functionality as well.
+				wp_enqueue_script( 'cyclos-userdirectory-map' );
+				// Keep track of the fact that we enqueued the map script.
+				$this->has_map = true;
+				break;
+			case 'list':
+				wp_enqueue_script( 'cyclos-userdirectory' );
+				break;
+		}
+	}
 
+	/**
+	 * Localize frontend javascript for the userdirectory.
+	 */
+	public function localize_script() {
 		// Pass the necessary information to the userdirectory script.
 		$map_icon = $this->conf->get_map_icon();
 		if ( empty( $map_icon ) ) {
 			$map_icon = self::LEAFLET_ICON;
 		}
+		$handle = $this->has_map ? 'cyclos-userdirectory-map' : 'cyclos-userdirectory';
 		wp_localize_script(
-			'cyclos-userdirectory',
+			$handle,
 			'cyclosUserObj',
 			array(
 				'ajax_url'         => admin_url( 'admin-ajax.php' ),
@@ -363,8 +393,6 @@ class UserDirectory {
 				),
 			)
 		);
-		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
-		$scripts_ready = true;
 	}
 
 	/**
