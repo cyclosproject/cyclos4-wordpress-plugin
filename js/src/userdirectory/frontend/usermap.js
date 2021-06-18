@@ -101,6 +101,8 @@ export default class UserMap {
 
 		// Add a marker to the map for each user, showing a popup with user details when clicked.
 		const markers = [];
+		const catField =
+			'customValues.' + this.userData.userMeta?.mapDirectoryField;
 		this.userData.users.forEach( ( user ) => {
 			const lat = getPropByPath( user, 'address.location.latitude' );
 			const lon = getPropByPath( user, 'address.location.longitude' );
@@ -111,7 +113,7 @@ export default class UserMap {
 					userNameValue( user ) +
 					getPropsByPath( user, cyclosUserObj.map_marker_title );
 				const userInfo = userDetails( user, this.userData.fields );
-				const userCat = getPropByPath( user, 'customValues.category' );
+				const userCat = getPropByPath( user, catField );
 				markers.push(
 					L.marker(
 						{ lon, lat },
