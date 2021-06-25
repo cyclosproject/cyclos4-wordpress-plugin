@@ -120,7 +120,7 @@
 		font-size: 12px;
 		color: var(--gray-dark);
 		display: grid;
-		grid-template-columns: 1fr minmax(auto, 100px);
+		grid-template-columns: 1fr fit-content(100px);
 		grid-template-rows: auto 1fr;
 		column-gap: 10px;
 		padding: 10px 0;
@@ -183,7 +183,7 @@
 
 		// Re-apply display of specific fields, that was done in general.
 		// Hide 'featured', country, no-logo.
-		.customvalues-featured,
+		& > div:not(.cyclos-user-address).customvalues-featured,
 		.cyclos-user-address .country,
 		.cyclos-user-info-modal .cyclos-no-logo {
 			display: none;
