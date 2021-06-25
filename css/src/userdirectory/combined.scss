@@ -88,15 +88,16 @@
 	}
 }
 
-// Styling the popup for the userlist.
-body > .cyclos-user-info-modal.ocean,
-body > .cyclos-user-info-modal.material {
+// Styling the popup for the userlist and usermap.
+.cyclos-user-info-modal.ocean,
+.cyclos-user-info-modal.material {
 
 	// Put addresses in a bordered block.
 	.cyclos-user-address {
 		border: 1px solid var(--gray-2);
 		margin: 1em 0;
 		padding: 1em;
+		box-sizing: content-box;
 	}
 }
 
