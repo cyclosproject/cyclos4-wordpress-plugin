@@ -104,7 +104,7 @@ export default class UserMap {
 		const catField =
 			'customValues.' + this.userData.userMeta?.mapDirectoryField;
 		const maxPopupW = this.container.clientHeight - 50;
-		const maxPopupH = Math.min( this.container.clientWidth - 100, 200 );
+		const maxPopupH = Math.min( this.container.clientWidth - 100, 300 );
 		this.userData.users.forEach( ( user ) => {
 			const lat = getPropByPath( user, 'address.location.latitude' );
 			const lon = getPropByPath( user, 'address.location.longitude' );

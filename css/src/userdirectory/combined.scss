@@ -120,7 +120,9 @@
 		font-size: 12px;
 		color: var(--gray-dark);
 		display: grid;
-		grid-template-columns: auto auto;
+		grid-template-columns: 1fr minmax(auto, 100px);
+		grid-template-rows: auto 1fr;
+		column-gap: 10px;
 		padding: 10px 0;
 
 		// Use the new clamp rule to truncate text.
@@ -154,13 +156,15 @@
 
 		.cyclos-user-logo {
 			grid-row: 1 / span 2;
-			grid-column: 2/3;
-			max-height: 200px;
-			max-width: 100px;
+			grid-column: 2 / 3;
 			justify-self: end;
+			max-height: none;
 
 			img {
-				padding-left: 10px;
+				max-width: 100px;
+				max-height: 200px;
+				height: auto;
+				width: auto;
 			}
 		}
 
