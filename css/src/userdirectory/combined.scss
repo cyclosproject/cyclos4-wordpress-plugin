@@ -96,7 +96,7 @@
 	.cyclos-user-address {
 		border: 1px solid var(--gray-2);
 		margin: 1em 0;
-		padding: 1em;
+		padding: 0.35em 0.7em;
 		box-sizing: content-box;
 	}
 }
@@ -125,8 +125,8 @@
 		column-gap: 10px;
 		padding: 10px 0;
 
-		// Use the new clamp rule to truncate text.
-		& > div {
+		// Use the new clamp rule to truncate text to be no more than 3 lines.
+		& > div:not(.cyclos-user-address) {
 			grid-column: 1 / span 2;
 			max-height: 4.5em; // Fallback when clamp does not work: this makes 3 lines.
 			line-height: 1.5;
@@ -135,6 +135,31 @@
 			-webkit-box-orient: vertical;
 			display: -webkit-box; // This display is required for the clamp rule.
 			-webkit-line-clamp: 3;
+
+			// Put the name and address next to the logo.
+			&.name {
+				grid-column: 1 / 2;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				display: block;
+				font-weight: 700;
+				margin-bottom: 0;
+				color: var(--gray-dark-2);
+			}
+
+			&.cyclos-user-logo {
+				grid-row: 1 / span 2;
+				grid-column: 2 / 3;
+				justify-self: end;
+				max-height: none;
+
+				img {
+					max-width: 100px;
+					max-height: 200px;
+					height: auto;
+					width: auto;
+				}
+			}
 		}
 
 		// Reset any margin and line-height of p-tags that might be inside our divs.
@@ -143,34 +168,10 @@
 			line-height: inherit;
 		}
 
-		// Put the name and address next to the logo.
-		.name {
-			grid-column: 1 / 2;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			display: block;
-			font-weight: 700;
-			margin-bottom: 0;
-			color: var(--gray-dark-2);
-		}
-
-		.cyclos-user-logo {
-			grid-row: 1 / span 2;
-			grid-column: 2 / 3;
-			justify-self: end;
-			max-height: none;
-
-			img {
-				max-width: 100px;
-				max-height: 200px;
-				height: auto;
-				width: auto;
-			}
-		}
-
 		.cyclos-user-address {
 			grid-column: 1 / 2;
 			margin-bottom: 1em;
+			align-self: start;
 		}
 
 		.cyclos-user-address div {
@@ -180,12 +181,18 @@
 			display: block;
 		}
 
-		// Re-apply hiding specific fields, that was done in general.
+		// Re-apply display of specific fields, that was done in general.
 		// Hide 'featured', country, no-logo.
 		.customvalues-featured,
 		.cyclos-user-address .country,
 		.cyclos-user-info-modal .cyclos-no-logo {
 			display: none;
+		}
+		// Put zip and city on one line.
+		.cyclos-user-address .zip,
+		.cyclos-user-address .city {
+			display: inline-block;
+			vertical-align: text-top;
 		}
 
 		// Show a relevant icon before any email, phone or url field type.
