@@ -127,6 +127,7 @@ export default class UserMap {
 						maxHeight: maxPopupW,
 						minWidth: maxPopupH,
 						className: cyclosUserObj.design,
+						autoPanPadding: [ 50, 50 ], // Open the popup always at least 50px from the left/top border to prevent the controls overlapping it.
 					} )
 				);
 			}
