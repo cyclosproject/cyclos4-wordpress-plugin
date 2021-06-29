@@ -126,8 +126,7 @@ export default class UserMap {
 					).bindPopup( userInfo, {
 						maxHeight: maxPopupW,
 						minWidth: maxPopupH,
-						className:
-							'cyclos-user-info-modal ' + cyclosUserObj.design,
+						className: cyclosUserObj.design,
 					} )
 				);
 			}

@@ -83,7 +83,7 @@ export const userDetails = ( user, fields ) => {
 				userInfo += defaultField( className, value, field.type );
 		}
 	}
-	return `<div class="user-details">${ userInfo }</div>`;
+	return `<div class="cyclos-user-details">${ userInfo }</div>`;
 };
 
 /**

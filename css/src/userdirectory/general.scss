@@ -1,8 +1,8 @@
 /*
- * The general styles for the userlist.
+ * The general styles for the userdirectory.
 */
 .cyclos-user-list,
-.cyclos-user-info-modal {
+.cyclos-user-details {
 	--blue: #33c3f7;
 	--orange: #f77133;
 	--white: #fff;
@@ -88,7 +88,7 @@
 // Hide customfields named 'featured', hide country, hide no-logo when in popup.
 .customvalues-featured,
 .cyclos-user-address .country,
-.cyclos-user-info-modal .cyclos-no-logo {
+.cyclos-user-details .cyclos-no-logo {
 	display: none;
 }
 

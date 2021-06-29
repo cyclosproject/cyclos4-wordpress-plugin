@@ -34,7 +34,7 @@
 }
 
 // Show bold gray names (usernames and names of addresses) in the popup.
-.cyclos-user-info-modal.material .name {
+.material .cyclos-user-details .name {
 	color: var(--gray-dark);
 	font-weight: 700;
 	margin-bottom: 1em;
