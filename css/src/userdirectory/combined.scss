@@ -126,7 +126,7 @@
 		padding: 10px 0;
 
 		// Use the new clamp rule to truncate text to be no more than 3 lines.
-		& > div:not(.cyclos-user-address) {
+		& > div {
 			grid-column: 1 / span 2;
 			max-height: 4.5em; // Fallback when clamp does not work: this makes 3 lines.
 			line-height: 1.5;
@@ -142,7 +142,6 @@
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				display: block;
-				font-weight: 700;
 				margin-bottom: 0;
 				color: var(--gray-dark-2);
 			}
@@ -169,21 +168,27 @@
 		}
 
 		.cyclos-user-address {
+			// Put the address block next to the logo, right under the name.
 			grid-column: 1 / 2;
 			margin-bottom: 1em;
 			align-self: start;
-		}
-
-		.cyclos-user-address div {
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
+			// Don't truncate the address block itself.
+			max-height: none;
 			display: block;
+
+			// Do trunctate lines within the address block.
+			div {
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				display: block;
+			}
 		}
 
 		// Re-apply display of specific fields, that was done in general.
-		// Hide 'featured', country, no-logo.
-		& > div:not(.cyclos-user-address).customvalues-featured,
+		// We need to override the -webkit-box display above, needed for the clamp.
+		// Hide 'featured' and country fields.
+		.customvalues-featured,
 		.cyclos-user-address .country {
 			display: none;
 		}
