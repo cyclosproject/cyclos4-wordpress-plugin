@@ -1,4 +1,4 @@
-/* global cyclosUserObj, L */
+/* global cyclosUserObj, L, Image */
 /**
  * UserMap class representing a frontend usermap.
  */
@@ -18,7 +18,7 @@ export default class UserMap {
 		/** @type { UserData} */
 		this.userData = userData;
 		this.initProps();
-		this.renderMap();
+		this.loadMap();
 	}
 
 	/**
@@ -54,6 +54,32 @@ export default class UserMap {
 	}
 
 	/**
+	 * Load the map: render the map in the load event of the marker image.
+	 * This way, we can adjust the marker options to the image dimensions (unless loading fails).
+	 */
+	loadMap() {
+		// Use the dimensions of the icon image to determine the iconSize, iconAnchor and popupAnchor.
+		const iconUrl = cyclosUserObj.map_icon;
+		this.iconOptions = { iconUrl };
+		const markerIcon = new Image();
+		markerIcon.onload = () => {
+			const iconW = markerIcon.naturalWidth;
+			const iconH = markerIcon.naturalHeight;
+			if ( iconW && iconH ) {
+				this.iconOptions.iconSize = [ iconW, iconH ];
+				this.iconOptions.iconAnchor = [ iconW / 2, iconH ];
+				this.iconOptions.popupAnchor = [ 1, -( iconH - 10 ) ];
+			}
+			this.renderMap();
+		};
+		markerIcon.onerror = () => {
+			this.iconOptions = null;
+			this.renderMap();
+		};
+		markerIcon.src = iconUrl;
+	}
+
+	/**
 	 * Render the map.
 	 */
 	renderMap() {
@@ -83,21 +109,23 @@ export default class UserMap {
 			attribution: this.props.copyright,
 		} ).addTo( map );
 
-		// Prepare an icon for each category option with its internal name as the className.
-		const cats = this.userData.filterOptions;
+		// Prepare the marker icons.
+		// As a fallback, setup a default leaflet icon with no specific className.
+		let defaultIcon = new L.Icon.Default();
 		const catIcons = {};
-		cats.forEach( ( cat ) => {
-			if ( cat.value ) {
-				catIcons[ cat.value ] = L.icon( {
-					iconUrl: cyclosUserObj.map_icon,
-					className: cat.value ?? '',
-				} );
-			}
-		} );
-		// For users with no category, use an icon with no specific className.
-		const defaultIcon = L.icon( {
-			iconUrl: cyclosUserObj.map_icon,
-		} );
+		// If the icon image is known, set up a custom icon as prepared in the load event of the icon image in loadMap().
+		if ( this.iconOptions ) {
+			// For users with no category, use the icon with no specific className.
+			defaultIcon = L.icon( this.iconOptions );
+			// Prepare an icon for each category option with its internal name as the className.
+			const cats = this.userData.filterOptions;
+			cats.forEach( ( cat ) => {
+				if ( cat.value ) {
+					this.iconOptions.className = cat.value ?? '';
+					catIcons[ cat.value ] = L.icon( this.iconOptions );
+				}
+			} );
+		}
 
 		// Add a marker to the map for each user, showing a popup with user details when clicked.
 		const markers = [];
