@@ -92,13 +92,83 @@
 .ocean .cyclos-user-details,
 .material .cyclos-user-details {
 
-	// Put addresses in a bordered block.
+	// Use a grid display to put name/address next to logo.
+	display: grid;
+	grid-template-columns: 1fr fit-content(100px);
+	grid-template-rows: auto 1fr;
+	column-gap: 10px;
+	padding: 10px 0;
+
+	& > div {
+		// Let child divs span two columns so they occupy the entire width.
+		grid-column: 1 / span 2;
+
+		// Except name/address and logo: put the name and address next to the logo.
+		&.name {
+			grid-column: 1 / 2;
+		}
+
+		&.cyclos-user-address {
+			grid-column: 1 / 2;
+			margin-bottom: 1em;
+			align-self: start;
+		}
+
+		&.cyclos-user-logo {
+			grid-row: 1 / span 2;
+			grid-column: 2 / 3;
+			justify-self: end;
+
+			img {
+				max-width: 100px;
+				max-height: 200px;
+				height: auto;
+				width: auto;
+			}
+		}
+	}
+
+	// Put the address in a bordered block.
 	.cyclos-user-address {
 		border: 1px solid var(--gray-2);
 		margin: 1em 0;
 		padding: 0.35em 0.7em;
 		box-sizing: content-box;
 	}
+
+	// Show bold names (usernames and optional names of addresses) in the popup.
+	.name {
+		font-weight: 700;
+	}
+
+	// Show a relevant icon before any email, phone or url field type.
+	.cyclos-user-email a,
+	.cyclos-user-phone a,
+	.cyclos-user-url a {
+		text-decoration: none;
+		display: block;
+		height: 2em;
+		line-height: 2;
+		padding-left: 22px;
+	}
+
+	// Don't escape spaces/quotes but put the url in quotes & disable stylelint.
+	// stylelint-disable function-url-quotes
+	.cyclos-user-email a {
+		// E-mail enveloppe SVG from https://icons.getbootstrap.com/icons/envelope/.
+		background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z'/></svg>") no-repeat left center;
+	}
+
+	.cyclos-user-phone a {
+		// Telephone SVG from https://icons.getbootstrap.com/icons/telephone/.
+		background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z'/></svg>") no-repeat left center;
+	}
+
+	.cyclos-user-url a {
+		// Globe SVG from https://icons.getbootstrap.com/icons/globe/.
+		background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z'/></svg>") no-repeat left center;
+	}
+	// stylelint-enable function-url-quotes
 }
 
 // Styling the popup for the map.
@@ -116,18 +186,12 @@
 	}
 
 	.cyclos-user-details {
-		// Use a smaller font size and grid display to put name/address next to logo.
+		// Use a smaller font size in the map popup.
 		font-size: 12px;
 		color: var(--gray-dark);
-		display: grid;
-		grid-template-columns: 1fr fit-content(100px);
-		grid-template-rows: auto 1fr;
-		column-gap: 10px;
-		padding: 10px 0;
 
 		// Use the new clamp rule to truncate text to be no more than 3 lines.
 		& > div {
-			grid-column: 1 / span 2;
 			max-height: 4.5em; // Fallback when clamp does not work: this makes 3 lines.
 			line-height: 1.5;
 			overflow: hidden;
@@ -136,28 +200,12 @@
 			display: -webkit-box; // This display is required for the clamp rule.
 			-webkit-line-clamp: 3;
 
-			// Put the name and address next to the logo.
 			&.name {
-				grid-column: 1 / 2;
+				color: var(--gray-dark-2);
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				display: block;
 				margin-bottom: 0;
-				color: var(--gray-dark-2);
-			}
-
-			&.cyclos-user-logo {
-				grid-row: 1 / span 2;
-				grid-column: 2 / 3;
-				justify-self: end;
-				max-height: none;
-
-				img {
-					max-width: 100px;
-					max-height: 200px;
-					height: auto;
-					width: auto;
-				}
 			}
 		}
 
@@ -167,22 +215,29 @@
 			line-height: inherit;
 		}
 
+		// Show hyperlinks in the same color as the text.
+		a {
+			color: var(--gray-dark);
+		}
+
+		// Don't truncate the logo div.
+		.cyclos-user-logo {
+			max-height: none;
+		}
+
 		.cyclos-user-address {
-			// Put the address block next to the logo, right under the name.
-			grid-column: 1 / 2;
-			margin-bottom: 1em;
-			align-self: start;
 			// Don't truncate the address block itself.
 			max-height: none;
 			display: block;
 
-			// Do trunctate lines within the address block.
+			// Do truncate lines within the address block.
 			div {
 				overflow: hidden;
 				white-space: nowrap;
 				text-overflow: ellipsis;
 				display: block;
 			}
+
 		}
 
 		// Re-apply display of specific fields, that was done in general.
@@ -198,35 +253,5 @@
 			display: inline-block;
 			vertical-align: text-top;
 		}
-
-		// Show a relevant icon before any email, phone or url field type.
-		.cyclos-user-email a,
-		.cyclos-user-phone a,
-		.cyclos-user-url a {
-			color: var(--gray-dark);
-			text-decoration: none;
-			display: block;
-			height: 2em;
-			line-height: 2;
-			padding-left: 22px;
-		}
-
-		// Don't escape spaces/quotes but put the url in quotes & disable stylelint.
-		// stylelint-disable function-url-quotes
-		.cyclos-user-email a {
-			// E-mail enveloppe SVG from https://icons.getbootstrap.com/icons/envelope/.
-			background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z'/></svg>") no-repeat left center;
-		}
-
-		.cyclos-user-phone a {
-			// Telephone SVG from https://icons.getbootstrap.com/icons/telephone/.
-			background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z'/></svg>") no-repeat left center;
-		}
-
-		.cyclos-user-url a {
-			// Globe SVG from https://icons.getbootstrap.com/icons/globe/.
-			background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='gray' viewBox='0 0 16 16'><path d='M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z'/></svg>") no-repeat left center;
-		}
-		// stylelint-enable function-url-quotes
 	}
 }
