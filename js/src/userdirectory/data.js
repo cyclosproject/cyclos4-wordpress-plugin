@@ -1,5 +1,6 @@
 /* global fetch, cyclosUserObj */
 import { getPropByPath } from './utils';
+const cloneDeep = require( 'lodash.clonedeep' );
 
 /**
  * UserData class containing current Cyclos user data and metadata.
@@ -152,29 +153,6 @@ export class UserData {
 		// Store the generated map.
 		this.fields = fields;
 	}
-
-	/**
-	 * Aggregate the users so users with multiple addresses are condensed to one user.
-	 */
-	aggregateUsers() {
-		this.users = this.users.reduce( ( aggregatedData, item ) => {
-			// Check if the current item belongs to the same user as the previous item we stored.
-			const prevUser = aggregatedData[ aggregatedData.length - 1 ] ?? {};
-			const prevUserId = prevUser?.id ?? '';
-			const curUserId = item?.id ?? '';
-			if ( prevUserId && prevUserId === curUserId ) {
-				// The current item belongs to the same user as the previous, so add the address of the current item to the previous,
-				// instead of pushing the current item itself to the aggregated data.
-				( prevUser.addresses = prevUser.addresses || [] ).push(
-					item.address
-				);
-			} else {
-				// The current item belongs to another user than the previous, so simply push the current item to the aggregated data.
-				aggregatedData.push( item );
-			}
-			return aggregatedData;
-		}, [] );
-	}
 }
 
 export async function initUsers() {
@@ -294,6 +272,33 @@ export const prepareUsersForRender = ( userData, sort, filter ) => {
 		doSort( tempUsers, orderField, orderDirection );
 	}
 	return tempUsers;
+};
+
+/**
+ * Aggregate the users so users with multiple addresses are condensed to one user.
+ *
+ * @param { Array } users The array of users that should be aggregated.
+ * @return { Array } The array of aggregated users.
+ */
+export const aggregateUsers = ( users ) => {
+	// Note: Deep clone the users array, so we don't manipulate the original user objects within it.
+	return cloneDeep( users ).reduce( ( aggregatedData, item ) => {
+		// Check if the current item belongs to the same user as the previous item we stored.
+		const prevUser = aggregatedData[ aggregatedData.length - 1 ] ?? {};
+		const prevUserId = prevUser?.id ?? '';
+		const curUserId = item?.id ?? '';
+		if ( prevUserId && prevUserId === curUserId ) {
+			// The current item belongs to the same user as the previous, so add the address of the current item to the previous,
+			// instead of pushing the current item itself to the aggregated data.
+			( prevUser.addresses = prevUser.addresses || [] ).push(
+				item.address
+			);
+		} else {
+			// The current item belongs to another user than the previous, so simply push the current item to the aggregated data.
+			aggregatedData.push( item );
+		}
+		return aggregatedData;
+	}, [] );
 };
 
 /**

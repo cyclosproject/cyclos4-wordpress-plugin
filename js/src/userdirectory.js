@@ -2,7 +2,7 @@
 /**
  * Internal dependencies
  */
-import { initUsers } from './userdirectory/data';
+import { initUsers, aggregateUsers, UserData } from './userdirectory/data';
 import UserList from './userdirectory/frontend/userlist';
 import UserMap from './userdirectory/frontend/usermap';
 
@@ -24,12 +24,18 @@ const frontEnd = () => {
 				( mapElement ) => new UserMap( mapElement, userData )
 			);
 
-			// For each list div on the page, show a user list.
 			// Before passing the userData to userLists, aggregate users with more than one address to be seen as one user.
-			userData.aggregateUsers();
-			userLists.forEach(
-				( listElement ) => new UserList( listElement, userData )
-			);
+			if ( userLists.length > 0 ) {
+				// To avoid changing the data used in UserMap, we make a new UserData object.
+				const aggrData = new UserData(
+					aggregateUsers( userData.users ),
+					userData.userMeta
+				);
+				// For each list div on the page, show a user list.
+				userLists.forEach(
+					( listElement ) => new UserList( listElement, aggrData )
+				);
+			}
 		} )
 		.catch( () => {
 			const errMsg = cyclosUserObj.l10n?.setupMessage;
