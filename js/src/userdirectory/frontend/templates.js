@@ -83,7 +83,7 @@ export const userDetails = ( user, fields ) => {
 				userInfo += defaultField( className, value, field.type );
 		}
 	}
-	return `<div class="user-details">${ userInfo }</div>`;
+	return `<div class="cyclos-user-details">${ userInfo }</div>`;
 };
 
 /**
@@ -103,13 +103,8 @@ const showInfoWindow = ( user, fields ) => {
  * @param { Object } user The user object.
  */
 const card = ( user ) => {
-	let nameValue = getPropByPath( user, 'name' );
-	if ( ! nameValue ) {
-		// If there is no 'name' field, the user name may be in the 'display' field.
-		nameValue = getPropByPath( user, 'display' );
-	}
-
 	// Create the html for the basic info of the user, being name and logo.
+	const nameValue = userNameValue( user );
 	const userName = nameValue ? defaultField( 'name', nameValue, 'text' ) : '';
 	const userLogo = logo( user, 180, 160 );
 
@@ -123,10 +118,11 @@ const card = ( user ) => {
 
 const logo = ( user, maxWidth = 300, minWidth = 300 ) => {
 	const image = user?.image;
+	const nameValue = userNameValue( user );
 	let logoElement;
 	if ( ! image?.url ) {
 		// This user has no logo, so return an element with the username instead.
-		logoElement = `<div class="cyclos-no-logo"><span>${ user?.name }</span></div>`;
+		logoElement = `<div class="cyclos-no-logo"><span>${ nameValue }</span></div>`;
 	} else {
 		// This user has a logo, so return an image with the logo converted to maximum proportions if needed.
 		const alt = image.name ?? '';
@@ -205,6 +201,10 @@ const defaultField = ( id, value, type ) => {
 
 const makeClass = ( input ) => {
 	return input.toLowerCase().replaceAll( '.', '-' );
+};
+
+export const userNameValue = ( user ) => {
+	return user?.name ?? user?.display ?? '';
 };
 
 class Modal {

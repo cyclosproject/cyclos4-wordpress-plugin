@@ -1,8 +1,9 @@
 /*
- * The general styles for the userlist.
+ * The general styles for the userdirectory.
 */
 .cyclos-user-list,
-.cyclos-user-info-modal {
+.cyclos-user-map,
+.cyclos-user-details {
 	--blue: #33c3f7;
 	--orange: #f77133;
 	--white: #fff;
@@ -88,7 +89,7 @@
 // Hide customfields named 'featured', hide country, hide no-logo when in popup.
 .customvalues-featured,
 .cyclos-user-address .country,
-.cyclos-user-info-modal .cyclos-no-logo {
+.cyclos-user-details .cyclos-no-logo {
 	display: none;
 }
 
@@ -102,6 +103,24 @@
 // Capitalize city names.
 .cyclos-user-address .city {
 	text-transform: capitalize;
+}
+
+/* Some rather arbitrary general fixes */
+// Remove ugly border leaflet puts in the popup whenever it has a scrollbar.
+.leaflet-popup-scrolled {
+	border: none;
+}
+// Remove underline of control buttons Twenty19 puts on all hyperlinks.
+.entry .entry-content .leaflet-control-container a {
+	text-decoration: none;
+}
+// Reset width of search input field when Twenty20 tries to make it full width.
+.leaflet-container input[type="text"] {
+	width: auto;
+}
+// Remove dotted outline Twenty21 theme puts around search input field.
+.leaflet-container input[type="text"]:focus {
+	outline: none;
 }
 
 /* Show a spinner while loading the userlist. */

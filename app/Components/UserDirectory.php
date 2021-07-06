@@ -16,6 +16,36 @@ use Cyclos\Services\CyclosAPI;
 class UserDirectory {
 
 	/**
+	 * Leaflet map asset sources.
+	 */
+	const LEAFLET_VERSION = '1.7.1';
+	const LEAFLET_CSS     = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
+	const LEAFLET_JS      = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
+	const LEAFLET_ICON    = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+
+	/**
+	 * Leaflet markercluster plugin asset sources.
+	 */
+	const LEAFLET_CLUSTER_VERSION  = '1.5.0';
+	const LEAFLET_CLUSTER_CSS      = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css';
+	const LEAFLET_CLUSTER_ICON_CSS = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css';
+	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js';
+
+	/**
+	 * Leaflet search plugin asset sources.
+	 */
+	const LEAFLET_SEARCH_VERSION = '2.9.9';
+	const LEAFLET_SEARCH_CSS     = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css';
+	const LEAFLET_SEARCH_JS      = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js';
+
+	/**
+	 * Leaflet fullscreen plugin asset sources. Source: https://github.com/brunob/leaflet.fullscreen.
+	 */
+	const LEAFLET_FULLSCREEN_VERSION = '2.0.0';
+	const LEAFLET_FULLSCREEN_CSS     = 'https://unpkg.com/leaflet.fullscreen@2.0.0/Control.FullScreen.css';
+	const LEAFLET_FULLSCREEN_JS      = 'https://unpkg.com/leaflet.fullscreen@2.0.0/Control.FullScreen.js';
+
+	/**
 	 * The Cyclos API.
 	 *
 	 * @var CyclosAPI $cyclos The Cyclos API.
@@ -28,6 +58,13 @@ class UserDirectory {
 	 * @var Configuration $conf The configuration.
 	 */
 	private $conf;
+
+	/**
+	 * Keep track of wether we have prepared the scripts for a map already or not.
+	 *
+	 * @var boolean $has_map Whether the userdirectory is shown in a map or not (i.e. in a list only).
+	 */
+	private $has_map;
 
 	/**
 	 * Constructor.
@@ -46,6 +83,7 @@ class UserDirectory {
 	public function init() {
 		add_action( 'init', array( $this, 'register_stuff' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
+		add_action( 'wp_footer', array( $this, 'localize_script' ) );
 		add_shortcode( 'cyclosusers', array( $this, 'handle_users_shortcode' ) );
 		add_filter( 'cyclos_render_setting', array( $this, 'render_user_settings' ), 10, 2 );
 		add_action( 'wp_ajax_cyclos_refresh_user_data', array( $this, 'handle_refresh_user_data_ajax_request' ) );
@@ -74,8 +112,6 @@ class UserDirectory {
 	 * @return string          The rendered user data.
 	 */
 	public function handle_users_shortcode( $atts = array(), $content = null, $tag = '' ) {
-		$this->enqueue_script();
-
 		$atts = shortcode_atts(
 			array(
 				'views'                => 'list',
@@ -84,6 +120,13 @@ class UserDirectory {
 				'order_field'          => '',
 				'sort_order'           => 'asc',
 				'visible_sort_options' => '',
+				'map_width'            => '',
+				'map_height'           => '',
+				'fit_users'            => true,
+				'home_longitude'       => '',
+				'home_latitude'        => '',
+				'zoom'                 => '',
+				'max_zoom'             => '',
 			),
 			$atts,
 			$tag
@@ -96,9 +139,11 @@ class UserDirectory {
 		foreach ( $views as $view ) {
 			switch ( trim( $view ) ) {
 				case 'map':
+					$this->enqueue_script( 'map' );
 					$output .= $this->render_user_map( $atts );
 					break;
 				case 'list':
+					$this->enqueue_script( 'list' );
 					$output .= $this->render_user_list( $atts );
 					break;
 				default:
@@ -142,10 +187,21 @@ class UserDirectory {
 	/**
 	 * Render the user directory map view.
 	 *
+	 * @param array $atts       The shortcode attributes relevant for list views.
 	 * @return string           The rendered map with the user data.
 	 */
-	public function render_user_map() {
-		return '<div class="cyclos-user-map">The map view is not implemented yet. Please use the list view for now.</div>';
+	public function render_user_map( $atts ) {
+		return sprintf(
+			'<div class="cyclos-user-map"%s%s%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			$this->make_data_attribute( 'width', $atts['map_width'] ),
+			$this->make_data_attribute( 'height', $atts['map_height'] ),
+			$this->make_data_attribute( 'fit-users', $atts['fit_users'], 'boolean' ),
+			$this->make_data_attribute( 'lon', $atts['home_longitude'] ),
+			$this->make_data_attribute( 'lat', $atts['home_latitude'] ),
+			$this->make_data_attribute( 'zoom', $atts['zoom'] ),
+			$this->make_data_attribute( 'max-zoom', $atts['max_zoom'] ),
+			esc_html__( 'Loading the user map, this might take a couple of seconds', 'cyclos' )
+		);
 	}
 
 	/**
@@ -221,7 +277,18 @@ class UserDirectory {
 			return;
 		}
 
-		// Register the userdirectory script.
+		// Register the leaflet map styles and scripts.
+		wp_register_style( 'leaflet-style', self::LEAFLET_CSS, array(), self::LEAFLET_VERSION );
+		wp_register_style( 'leaflet-cluster-style', self::LEAFLET_CLUSTER_CSS, array( 'leaflet-style' ), self::LEAFLET_CLUSTER_VERSION );
+		wp_register_style( 'leaflet-cluster-icon-style', self::LEAFLET_CLUSTER_ICON_CSS, array( 'leaflet-cluster-style' ), self::LEAFLET_CLUSTER_VERSION );
+		wp_register_style( 'leaflet-search-style', self::LEAFLET_SEARCH_CSS, array( 'leaflet-style' ), self::LEAFLET_SEARCH_VERSION );
+		wp_register_style( 'leaflet-fullscreen-style', self::LEAFLET_FULLSCREEN_CSS, array( 'leaflet-style' ), self::LEAFLET_FULLSCREEN_VERSION );
+		wp_register_script( 'leaflet-script', self::LEAFLET_JS, array(), self::LEAFLET_VERSION, true );
+		wp_register_script( 'leaflet-cluster-script', self::LEAFLET_CLUSTER_JS, array( 'leaflet-script' ), self::LEAFLET_CLUSTER_VERSION, true );
+		wp_register_script( 'leaflet-search-script', self::LEAFLET_SEARCH_JS, array( 'leaflet-script' ), self::LEAFLET_SEARCH_VERSION, true );
+		wp_register_script( 'leaflet-fullscreen-script', self::LEAFLET_FULLSCREEN_JS, array( 'leaflet-script' ), self::LEAFLET_FULLSCREEN_VERSION, true );
+
+		// Register the userdirectory script variant for the list.
 		$file      = 'js/dist/userdirectory.js';
 		$asset     = include \Cyclos\PLUGIN_DIR . 'js/dist/userdirectory.asset.php';
 		$handle    = 'cyclos-userdirectory';
@@ -230,13 +297,17 @@ class UserDirectory {
 		$version   = $asset['version'];
 		$in_footer = true;
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
+		// Register the userdirectory script variant for the map (including leaflet deps).
+		$handle = 'cyclos-userdirectory-map';
+		$deps   = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script', 'leaflet-search-script', 'leaflet-fullscreen-script' ) );
+		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
 		// Register the userdirectory style.
 		$file     = 'css/dist/userdirectory.min.css';
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
-		$deps     = array();
+		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style', 'leaflet-search-style', 'leaflet-fullscreen-style' );
 		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 
@@ -245,38 +316,74 @@ class UserDirectory {
 	 * Note: we always enqueue the userdirectory stylesheet, regardless of whether the userdirectory is on the screen.
 	 * This could be improved by checking if the screen actually contains the userdirectory shortcode.
 	 * But this is not trivial (for example the content may be in an intro text on a category screen).
+	 * Note: since adding the map functionality, we always load the leaflet stylesheet, even when the webmaster is only showing
+	 * a user list and no user map. The webmaster can dequeue these styles on all pages or on all pages except where they show the map.
 	 */
 	public function enqueue_style() {
-		if ( 'none' !== $this->conf->get_user_style() ) {
+		if ( 'none' === $this->conf->get_user_style() ) {
+			// The webmaster choose to not include our userdirectory CSS. Still we should load the leaflet CSS which would otherwise load as a dependency of our CSS.
+			wp_enqueue_style( 'leaflet-cluster-icon-style' );
+			wp_enqueue_style( 'leaflet-search-style' );
+			wp_enqueue_style( 'leaflet-fullscreen-style' );
+		} else {
+			// Load our userdirectory CSS, which includes a dependency to the leaflet CSS.
 			wp_enqueue_style( 'cyclos-userdirectory-style' );
 		}
 	}
 
 	/**
 	 * Enqueue frontend javascript for the userdirectory.
+	 *
+	 * @param string $view   The view to enqueue scripts for, being either 'list' or 'map'.
 	 */
-	public function enqueue_script() {
-		// Keep track of wether we have prepared the scripts already or not.
-		// If we call wp_localize_script more than once, the resulting javascript object is also put on the html several times.
-		static $scripts_ready = false;
-		if ( $scripts_ready ) {
-			// We have done the enqueue and localize script work already before, so just return.
+	public function enqueue_script( $view ) {
+		if ( $this->has_map ) {
+			// We have already enqueued the map script. This contains list functionality as well, so there is nothing left to do.
 			return;
 		}
-		// Enqueue the userdirectory script.
-		wp_enqueue_script( 'cyclos-userdirectory' );
+		switch ( $view ) {
+			case 'map':
+				// First remove the list script that might be enqueued.
+				wp_dequeue_script( 'cyclos-userdirectory' );
+				// Next, enqueue the map script, which contains list functionality as well.
+				wp_enqueue_script( 'cyclos-userdirectory-map' );
+				// Keep track of the fact that we enqueued the map script.
+				$this->has_map = true;
+				break;
+			case 'list':
+				wp_enqueue_script( 'cyclos-userdirectory' );
+				break;
+		}
+	}
 
+	/**
+	 * Localize frontend javascript for the userdirectory.
+	 */
+	public function localize_script() {
 		// Pass the necessary information to the userdirectory script.
+		$map_icon = $this->conf->get_map_icon();
+		if ( empty( $map_icon ) ) {
+			$map_icon = self::LEAFLET_ICON;
+		}
+		$handle = $this->has_map ? 'cyclos-userdirectory-map' : 'cyclos-userdirectory';
 		wp_localize_script(
-			'cyclos-userdirectory',
+			$handle,
 			'cyclosUserObj',
 			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'id'       => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
-				'design'   => $this->conf->get_user_style(),
-				'l10n'     => array(
+				'ajax_url'         => admin_url( 'admin-ajax.php' ),
+				'id'               => wp_create_nonce( 'cyclos_userdirectory_nonce' ),
+				'design'           => $this->conf->get_user_style(),
+				'map_icon'         => $map_icon,
+				'map_marker_title' => apply_filters( 'cyclos_map_marker_title', 'address.addressLine1 + address.city' ),
+				'l10n'             => array(
 					'setupMessage'   => __( 'There was an error retrieving the user data from the server. Please ask your website administrator if this problem persists.', 'cyclos' ),
 					'noUsers'        => __( 'No users found', 'cyclos' ),
+					'cancel'         => __( 'Cancel', 'cyclos' ),
+					'search'         => __( 'Search', 'cyclos' ),
+					'zoomInTitle'    => __( 'Zoom in', 'cyclos' ),
+					'zoomOutTitle'   => __( 'Zoom out', 'cyclos' ),
+					'fullScreen'     => __( 'Full Screen', 'cyclos' ),
+					'exitFullscreen' => __( 'Exit Full Screen', 'cyclos' ),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
 					'noFilterOption' => $this->conf->get_user_nofilter_option(),
 					'sortLabel'      => $this->conf->get_user_sort_label(),
@@ -286,8 +393,6 @@ class UserDirectory {
 				),
 			)
 		);
-		// Set the indicator the scripts are ready, so next time we kan skip the enqueue and localize script work.
-		$scripts_ready = true;
 	}
 
 	/**

@@ -31,3 +31,23 @@ export const getPropByPath = ( obj, path ) => {
 		return intermediate;
 	}, obj );
 };
+
+/**
+ * Get multiple properties of an object as a concatenated output string, using paths dividing the property names with a dot, each path separated with a '+'.
+ *
+ * For example, if the paths string is: 'address.zip + address.city', the string returned is obj['address']['zip'] - obj['address']['city'].
+ *
+ * @param { Object } obj The object to get the properties from.
+ * @param { string } paths The property paths seperated with a '+' sign.
+ * @param { string } sep (Optional) The separator to use in the output string. Defaults to ' - '.
+ */
+export const getPropsByPath = ( obj, paths, sep = ' - ' ) => {
+	if ( ! paths || paths.length <= 0 ) {
+		return '';
+	}
+	const output = paths.split( ' + ' ).reduce( ( result, path ) => {
+		const prop = getPropByPath( obj, path );
+		return result + ( prop ? sep + prop : '' );
+	}, '' );
+	return output;
+};
