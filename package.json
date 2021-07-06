@@ -16,7 +16,7 @@
 	"private": true,
 	"dependencies": {},
 	"devDependencies": {
-		"@wordpress/scripts": "15.0.1",
+		"@wordpress/scripts": "16.1.4",
 		"lodash.clonedeep": "4.5.0"
 	},
 	"scripts": {
