@@ -166,15 +166,15 @@ const image = ( id, value ) => {
 };
 
 const url = ( id, value ) => {
-	return `<div class="${ id } cyclos-user-url"><a href="${ value }">${ value }</a></div>`;
+	return `<div class="${ id } cyclos-user-url"><a href="${ value }" target="_blank" rel="noopener noreferrer">${ value }</a></div>`;
 };
 
 const email = ( id, value ) => {
-	return `<div class="${ id } cyclos-user-email"><a href="mailto:${ value }">${ value }</a></div>`;
+	return `<div class="${ id } cyclos-user-email"><a href="mailto:${ value }" target="_blank" rel="noopener noreferrer">${ value }</a></div>`;
 };
 
 const phone = ( id, value ) => {
-	return `<div class="${ id } cyclos-user-phone"><a href="tel:${ value }">${ value }</a></div>`;
+	return `<div class="${ id } cyclos-user-phone"><a href="tel:${ value }" target="_blank" rel="noopener noreferrer">${ value }</a></div>`;
 };
 
 const selection = ( id, value, possibleValues ) => {
