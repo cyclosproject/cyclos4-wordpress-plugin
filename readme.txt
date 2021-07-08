@@ -5,15 +5,15 @@ Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
 Tested up to: 5.7
 Requires PHP: 7.2
-Stable tag: 3.0.0-plus
+Stable tag: 4.0.0
 License: GPLv2
 
-This plugin enables you to add a Cyclos login form and/or show a list of Cyclos users on your WordPress website.
+This plugin enables you to add a Cyclos login form and/or show Cyclos users in a list or map on your WordPress website.
 
 == Description ==
 
 ### Cyclos WordPress Plugin ###
-This plugin enables you to add a Cyclos login form and/or show a list of Cyclos users on your WordPress website.
+This plugin enables you to add a Cyclos login form and/or show Cyclos users in a list or map on your WordPress website.
 
 == Installation ==
 
@@ -36,7 +36,7 @@ Detailed instructions for the configuration of both Cyclos and WordPress setting
 == Frequently Asked Questions ==
 
 = What does the plugin do? =
-With the plugin you can allow your Cyclos users to login to Cyclos using a WordPress front-end site. And/or you can show a list of your Cyclos users in your WordPress site.
+With the plugin you can allow your Cyclos users to login to Cyclos using a WordPress front-end site. And/or you can show your Cyclos users in a list or map in your WordPress site.
 
 = What is Cyclos? =
 Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
