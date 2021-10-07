@@ -180,7 +180,7 @@ class UserDirectory {
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
 			$this->make_data_attribute( 'sort-options', $visible_sort_options ),
-			esc_html__( 'Loading the user list, this might take a couple of seconds', 'cyclos' )
+			esc_html__( 'Loading the users, this might take a couple of seconds', 'cyclos' )
 		);
 	}
 
@@ -200,7 +200,7 @@ class UserDirectory {
 			$this->make_data_attribute( 'lat', $atts['home_latitude'] ),
 			$this->make_data_attribute( 'zoom', $atts['zoom'] ),
 			$this->make_data_attribute( 'max-zoom', $atts['max_zoom'] ),
-			esc_html__( 'Loading the user map, this might take a couple of seconds', 'cyclos' )
+			esc_html__( 'Loading the users, this might take a couple of seconds', 'cyclos' )
 		);
 	}
 
