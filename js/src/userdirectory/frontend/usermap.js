@@ -88,6 +88,7 @@ export default class UserMap {
 		this.container.style.height = this.props.height;
 		const map = L.map( this.container, {
 			zoomControl: false,
+			tap: false,
 		} );
 		// Add a custom zoom control so we can pass translated hover texts.
 		L.control
