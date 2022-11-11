@@ -3,7 +3,7 @@ Contributors: Cyclos, luisfpg, rleon.uy, augusto1995, rozijntje
 Tags: Cyclos, Cyclos login, Cyclos users, Cyclos user directory, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
 Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
-Tested up to: 5.8
+Tested up to: 6.1
 Requires PHP: 7.2
 Stable tag: 4.1.0
 License: GPLv2
