@@ -41,7 +41,7 @@ export const userDetails = ( user, fields ) => {
 			if ( user?.addresses ) {
 				// Show the address in the address property and those in the addresses property.
 				// Pass a customized list of fields to skip, to show the 'name' for each address.
-				const fieldsToSkip = [ 'id', 'location' ];
+				const fieldsToSkip = [ 'id', 'location', 'contactInfo' ];
 				userInfo += address( user?.address, fieldsToSkip );
 				userInfo += user.addresses.reduce(
 					( extras, extraAddress ) =>
@@ -131,7 +131,10 @@ const logo = ( user, maxWidth = 300, minWidth = 300 ) => {
 	return `<div class="cyclos-user-logo">${ logoElement }</div>`;
 };
 
-const address = ( addressVal, fieldsToSkip = [ 'id', 'name', 'location' ] ) => {
+const address = (
+	addressVal,
+	fieldsToSkip = [ 'id', 'name', 'location', 'contactInfo' ]
+) => {
 	if ( ! addressVal ) {
 		// This user has no address, so return an empty string.
 		return '';
