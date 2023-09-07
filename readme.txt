@@ -31,7 +31,7 @@ This plugin enables you to add a Cyclos login form and/or show Cyclos users in a
 1. Activate the Cyclos plugin through the 'Plugins' menu in WordPress.
 1. Configure the plugin by going to 'Cyclos' under the 'Settings' menu.
 
-Detailed instructions for the configuration of both Cyclos and WordPress settings are available in our [Wiki](https://wiki4.cyclos.org/index.php/WordPress).
+Detailed instructions for the configuration of both Cyclos and WordPress settings are available in our [Wiki](https://wiki.cyclos.org/index.php/WordPress).
 
 == Frequently Asked Questions ==
 
@@ -42,7 +42,7 @@ With the plugin you can allow your Cyclos users to login to Cyclos using a WordP
 Cyclos is a payment platform used by banks, mfi's, barters, for remittances and complementary currency systems. For more information please visit: [www.cyclos.org](https://www.cyclos.org).
 
 = Where can I find more information? =
-Please read the dedicated page in our [Wiki](https://wiki4.cyclos.org/index.php/WordPress) about this plugin.
+Please read the dedicated page in our [Wiki](https://wiki.cyclos.org/index.php/WordPress) about this plugin.
 
 == Screenshots ==
 1. Login form (in a page).
@@ -52,4 +52,4 @@ Please read the dedicated page in our [Wiki](https://wiki4.cyclos.org/index.php/
 5. User list example with filter option.
 
 == Changelog ==
-Please see the [Changelog](https://wiki4.cyclos.org/index.php/WordPress#Changelog) in our Wiki.
+Please see the [Changelog](https://wiki.cyclos.org/index.php/WordPress#Changelog) in our Wiki.
