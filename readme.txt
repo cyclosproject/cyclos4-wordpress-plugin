@@ -3,9 +3,9 @@ Contributors: Cyclos, luisfpg, rleon.uy, augusto1995, rozijntje
 Tags: Cyclos, Cyclos login, Cyclos users, Cyclos user directory, Banking, Payment, Barter, Remittances, Micro Finance, Complementary Currency, Mobile Money
 Donate link: https://www.cyclos.org/contributors/
 Requires at least: 5.0
-Tested up to: 6.1
+Tested up to: 6.3
 Requires PHP: 7.2
-Stable tag: 4.1.0
+Stable tag: 4.1.1
 License: GPLv2
 
 This plugin enables you to add a Cyclos login form and/or show Cyclos users in a list or map on your WordPress website.
