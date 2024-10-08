@@ -19,6 +19,9 @@
 		"@wordpress/scripts": "30.0.2",
 		"lodash.clonedeep": "4.5.0"
 	},
+	"engines": {
+		"node": ">=20"
+	},
 	"scripts": {
 		"build": "npm run build:js && npm run build:css",
 		"build:js": "wp-scripts build js/src/admin.js js/src/cyclos_login.js js/src/userdirectory.js --output-path=js/dist",

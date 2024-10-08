@@ -1,6 +1,6 @@
-/* global fetch, cyclosUserObj */
+/* global cyclosUserObj */
 import { getPropByPath } from './utils';
-const cloneDeep = require( 'lodash.clonedeep' );
+import cloneDeep from 'lodash.clonedeep';
 
 /**
  * UserData class containing current Cyclos user data and metadata.
