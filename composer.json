@@ -11,5 +11,10 @@
 	"scripts": {
 		"wpcs:fix": "phpcbf --report-summary --report-source .",
 		"wpcs:check": "phpcs ."
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }
