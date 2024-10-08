@@ -152,9 +152,8 @@ jQuery( document ).ready( function ( $ ) {
 				grecaptchav2ID = $( forgotForm ).data( 'grecaptchav2' );
 				if ( undefined !== grecaptchav2ID ) {
 					// Google recaptchaV2 is used as a captcha provider. Set its response in the data object.
-					data.captcha_response = grecaptcha.getResponse(
-						grecaptchav2ID
-					);
+					data.captcha_response =
+						grecaptcha.getResponse( grecaptchav2ID );
 				}
 				// The medium must not be sent in the simple form, so first check if it is there.
 				const sendMedium = fieldVal( forgotForm, 'send-medium' );

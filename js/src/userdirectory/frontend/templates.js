@@ -10,8 +10,8 @@ import { getPropByPath } from '../utils';
  * Maybe in a future version the webmaster would be able to override the card and onclick handler, to provide a custom template.
  *
  * @param { HTMLElement } userList The list element to render the user on.
- * @param { Object } user The user object to render.
- * @param { Map } fields A Map of fields to show for this user.
+ * @param { Object }      user     The user object to render.
+ * @param { Map }         fields   A Map of fields to show for this user.
  */
 export const renderUser = ( userList, user, fields ) => {
 	// Render the user card at the end of the userList container.
@@ -24,8 +24,8 @@ export const renderUser = ( userList, user, fields ) => {
 /**
  * Returns an HTML string with all fields we should show for this user.
  *
- * @param { Object } user The user object.
- * @param { Map } fields The Map of fields to show.
+ * @param { Object } user   The user object.
+ * @param { Map }    fields The Map of fields to show.
  * @return { string } The html string with the info of the given user.
  */
 export const userDetails = ( user, fields ) => {
@@ -89,8 +89,8 @@ export const userDetails = ( user, fields ) => {
 /**
  * Creates a modal window with all fields we should show for this user.
  *
- * @param { Object } user The user object.
- * @param { Map } fields The Map of fields to show.
+ * @param { Object } user   The user object.
+ * @param { Map }    fields The Map of fields to show.
  */
 const showInfoWindow = ( user, fields ) => {
 	const userInfo = userDetails( user, fields );
