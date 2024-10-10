@@ -1,6 +1,6 @@
-/* global fetch, cyclosUserObj */
+/* global cyclosUserObj */
 import { getPropByPath } from './utils';
-const cloneDeep = require( 'lodash.clonedeep' );
+import cloneDeep from 'lodash.clonedeep';
 
 /**
  * UserData class containing current Cyclos user data and metadata.
@@ -208,9 +208,9 @@ export async function initUsers() {
  * 	  { value: 'customValues.rating-desc', label: 'Rating DESC' },
  *  ]
  *
- * @param { UserData } userData The userData object containing the array of all possible sortOptions.
- * @param { string } initialSort The initial sorting, for example: name-asc.
- * @param { string } visibleSortOptions The visible sort options, for example: name-asc, name-desc, customValues.rating-desc.
+ * @param { UserData } userData           The userData object containing the array of all possible sortOptions.
+ * @param { string }   initialSort        The initial sorting, for example: name-asc.
+ * @param { string }   visibleSortOptions The visible sort options, for example: name-asc, name-desc, customValues.rating-desc.
  * @return { Array } The array of value/label objects.
  */
 export const generateVisibleSortOptions = (
@@ -254,8 +254,8 @@ export const generateVisibleSortOptions = (
  * Returns the users array filtered on the given filter and order by the given sort.
  *
  * @param { UserData } userData The userData object containing the array of users.
- * @param { string } sort The order to sort by. Contains field and direction separated by a dash, for example: name-asc.
- * @param { string } filter The field to filter on.
+ * @param { string }   sort     The order to sort by. Contains field and direction separated by a dash, for example: name-asc.
+ * @param { string }   filter   The field to filter on.
  * @return { Array } The filtered and sorted array of users.
  */
 export const prepareUsersForRender = ( userData, sort, filter ) => {
@@ -304,7 +304,7 @@ export const aggregateUsers = ( users ) => {
 /**
  * Filters the given array of users so we only have users in the requested category.
  *
- * @param { Array } users The array of users that should be filtered.
+ * @param { Array }  users    The array of users that should be filtered.
  * @param { string } catField The internal name of the category field to filter by.
  * @param { string } category The category to filter by.
  */
@@ -323,8 +323,8 @@ const doFilter = ( users, catField, category ) => {
 /**
  * Sorts the given array of users.
  *
- * @param { Array } users The array of users that should be sorted.
- * @param { string } orderBy The field to sort by.
+ * @param { Array }  users     The array of users that should be sorted.
+ * @param { string } orderBy   The field to sort by.
  * @param { string } sortOrder The direction to sort by. Either 'asc' or 'desc'.
  */
 export const doSort = ( users, orderBy, sortOrder ) => {
@@ -337,7 +337,7 @@ export const doSort = ( users, orderBy, sortOrder ) => {
  * Creates a comparator callback function that compares two given users a and b.
  * The callback returns -1 if a should be before b; 1 if b should be before a; 0 otherwise.
  *
- * @param { string } orderBy The property to use for the ordering.
+ * @param { string } orderBy   The property to use for the ordering.
  * @param { string } sortOrder The sort order. Either 'asc' or 'desc'.
  */
 const usersComparator = ( orderBy, sortOrder ) => ( a, b ) => {

@@ -1,5 +1,7 @@
 {
 	"css.validate": false,
+	"stylelint.enable": true,
+	"stylelint.validate": ["css", "scss"],
 	"phpcs.executablePath": "vendor\\bin\\phpcs.bat",
 	"phpcs.autoConfigSearch": false,
 	"phpcs.standard": ".phpcs.xml.dist",
