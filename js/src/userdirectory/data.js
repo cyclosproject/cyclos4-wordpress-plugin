@@ -30,9 +30,15 @@ export class UserData {
 			return null;
 		}
 		// Create a set of internal names of unique categories.
+		// Category may contain multiple values separated by pipes if the category field is of type multiple selection.
 		const categories = this.users.reduce( ( cats, user ) => {
 			if ( user.customValues ) {
-				cats.add( user.customValues[ catFieldId ] );
+				const vals = user.customValues[ catFieldId ];
+				if ( vals ) {
+					for ( const val of vals.split( '|' ) ) {
+						cats.add( val );
+					}
+				}
 			}
 			return cats;
 		}, new Set() );
@@ -315,8 +321,8 @@ const doFilter = ( users, catField, category ) => {
 	}
 
 	// Return the users, filtered by category.
-	return users.filter(
-		( user ) => category === user.customValues?.[ catField ]
+	return users.filter( ( user ) =>
+		user.customValues?.[ catField ]?.includes( category )
 	);
 };
 

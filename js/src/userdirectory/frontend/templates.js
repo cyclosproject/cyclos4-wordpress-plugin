@@ -77,6 +77,7 @@ export const userDetails = ( user, fields ) => {
 				userInfo += phone( className, value );
 				break;
 			case 'singleSelection':
+			case 'multiSelection':
 				userInfo += selection( className, value, field.possibleValues );
 				break;
 			default:
@@ -181,13 +182,19 @@ const phone = ( id, value ) => {
 };
 
 const selection = ( id, value, possibleValues ) => {
-	// Try to pull the display name of the selected value from the possibleValues array.
-	const selectedValue = possibleValues.find(
-		( option ) => value === option.internalName
-	);
-	// Show the selected value, or if we can not find it, fall back to showing the orginal value (i.e. the internalName).
-	const valueName = selectedValue?.value ?? value;
-	return `<div class="${ id } cyclos-user-selection cyclos-value-${ value }">${ valueName }</div>`;
+	// The value may contain multiple internal names separated by pipes if the field is of type multiple selection.
+	const valueNames = [];
+	for ( const val of value.split( '|' ) ) {
+		// Try to pull the display name of the selected value from the possibleValues array.
+		const selectedValue = possibleValues.find(
+			( option ) => val === option.internalName
+		);
+		// Show the selected value, or if we can not find it, fall back to showing the orginal value (i.e. the internalName).
+		valueNames.push( selectedValue?.value ?? val );
+	}
+	const valueName = valueNames.join( ', ' );
+	const className = value.replaceAll( '|', '-' );
+	return `<div class="${ id } cyclos-user-selection cyclos-value-${ className }">${ valueName }</div>`;
 };
 
 const defaultField = ( id, value, type ) => {

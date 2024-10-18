@@ -530,13 +530,6 @@ class UserDirectory {
 			$filter_field = $user_metadata->mapDirectoryField ?? '';
 			if ( empty( $filter_field ) ) {
 				$notes[] = __( 'You can not use the filter functionality, because the \'Default filter for map directory\' setting in your Cyclos configuration is currently not set to a selection field.', 'cyclos' );
-			} else {
-				// When the filter field is set but not visible in the Map result for our Cyclos user, add a warning.
-				$visible_fields = $user_metadata->fieldsInList;
-				if ( ! in_array( $filter_field, $visible_fields, true ) ) {
-					/* translators: 1: The name of the filter field. */
-					$notes[] = sprintf( __( 'The \'Default filter for map directory\' setting in your Cyclos configuration is set to \'%1$s\', but this field is currently not visible for the Cyclos user. If you would like to use filtering, please set \'Map result\' to Yes for this field in the group permission \'Profile fields of other users\' in Cyclos.', 'cyclos' ), $filter_field );
-				}
 			}
 
 			// When the users in our dataset are only a subset of the users that exist in Cyclos, explain that filtering/sorting the subset may not be useful.
