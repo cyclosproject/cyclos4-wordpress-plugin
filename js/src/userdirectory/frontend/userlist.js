@@ -7,7 +7,12 @@ import {
 	prepareUsersForRender,
 	generateVisibleSortOptions,
 } from '../data';
-import { renderUser, searchElement, filterElement, sortElement } from './templates';
+import {
+	renderUser,
+	searchElement,
+	filterElement,
+	sortElement,
+} from './templates';
 
 export default class UserList {
 	constructor( container, userData ) {
