@@ -108,7 +108,7 @@ class UserDirectory {
 		$atts = shortcode_atts(
 			array(
 				'views'                => 'list',
-				'show_search'          => true,
+				'show_search'          => false,
 				'filter_category'      => '',
 				'show_filter'          => true,
 				'order_field'          => '',
