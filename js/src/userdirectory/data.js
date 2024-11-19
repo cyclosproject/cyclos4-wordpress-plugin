@@ -260,15 +260,20 @@ export const generateVisibleSortOptions = (
  * Returns the users array filtered on the given filter and order by the given sort.
  *
  * @param { UserData } userData The userData object containing the array of users.
+ * @param { string }   keywords The keyword(s) to search on.
  * @param { string }   sort     The order to sort by. Contains field and direction separated by a dash, for example: name-asc.
  * @param { string }   filter   The field to filter on.
  * @return { Array } The filtered and sorted array of users.
  */
-export const prepareUsersForRender = ( userData, sort, filter ) => {
+export const prepareUsersForRender = ( userData, keywords, sort, filter ) => {
 	// Create a new local array, so the original users array is not affected by our sorting.
 	// This way we can always reset the sort to none if the webmaster wants to.
 	// Note: arrays are passed by reference in JavaScript.
 	let tempUsers = Array.from( userData?.users );
+	const searchFields = userData.userMeta?.fieldsInAdvancedSearch;
+	if ( '' !== keywords && '' !== searchFields ) {
+		tempUsers = doSearch( tempUsers, searchFields, keywords );
+	}
 	const catField = userData.userMeta?.mapDirectoryField;
 	if ( '' !== filter && '' !== catField ) {
 		tempUsers = doFilter( tempUsers, catField, filter, '' );
@@ -305,6 +310,33 @@ export const aggregateUsers = ( users ) => {
 		}
 		return aggregatedData;
 	}, [] );
+};
+
+/**
+ * Searches the given array of users having the given keyword(s) in the given fields.
+ *
+ * @param { Array }  users        The array of users that should be searched.
+ * @param { string } searchFields The internal name of the fields to search in.
+ * @param { string } keywords     The keyword(s) to search.
+ */
+const doSearch = ( users, searchFields, keywords ) => {
+	// If there is no keyword to search for, or no searchable field, just return the original users.
+	if ( '' === keywords || ! searchFields ) {
+		return users;
+	}
+
+	// Return the users, filtered by containing the keyword(s) in one of the search fields.
+	const regExToFind = new RegExp( `.*${ keywords }.*`, 'gi' );
+	return users.filter( ( user ) => {
+		// Concatenate the user field values into one string to search.
+		const stringToSearch = searchFields.reduce(
+			( result, field ) =>
+				result + ( user?.[ field ] ?? user.customValues?.[ field ] ),
+			''
+		);
+		// Next, test the concatened string on the regular expression to search for.
+		return regExToFind.test( stringToSearch );
+	} );
 };
 
 /**

@@ -7,7 +7,7 @@ import {
 	prepareUsersForRender,
 	generateVisibleSortOptions,
 } from '../data';
-import { renderUser } from './templates';
+import { renderUser, searchElement } from './templates';
 
 export default class UserList {
 	constructor( container, userData ) {
@@ -29,6 +29,9 @@ export default class UserList {
 		if ( this.props.showFilter ) {
 			this.renderFilterElement();
 		}
+		if ( this.props.showSearch ) {
+			this.renderSearchElement();
+		}
 	}
 
 	/**
@@ -42,6 +45,9 @@ export default class UserList {
 			initialFilter: props.cyclosFilter ?? '',
 			// The boolean attributes might be put in without a value (indicating true) or with a value "true"/"false".
 			// So check if they exist and if so with a value that is not false (so either empty or "true").
+			showSearch:
+				'cyclosShowSearch' in props &&
+				'false' !== props.cyclosShowSearch,
 			showFilter:
 				'cyclosShowFilter' in props &&
 				'false' !== props.cyclosShowFilter,
@@ -54,6 +60,7 @@ export default class UserList {
 	 */
 	initState() {
 		this.state = {
+			currentSearch: '',
 			currentFilter: this.props.initialFilter,
 			currentSort: this.props.initialSort,
 		};
@@ -77,6 +84,7 @@ export default class UserList {
 		// Get the users we should show.
 		const preparedUsers = prepareUsersForRender(
 			this.userData,
+			this.state.currentSearch,
 			this.state.currentSort,
 			this.state.currentFilter
 		);
@@ -85,6 +93,30 @@ export default class UserList {
 		preparedUsers.forEach( ( user ) =>
 			renderUser( this.userList, user, this.userData.fields )
 		);
+	}
+
+	/**
+	 * Render the search select and put a change event handler on it.
+	 */
+	renderSearchElement() {
+		// Add a search element to the container.
+		const search = searchElement();
+		this.container.insertAdjacentHTML( 'afterbegin', search );
+
+		// Add the trigger to search the userlist whenever the visitor leaves the search field.
+		this.container.querySelector( '.search input' ).onchange = (
+			event
+		) => {
+			this.handleChangeSearch( event.target.value );
+		};
+
+		// Add the trigger to search the userlist whenever the visitor clicks the search button.
+		// Note: actually, this is not needed, because the search input onchange above already should have triggered the search.
+		this.container.querySelector( '.search button' ).onclick = () => {
+			const searchKeywords =
+				this.container.querySelector( '.search input' ).value;
+			this.handleChangeSearch( searchKeywords );
+		};
 	}
 
 	/**
@@ -127,6 +159,18 @@ export default class UserList {
 	}
 
 	/**
+	 * Change event handler for the search.
+	 *
+	 * @param { string } newSearch The new search value.
+	 */
+	handleChangeSearch( newSearch ) {
+		// Set the currentSearch in our state to the chosen search value.
+		this.state.currentSearch = newSearch;
+		// Re-build the list of users.
+		this.renderList();
+	}
+
+	/**
 	 * Change event handler for the filter.
 	 *
 	 * @param { string } newFilter The new filter value.
@@ -161,7 +205,7 @@ export default class UserList {
 		const currentFilter = this.state.currentFilter;
 		let dropdown = '<div class="filter">';
 		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
-		dropdown += '<select>';
+		dropdown += '<select name="filter">';
 		catList.forEach( ( { value, label } ) => {
 			const selected = currentFilter === value ? ' selected' : '';
 			dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
@@ -186,7 +230,7 @@ export default class UserList {
 		}
 		let dropdown = '<div class="orderby">';
 		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
-		dropdown += `<select>`;
+		dropdown += `<select name="sort">`;
 		const optionList = generateVisibleSortOptions(
 			this.userData,
 			this.props.initialSort,

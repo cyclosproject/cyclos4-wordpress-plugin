@@ -88,6 +88,19 @@ export const userDetails = ( user, fields ) => {
 };
 
 /**
+ * Returns an HTML string with search input field and search button.
+ */
+export const searchElement = () => {
+	let dropdown = '<div class="search">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.searchLabel }`;
+	dropdown += '<input type="text" name="search" />';
+	dropdown += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
+	dropdown += '</label>';
+	dropdown += '</div>';
+	return dropdown;
+};
+
+/**
  * Creates a modal window with all fields we should show for this user.
  *
  * @param { Object } user   The user object.

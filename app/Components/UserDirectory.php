@@ -108,6 +108,7 @@ class UserDirectory {
 		$atts = shortcode_atts(
 			array(
 				'views'                => 'list',
+				'show_search'          => true,
 				'filter_category'      => '',
 				'show_filter'          => true,
 				'order_field'          => '',
@@ -167,8 +168,9 @@ class UserDirectory {
 
 		// Return a user-list div with the proper data attributes. Also set the selected style as an extra CSS class on the div.
 		return sprintf(
-			'<div class="cyclos-user-list %s"%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			'<div class="cyclos-user-list %s"%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
 			$selector,
+			$this->make_data_attribute( 'show-search', $atts['show_search'], 'boolean' ),
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
@@ -374,6 +376,7 @@ class UserDirectory {
 					'zoomOutTitle'   => __( 'Zoom out', 'cyclos' ),
 					'fullScreen'     => __( 'Full Screen', 'cyclos' ),
 					'exitFullscreen' => __( 'Exit Full Screen', 'cyclos' ),
+					'searchLabel'    => $this->conf->get_user_search_label(),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
 					'noFilterOption' => $this->conf->get_user_nofilter_option(),
 					'sortLabel'      => $this->conf->get_user_sort_label(),
