@@ -101,6 +101,52 @@ export const searchElement = () => {
 };
 
 /**
+ * Returns an HTML string for a dropdown the visitor can use to filter the list.
+ *
+ * @param { Array }  catList       List of category options to show in the dropdown.
+ * @param { string } currentFilter The currently selected option.
+ */
+export const filterElement = ( catList, currentFilter ) => {
+	if ( ! catList || catList.length <= 0 ) {
+		return '';
+	}
+	let dropdown = '<div class="filter">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
+	dropdown += '<select name="filter">';
+	catList.forEach( ( { value, label } ) => {
+		const selected = currentFilter === value ? ' selected' : '';
+		dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
+	} );
+	dropdown += '</select>';
+	dropdown += '</label>';
+	dropdown += '</div>';
+	return dropdown;
+};
+
+/**
+ * Returns an HTML string for a dropdown the visitor can use to sort the list.
+ *
+ * The initial sort property (for example name-asc) is used to make the corresponding option selected initially.
+ *
+ * @param { Array }  sortList    List of sort options to show in the dropdown.
+ * @param { string } initialSort The inital sort option.
+ */
+export const sortElement = ( sortList, initialSort ) => {
+	let dropdown = '<div class="orderby">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
+	dropdown += `<select name="sort">`;
+	sortList.forEach( ( { value, label, disabled } ) => {
+		const selectedAttr = initialSort === value ? ' selected' : '';
+		const disabledAttr = disabled ? ' disabled' : '';
+		dropdown += `<option value="${ value }"${ selectedAttr }${ disabledAttr }>${ label }</option>`;
+	} );
+	dropdown += '</select>';
+	dropdown += '</label>';
+	dropdown += '</div>';
+	return dropdown;
+};
+
+/**
  * Creates a modal window with all fields we should show for this user.
  *
  * @param { Object } user   The user object.

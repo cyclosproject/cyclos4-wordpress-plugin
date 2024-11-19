@@ -7,7 +7,7 @@ import {
 	prepareUsersForRender,
 	generateVisibleSortOptions,
 } from '../data';
-import { renderUser, searchElement } from './templates';
+import { renderUser, searchElement, filterElement, sortElement } from './templates';
 
 export default class UserList {
 	constructor( container, userData ) {
@@ -124,7 +124,10 @@ export default class UserList {
 	 */
 	renderFilterElement() {
 		// Add a filter element to the container.
-		const filter = this.filterElement();
+		const filter = filterElement(
+			this.userData.filterOptions,
+			this.state.currentFilter
+		);
 		// If the filter is empty, don't render anything. This happens when Cyclos has no 'Default filter for map directory' filter field set.
 		if ( ! filter ) {
 			return;
@@ -141,10 +144,24 @@ export default class UserList {
 
 	/**
 	 * Render the sort select and put a change event handler on it.
+	 * The visibleSortOptions are for example: name-asc, name-desc, customValues.rating-desc.
+	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), customValues.rating-desc (Rating).
 	 */
 	renderSortElement() {
 		// Add a sort element to the container.
-		this.container.insertAdjacentHTML( 'afterbegin', this.sortElement() );
+		const visibleSortOptions = this.props.visibleSortOptions;
+		if ( visibleSortOptions.length <= 0 ) {
+			return;
+		}
+		const optionList = generateVisibleSortOptions(
+			this.userData,
+			this.props.initialSort,
+			visibleSortOptions
+		);
+		this.container.insertAdjacentHTML(
+			'afterbegin',
+			sortElement( optionList, this.props.initialSort )
+		);
 
 		// Add the trigger to sort the userlist whenever the orderby option changes.
 		this.container.querySelector( '.orderby select' ).onchange = (
@@ -192,59 +209,5 @@ export default class UserList {
 		this.state.currentSort = newSort;
 		// Re-build the list of users.
 		this.renderList();
-	}
-
-	/**
-	 * Build up the HTML for a dropdown the visitor can use to filter the list.
-	 */
-	filterElement() {
-		const catList = this.userData.filterOptions;
-		if ( ! catList || catList.length <= 0 ) {
-			return '';
-		}
-		const currentFilter = this.state.currentFilter;
-		let dropdown = '<div class="filter">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
-		dropdown += '<select name="filter">';
-		catList.forEach( ( { value, label } ) => {
-			const selected = currentFilter === value ? ' selected' : '';
-			dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
-		} );
-		dropdown += '</select>';
-		dropdown += '</label>';
-		dropdown += '</div>';
-		return dropdown;
-	}
-
-	/**
-	 * Build up the HTML for a dropdown the visitor can use to sort the list.
-	 *
-	 * The visibleSortOptions are for example: name-asc, name-desc, customValues.rating-desc.
-	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), customValues.rating-desc (Rating).
-	 * The initial sort property (for example name-asc) is used to make the corresponding option selected initially.
-	 */
-	sortElement() {
-		const visibleSortOptions = this.props.visibleSortOptions;
-		if ( visibleSortOptions.length <= 0 ) {
-			return '';
-		}
-		let dropdown = '<div class="orderby">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
-		dropdown += `<select name="sort">`;
-		const optionList = generateVisibleSortOptions(
-			this.userData,
-			this.props.initialSort,
-			visibleSortOptions
-		);
-		optionList.forEach( ( { value, label, disabled } ) => {
-			const selectedAttr =
-				this.props.initialSort === value ? ' selected' : '';
-			const disabledAttr = disabled ? ' disabled' : '';
-			dropdown += `<option value="${ value }"${ selectedAttr }${ disabledAttr }>${ label }</option>`;
-		} );
-		dropdown += '</select>';
-		dropdown += '</label>';
-		dropdown += '</div>';
-		return dropdown;
 	}
 }
