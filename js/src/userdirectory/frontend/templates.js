@@ -92,10 +92,9 @@ export const userDetails = ( user, fields ) => {
  */
 export const searchElement = () => {
 	let dropdown = '<div class="search">';
-	dropdown += `<label>${ cyclosUserObj.l10n?.searchLabel }`;
+	dropdown += `<label>${ cyclosUserObj.l10n?.searchLabel }</label>`;
 	dropdown += '<input type="text" name="search" />';
 	dropdown += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
-	dropdown += '</label>';
 	dropdown += '</div>';
 	return dropdown;
 };

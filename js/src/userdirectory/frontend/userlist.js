@@ -29,12 +29,15 @@ export default class UserList {
 		this.initState();
 		this.renderList();
 		if ( this.props.visibleSortOptions.length > 0 ) {
+			this.renderOptions();
 			this.renderSortElement();
 		}
 		if ( this.props.showFilter ) {
+			this.renderOptions();
 			this.renderFilterElement();
 		}
 		if ( this.props.showSearch ) {
+			this.renderOptions();
 			this.renderSearchElement();
 		}
 	}
@@ -72,7 +75,7 @@ export default class UserList {
 	}
 
 	/**
-	 * Render the user list, using the current sort and filter.
+	 * Render the user list, using the current search, sort and filter.
 	 */
 	renderList() {
 		// Make sure we have a list element.
@@ -101,12 +104,23 @@ export default class UserList {
 	}
 
 	/**
+	 * Render an options div at the top of the container if it is not there already.
+	 */
+	renderOptions() {
+		if ( ! this.options ) {
+			this.options = document.createElement( 'div' );
+			this.options.className = 'user-options';
+			this.container.prepend( this.options );
+		}
+	}
+
+	/**
 	 * Render the search select and put a change event handler on it.
 	 */
 	renderSearchElement() {
 		// Add a search element to the container.
 		const search = searchElement();
-		this.container.insertAdjacentHTML( 'afterbegin', search );
+		this.options.insertAdjacentHTML( 'afterbegin', search );
 
 		// Add the trigger to search the userlist whenever the visitor leaves the search field.
 		this.container.querySelector( '.search input' ).onchange = (
@@ -137,7 +151,7 @@ export default class UserList {
 		if ( ! filter ) {
 			return;
 		}
-		this.container.insertAdjacentHTML( 'afterbegin', filter );
+		this.options.insertAdjacentHTML( 'afterbegin', filter );
 
 		// Add the trigger to filter the userlist whenever the filter option changes.
 		this.container.querySelector( '.filter select' ).onchange = (
@@ -163,7 +177,7 @@ export default class UserList {
 			this.props.initialSort,
 			visibleSortOptions
 		);
-		this.container.insertAdjacentHTML(
+		this.options.insertAdjacentHTML(
 			'afterbegin',
 			sortElement( optionList, this.props.initialSort )
 		);
