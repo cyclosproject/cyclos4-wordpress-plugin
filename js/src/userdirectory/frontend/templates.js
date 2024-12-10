@@ -91,12 +91,12 @@ export const userDetails = ( user, fields ) => {
  * Returns an HTML string with search input field and search button.
  */
 export const searchElement = () => {
-	let dropdown = '<div class="search">';
-	dropdown += `<label>${ cyclosUserObj.l10n?.searchLabel }</label>`;
-	dropdown += '<input type="text" name="search" />';
-	dropdown += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
-	dropdown += '</div>';
-	return dropdown;
+	let searchElt = '<div class="search">';
+	searchElt += `<label>${ cyclosUserObj.l10n?.searchLabel }</label>`;
+	searchElt += '<input type="text" name="search" />';
+	searchElt += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
+	searchElt += '</div>';
+	return searchElt;
 };
 
 /**
