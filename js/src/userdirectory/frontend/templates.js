@@ -77,6 +77,7 @@ export const userDetails = ( user, fields ) => {
 				userInfo += phone( className, value );
 				break;
 			case 'singleSelection':
+			case 'multiSelection':
 				userInfo += selection( className, value, field.possibleValues );
 				break;
 			default:
@@ -84,6 +85,64 @@ export const userDetails = ( user, fields ) => {
 		}
 	}
 	return `<div class="cyclos-user-details">${ userInfo }</div>`;
+};
+
+/**
+ * Returns an HTML string with search input field and search button.
+ */
+export const searchElement = () => {
+	let searchElt = '<div class="search">';
+	searchElt += `<label>${ cyclosUserObj.l10n?.searchLabel }</label>`;
+	searchElt += '<input type="text" name="search" />';
+	searchElt += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
+	searchElt += '</div>';
+	return searchElt;
+};
+
+/**
+ * Returns an HTML string for a dropdown the visitor can use to filter the list.
+ *
+ * @param { Array }  catList       List of category options to show in the dropdown.
+ * @param { string } currentFilter The currently selected option.
+ */
+export const filterElement = ( catList, currentFilter ) => {
+	if ( ! catList || catList.length <= 0 ) {
+		return '';
+	}
+	let dropdown = '<div class="filter">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
+	dropdown += '<select name="filter">';
+	catList.forEach( ( { value, label } ) => {
+		const selected = currentFilter === value ? ' selected' : '';
+		dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
+	} );
+	dropdown += '</select>';
+	dropdown += '</label>';
+	dropdown += '</div>';
+	return dropdown;
+};
+
+/**
+ * Returns an HTML string for a dropdown the visitor can use to sort the list.
+ *
+ * The initial sort property (for example name-asc) is used to make the corresponding option selected initially.
+ *
+ * @param { Array }  sortList    List of sort options to show in the dropdown.
+ * @param { string } initialSort The inital sort option.
+ */
+export const sortElement = ( sortList, initialSort ) => {
+	let dropdown = '<div class="orderby">';
+	dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
+	dropdown += `<select name="sort">`;
+	sortList.forEach( ( { value, label, disabled } ) => {
+		const selectedAttr = initialSort === value ? ' selected' : '';
+		const disabledAttr = disabled ? ' disabled' : '';
+		dropdown += `<option value="${ value }"${ selectedAttr }${ disabledAttr }>${ label }</option>`;
+	} );
+	dropdown += '</select>';
+	dropdown += '</label>';
+	dropdown += '</div>';
+	return dropdown;
 };
 
 /**
@@ -181,13 +240,19 @@ const phone = ( id, value ) => {
 };
 
 const selection = ( id, value, possibleValues ) => {
-	// Try to pull the display name of the selected value from the possibleValues array.
-	const selectedValue = possibleValues.find(
-		( option ) => value === option.internalName
-	);
-	// Show the selected value, or if we can not find it, fall back to showing the orginal value (i.e. the internalName).
-	const valueName = selectedValue?.value ?? value;
-	return `<div class="${ id } cyclos-user-selection cyclos-value-${ value }">${ valueName }</div>`;
+	// The value may contain multiple internal names separated by pipes if the field is of type multiple selection.
+	const valueNames = [];
+	for ( const val of value.split( '|' ) ) {
+		// Try to pull the display name of the selected value from the possibleValues array.
+		const selectedValue = possibleValues.find(
+			( option ) => val === option.internalName
+		);
+		// Show the selected value, or if we can not find it, fall back to showing the orginal value (i.e. the internalName).
+		valueNames.push( selectedValue?.value ?? val );
+	}
+	const valueName = valueNames.join( ', ' );
+	const className = value.replaceAll( '|', '-' );
+	return `<div class="${ id } cyclos-user-selection cyclos-value-${ className }">${ valueName }</div>`;
 };
 
 const defaultField = ( id, value, type ) => {

@@ -108,6 +108,7 @@ class UserDirectory {
 		$atts = shortcode_atts(
 			array(
 				'views'                => 'list',
+				'show_search'          => false,
 				'filter_category'      => '',
 				'show_filter'          => true,
 				'order_field'          => '',
@@ -167,8 +168,9 @@ class UserDirectory {
 
 		// Return a user-list div with the proper data attributes. Also set the selected style as an extra CSS class on the div.
 		return sprintf(
-			'<div class="cyclos-user-list %s"%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			'<div class="cyclos-user-list %s"%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
 			$selector,
+			$this->make_data_attribute( 'show-search', $atts['show_search'], 'boolean' ),
 			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
 			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$order_field ? $this->make_data_attribute( 'orderby', $order_field . '-' . $atts['sort_order'] ) : '',
@@ -374,6 +376,7 @@ class UserDirectory {
 					'zoomOutTitle'   => __( 'Zoom out', 'cyclos' ),
 					'fullScreen'     => __( 'Full Screen', 'cyclos' ),
 					'exitFullscreen' => __( 'Exit Full Screen', 'cyclos' ),
+					'searchLabel'    => $this->conf->get_user_search_label(),
 					'filterLabel'    => $this->conf->get_user_filter_label(),
 					'noFilterOption' => $this->conf->get_user_nofilter_option(),
 					'sortLabel'      => $this->conf->get_user_sort_label(),
@@ -530,13 +533,6 @@ class UserDirectory {
 			$filter_field = $user_metadata->mapDirectoryField ?? '';
 			if ( empty( $filter_field ) ) {
 				$notes[] = __( 'You can not use the filter functionality, because the \'Default filter for map directory\' setting in your Cyclos configuration is currently not set to a selection field.', 'cyclos' );
-			} else {
-				// When the filter field is set but not visible in the Map result for our Cyclos user, add a warning.
-				$visible_fields = $user_metadata->fieldsInList;
-				if ( ! in_array( $filter_field, $visible_fields, true ) ) {
-					/* translators: 1: The name of the filter field. */
-					$notes[] = sprintf( __( 'The \'Default filter for map directory\' setting in your Cyclos configuration is set to \'%1$s\', but this field is currently not visible for the Cyclos user. If you would like to use filtering, please set \'Map result\' to Yes for this field in the group permission \'Profile fields of other users\' in Cyclos.', 'cyclos' ), $filter_field );
-				}
 			}
 
 			// When the users in our dataset are only a subset of the users that exist in Cyclos, explain that filtering/sorting the subset may not be useful.

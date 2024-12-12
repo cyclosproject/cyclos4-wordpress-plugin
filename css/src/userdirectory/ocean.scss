@@ -4,6 +4,21 @@
 
 .cyclos-user-list.ocean {
 
+	// Light border-color around the options.
+	.user-options {
+		border-color: var(--gray-2);
+	}
+
+	// Use blue colors for the search button.
+	.search button {
+		background-color: var(--blue);
+		color: #fff;
+
+		&:hover {
+			box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+		}
+	}
+
 	// Show usernames in a blue bar and truncate them if needed.
 	.name {
 		color: var(--white);

@@ -7,7 +7,12 @@ import {
 	prepareUsersForRender,
 	generateVisibleSortOptions,
 } from '../data';
-import { renderUser } from './templates';
+import {
+	renderUser,
+	searchElement,
+	filterElement,
+	sortElement,
+} from './templates';
 
 export default class UserList {
 	constructor( container, userData ) {
@@ -24,10 +29,16 @@ export default class UserList {
 		this.initState();
 		this.renderList();
 		if ( this.props.visibleSortOptions.length > 0 ) {
+			this.renderOptions();
 			this.renderSortElement();
 		}
 		if ( this.props.showFilter ) {
+			this.renderOptions();
 			this.renderFilterElement();
+		}
+		if ( this.props.showSearch ) {
+			this.renderOptions();
+			this.renderSearchElement();
 		}
 	}
 
@@ -42,6 +53,9 @@ export default class UserList {
 			initialFilter: props.cyclosFilter ?? '',
 			// The boolean attributes might be put in without a value (indicating true) or with a value "true"/"false".
 			// So check if they exist and if so with a value that is not false (so either empty or "true").
+			showSearch:
+				'cyclosShowSearch' in props &&
+				'false' !== props.cyclosShowSearch,
 			showFilter:
 				'cyclosShowFilter' in props &&
 				'false' !== props.cyclosShowFilter,
@@ -54,13 +68,14 @@ export default class UserList {
 	 */
 	initState() {
 		this.state = {
+			currentSearch: '',
 			currentFilter: this.props.initialFilter,
 			currentSort: this.props.initialSort,
 		};
 	}
 
 	/**
-	 * Render the user list, using the current sort and filter.
+	 * Render the user list, using the current search, sort and filter.
 	 */
 	renderList() {
 		// Make sure we have a list element.
@@ -77,6 +92,7 @@ export default class UserList {
 		// Get the users we should show.
 		const preparedUsers = prepareUsersForRender(
 			this.userData,
+			this.state.currentSearch,
 			this.state.currentSort,
 			this.state.currentFilter
 		);
@@ -88,16 +104,54 @@ export default class UserList {
 	}
 
 	/**
+	 * Render an options div at the top of the container if it is not there already.
+	 */
+	renderOptions() {
+		if ( ! this.options ) {
+			this.options = document.createElement( 'div' );
+			this.options.className = 'user-options';
+			this.container.prepend( this.options );
+		}
+	}
+
+	/**
+	 * Render the search select and put a change event handler on it.
+	 */
+	renderSearchElement() {
+		// Add a search element to the container.
+		const search = searchElement();
+		this.options.insertAdjacentHTML( 'afterbegin', search );
+
+		// Add the trigger to search the userlist whenever the visitor leaves the search field.
+		this.container.querySelector( '.search input' ).onchange = (
+			event
+		) => {
+			this.handleChangeSearch( event.target.value );
+		};
+
+		// Add the trigger to search the userlist whenever the visitor clicks the search button.
+		// Note: actually, this is not needed, because the search input onchange above already should have triggered the search.
+		this.container.querySelector( '.search button' ).onclick = () => {
+			const searchKeywords =
+				this.container.querySelector( '.search input' ).value;
+			this.handleChangeSearch( searchKeywords );
+		};
+	}
+
+	/**
 	 * Render the filter select and put a change event handler on it.
 	 */
 	renderFilterElement() {
 		// Add a filter element to the container.
-		const filter = this.filterElement();
+		const filter = filterElement(
+			this.userData.filterOptions,
+			this.state.currentFilter
+		);
 		// If the filter is empty, don't render anything. This happens when Cyclos has no 'Default filter for map directory' filter field set.
 		if ( ! filter ) {
 			return;
 		}
-		this.container.insertAdjacentHTML( 'afterbegin', filter );
+		this.options.insertAdjacentHTML( 'afterbegin', filter );
 
 		// Add the trigger to filter the userlist whenever the filter option changes.
 		this.container.querySelector( '.filter select' ).onchange = (
@@ -109,10 +163,24 @@ export default class UserList {
 
 	/**
 	 * Render the sort select and put a change event handler on it.
+	 * The visibleSortOptions are for example: name-asc, name-desc, customValues.rating-desc.
+	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), customValues.rating-desc (Rating).
 	 */
 	renderSortElement() {
 		// Add a sort element to the container.
-		this.container.insertAdjacentHTML( 'afterbegin', this.sortElement() );
+		const visibleSortOptions = this.props.visibleSortOptions;
+		if ( visibleSortOptions.length <= 0 ) {
+			return;
+		}
+		const optionList = generateVisibleSortOptions(
+			this.userData,
+			this.props.initialSort,
+			visibleSortOptions
+		);
+		this.options.insertAdjacentHTML(
+			'afterbegin',
+			sortElement( optionList, this.props.initialSort )
+		);
 
 		// Add the trigger to sort the userlist whenever the orderby option changes.
 		this.container.querySelector( '.orderby select' ).onchange = (
@@ -124,6 +192,18 @@ export default class UserList {
 				.querySelectorAll( 'option[disabled]' )
 				.forEach( ( el ) => el.remove() );
 		};
+	}
+
+	/**
+	 * Change event handler for the search.
+	 *
+	 * @param { string } newSearch The new search value.
+	 */
+	handleChangeSearch( newSearch ) {
+		// Set the currentSearch in our state to the chosen search value.
+		this.state.currentSearch = newSearch;
+		// Re-build the list of users.
+		this.renderList();
 	}
 
 	/**
@@ -148,59 +228,5 @@ export default class UserList {
 		this.state.currentSort = newSort;
 		// Re-build the list of users.
 		this.renderList();
-	}
-
-	/**
-	 * Build up the HTML for a dropdown the visitor can use to filter the list.
-	 */
-	filterElement() {
-		const catList = this.userData.filterOptions;
-		if ( ! catList || catList.length <= 0 ) {
-			return '';
-		}
-		const currentFilter = this.state.currentFilter;
-		let dropdown = '<div class="filter">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.filterLabel }`;
-		dropdown += '<select>';
-		catList.forEach( ( { value, label } ) => {
-			const selected = currentFilter === value ? ' selected' : '';
-			dropdown += `<option value="${ value }"${ selected }>${ label }</option>`;
-		} );
-		dropdown += '</select>';
-		dropdown += '</label>';
-		dropdown += '</div>';
-		return dropdown;
-	}
-
-	/**
-	 * Build up the HTML for a dropdown the visitor can use to sort the list.
-	 *
-	 * The visibleSortOptions are for example: name-asc, name-desc, customValues.rating-desc.
-	 * This should lead to a select with options: name-asc (Name ASC), name-desc (Name DESC), customValues.rating-desc (Rating).
-	 * The initial sort property (for example name-asc) is used to make the corresponding option selected initially.
-	 */
-	sortElement() {
-		const visibleSortOptions = this.props.visibleSortOptions;
-		if ( visibleSortOptions.length <= 0 ) {
-			return '';
-		}
-		let dropdown = '<div class="orderby">';
-		dropdown += `<label>${ cyclosUserObj.l10n?.sortLabel }`;
-		dropdown += `<select>`;
-		const optionList = generateVisibleSortOptions(
-			this.userData,
-			this.props.initialSort,
-			visibleSortOptions
-		);
-		optionList.forEach( ( { value, label, disabled } ) => {
-			const selectedAttr =
-				this.props.initialSort === value ? ' selected' : '';
-			const disabledAttr = disabled ? ' disabled' : '';
-			dropdown += `<option value="${ value }"${ selectedAttr }${ disabledAttr }>${ label }</option>`;
-		} );
-		dropdown += '</select>';
-		dropdown += '</label>';
-		dropdown += '</div>';
-		return dropdown;
 	}
 }

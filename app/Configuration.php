@@ -147,6 +147,7 @@ class Configuration {
 				'forgot_pw_cancel'     => new Setting( 'login_form', __( 'Forgotten password cancel', 'cyclos' ), 'text', false, __( 'Cancel', 'cyclos' ), __( 'The text for the cancel link in the forgotten password form', 'cyclos' ) ),
 				'user_style'           => new Setting( 'user_directory', __( 'Choose style', 'cyclos' ), 'user_style', false, 'ocean', __( 'You can choose different designs for the user directory. If you prefer to use your own custom style, choose \'None\' here and adjust your theme\'s CSS however you like.', 'cyclos' ) ),
 				'map_icon'             => new Setting( 'user_directory', __( 'Custom map icon', 'cyclos' ), 'url', false, '', __( 'If you would like to use a custom icon image as a marker on the map, fill in the full URL to this image here.', 'cyclos' ) ),
+				'user_search_label'    => new Setting( 'user_directory', __( 'Search label', 'cyclos' ), 'text', false, __( 'Keywords', 'cyclos' ), __( 'The label of the search field', 'cyclos' ) ),
 				'user_filter_label'    => new Setting( 'user_directory', __( 'Filter label', 'cyclos' ), 'text', false, __( 'Filter', 'cyclos' ), __( 'The label of the filter dropdown', 'cyclos' ) ),
 				'user_sort_label'      => new Setting( 'user_directory', __( 'Sort label', 'cyclos' ), 'text', false, __( 'Sort', 'cyclos' ), __( 'The label of the sort dropdown', 'cyclos' ) ),
 				'user_nofilter_option' => new Setting( 'user_directory', __( 'Unfiltered option', 'cyclos' ), 'text', false, __( 'All users', 'cyclos' ), __( 'The filter option when users are shown without filtering', 'cyclos' ) ),
@@ -508,6 +509,15 @@ class Configuration {
 	 */
 	public function get_map_icon( bool $use_default = true ) {
 		return $this->get_setting( 'map_icon', $use_default );
+	}
+
+	/**
+	 * Returns the label to use near the search input in the user directory.
+	 *
+	 * @param bool $use_default (optional) Whether to return the default value if the setting is not set. Defaults to true.
+	 */
+	public function get_user_search_label( bool $use_default = true ) {
+		return $this->get_setting( 'user_search_label', $use_default );
 	}
 
 	/**
