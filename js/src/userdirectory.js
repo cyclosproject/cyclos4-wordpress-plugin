@@ -3,7 +3,7 @@
  * Internal dependencies
  */
 import { initUsers, aggregateUsers, UserData } from './userdirectory/data';
-import UserList from './userdirectory/frontend/userlist';
+import ListView from './userdirectory/frontend/listview';
 import UserMap from './userdirectory/frontend/usermap';
 
 const frontEnd = () => {
@@ -33,7 +33,7 @@ const frontEnd = () => {
 				);
 				// For each list div on the page, show a user list.
 				userLists.forEach(
-					( listElement ) => new UserList( listElement, aggrData )
+					( listElement ) => new ListView( listElement, aggrData )
 				);
 			}
 		} )
