@@ -2,6 +2,7 @@
  * Ocean design specific styles.
 */
 
+.cyclos-user-map.ocean,
 .cyclos-user-list.ocean {
 
 	// Light border-color around the options.
@@ -18,7 +19,9 @@
 			box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
 		}
 	}
+}
 
+.cyclos-user-list.ocean {
 	// Show usernames in a blue bar and truncate them if needed.
 	.name {
 		color: var(--white);

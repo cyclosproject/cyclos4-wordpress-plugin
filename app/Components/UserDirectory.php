@@ -186,8 +186,19 @@ class UserDirectory {
 	 * @return string           The rendered map with the user data.
 	 */
 	public function render_user_map( $atts ) {
+		// Prepare the selector to use on the div, based on the selected style.
+		$selector = $this->conf->get_user_style();
+		if ( 'plain' === $selector || 'none' === $selector ) {
+			// The plain and empty styles don't need a specific selector.
+			$selector = '';
+		}
+
 		return sprintf(
-			'<div class="cyclos-user-map"%s%s%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			'<div class="cyclos-user-map %s "%s%s%s%s%s%s%s%s%s%s><div class="cyclos-loader">%s...</div></div>',
+			$selector,
+			$this->make_data_attribute( 'show-search', $atts['show_search'], 'boolean' ),
+			$this->make_data_attribute( 'filter', $atts['filter_category'] ),
+			$this->make_data_attribute( 'show-filter', $atts['show_filter'], 'boolean' ),
 			$this->make_data_attribute( 'width', $atts['map_width'] ),
 			$this->make_data_attribute( 'height', $atts['map_height'] ),
 			$this->make_data_attribute( 'fit-users', $atts['fit_users'], 'boolean' ),
