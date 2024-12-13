@@ -2,25 +2,11 @@
 /**
  * UserMap class representing a frontend usermap.
  */
-import { UserData } from '../data';
 import { userDetails, userNameValue } from './templates';
 import { getPropByPath, getPropsByPath } from '../utils';
+import View from './view';
 
-export default class UserMap {
-	constructor( container, userData ) {
-		// If there are no users, show a message instead of a map.
-		if ( userData?.users.length <= 0 ) {
-			container.textContent = cyclosUserObj.l10n?.noUsers;
-			return;
-		}
-
-		this.container = container;
-		/** @type { UserData} */
-		this.userData = userData;
-		this.initProps();
-		this.loadMap();
-	}
-
+export default class MapView extends View {
 	/**
 	 * Initialize the properties needed for the map.
 	 */
@@ -32,9 +18,9 @@ export default class UserMap {
 		defaults.lat = cyclosSettings.defaultMapLocation?.latitude ?? 0;
 		defaults.zoom = cyclosSettings.defaultMapZoomWeb ?? 1;
 
-		// Retrieve the properties we need from the container dataset.
+		// Retrieve the specific map properties we need from the container dataset.
 		const props = this.container.dataset;
-		this.props = {
+		const mapProps = {
 			width: props.cyclosWidth ?? '100%',
 			height: props.cyclosHeight ?? '500px',
 			// The boolean attributes might be put in without a value (indicating true) or with a value "true"/"false".
@@ -45,6 +31,13 @@ export default class UserMap {
 			zoom: props.cyclosZoom ?? defaults.zoom,
 			maxZoom: props.cyclosMaxZoom ?? 19,
 		};
+
+		// Add the specific map properties to the default properties from our parent View class.
+		super.initProps();
+		Object.assign( this.props, mapProps );
+
+		// Never show sort on maps.
+		this.props.showSort = false;
 
 		// Add the tile provider and its copyright string. Maybe we will add other providers in the future, but for now just use openstreetmap.
 		this.props.tilesURLTemplate =
@@ -57,7 +50,10 @@ export default class UserMap {
 	 * Load the map: render the map in the load event of the marker image.
 	 * This way, we can adjust the marker options to the image dimensions (unless loading fails).
 	 */
-	loadMap() {
+	setupView() {
+		// Create the usermap element.
+		this.initializeView();
+
 		// Use the dimensions of the icon image to determine the iconSize, iconAnchor and popupAnchor.
 		const iconUrl = cyclosUserObj.map_icon;
 		this.iconOptions = { iconUrl };
@@ -84,9 +80,9 @@ export default class UserMap {
 	 */
 	renderMap() {
 		// Initialize the map.
-		this.container.style.width = this.props.width;
-		this.container.style.height = this.props.height;
-		const map = L.map( this.container, {
+		this.userMap.style.width = this.props.width;
+		this.userMap.style.height = this.props.height;
+		const map = L.map( this.userMap, {
 			zoomControl: false,
 			tap: false,
 		} );
@@ -125,8 +121,8 @@ export default class UserMap {
 		const markers = [];
 		const catField =
 			'customValues.' + this.userData.userMeta?.mapDirectoryField;
-		const maxPopupW = this.container.clientHeight - 50;
-		const maxPopupH = Math.min( this.container.clientWidth - 100, 300 );
+		const maxPopupW = this.userMap.clientHeight - 50;
+		const maxPopupH = Math.min( this.userMap.clientWidth - 100, 300 );
 		this.userData.users.forEach( ( user ) => {
 			const lat = getPropByPath( user, 'address.location.latitude' );
 			const lon = getPropByPath( user, 'address.location.longitude' );
@@ -199,7 +195,7 @@ export default class UserMap {
 
 		// Let the popup update itself after the image it might contain is loaded, because we don't know the dimensions in advance.
 		// This corrects the popup dimensions so it does not go outside the map area the first time a new image is loaded.
-		this.container.querySelector( '.leaflet-popup-pane' ).addEventListener(
+		this.userMap.querySelector( '.leaflet-popup-pane' ).addEventListener(
 			'load',
 			( event ) => {
 				const tagName = event.target.tagName;
@@ -212,5 +208,24 @@ export default class UserMap {
 			},
 			true // Capture the load event, because it does not bubble.
 		);
+	}
+
+	/**
+	 * Initialize the user map.
+	 */
+	initializeView() {
+		// Make sure we have a map element.
+		if ( ! this.userMap ) {
+			this.userMap = document.createElement( 'div' );
+			this.userMap.className = 'user-map';
+			this.container.append( this.userMap );
+		}
+	}
+
+	/**
+	 * Re-render the view, used when the state has changed.
+	 */
+	reRenderView() {
+		// @todo: implement re-render for the map.
 	}
 }

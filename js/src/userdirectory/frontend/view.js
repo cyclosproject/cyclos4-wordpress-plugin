@@ -28,7 +28,7 @@ export default class View {
 		this.initProps();
 		this.initState();
 		this.setupView();
-		if ( this.props.visibleSortOptions.length > 0 ) {
+		if ( this.props.showSort ) {
 			this.renderOptions();
 			this.renderSortElement();
 		}
@@ -60,6 +60,7 @@ export default class View {
 				'cyclosShowFilter' in props &&
 				'false' !== props.cyclosShowFilter,
 			visibleSortOptions: props.cyclosSortOptions ?? '',
+			showSort: props.cyclosSortOptions?.length > 0,
 		};
 	}
 
