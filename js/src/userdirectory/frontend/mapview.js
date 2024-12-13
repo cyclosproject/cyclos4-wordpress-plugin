@@ -17,6 +17,7 @@ export default class MapView extends View {
 		defaults.lon = cyclosSettings.defaultMapLocation?.longitude ?? 0;
 		defaults.lat = cyclosSettings.defaultMapLocation?.latitude ?? 0;
 		defaults.zoom = cyclosSettings.defaultMapZoomWeb ?? 1;
+		defaults.catField = cyclosSettings.mapDirectoryField ?? '';
 
 		// Retrieve the specific map properties we need from the container dataset.
 		const props = this.container.dataset;
@@ -38,6 +39,9 @@ export default class MapView extends View {
 
 		// Never show sort on maps.
 		this.props.showSort = false;
+
+		// Store some other props we need later on.
+		this.props.catField = 'customValues.' + defaults.catField;
 
 		// Add the tile provider and its copyright string. Maybe we will add other providers in the future, but for now just use openstreetmap.
 		this.props.tilesURLTemplate =
@@ -101,58 +105,30 @@ export default class MapView extends View {
 
 		// Prepare the marker icons.
 		// As a fallback, setup a default leaflet icon with no specific className.
-		let defaultIcon = new L.Icon.Default();
-		const catIcons = {};
+		this.defaultIcon = new L.Icon.Default();
+		this.catIcons = {};
 		// If the icon image is known, set up a custom icon as prepared in the load event of the icon image in loadMap().
 		if ( this.iconOptions ) {
 			// For users with no category, use the icon with no specific className.
-			defaultIcon = L.icon( this.iconOptions );
+			this.defaultIcon = L.icon( this.iconOptions );
 			// Prepare an icon for each category option with its internal name as the className.
 			const cats = this.userData.filterOptions;
 			cats.forEach( ( cat ) => {
 				if ( cat.value ) {
 					this.iconOptions.className = cat.value ?? '';
-					catIcons[ cat.value ] = L.icon( this.iconOptions );
+					this.catIcons[ cat.value ] = L.icon( this.iconOptions );
 				}
 			} );
 		}
 
-		// Add a marker to the map for each user, showing a popup with user details when clicked.
-		const markers = [];
-		const catField =
-			'customValues.' + this.userData.userMeta?.mapDirectoryField;
-		const maxPopupW = this.userMap.clientHeight - 50;
-		const maxPopupH = Math.min( this.userMap.clientWidth - 100, 300 );
-		this.userData.users.forEach( ( user ) => {
-			const lat = getPropByPath( user, 'address.location.latitude' );
-			const lon = getPropByPath( user, 'address.location.longitude' );
-			if ( lat && lon ) {
-				// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
-				// This way, users with multiple addresses turn up with their different addresses in the search control.
-				const title =
-					userNameValue( user ) +
-					getPropsByPath( user, cyclosUserObj.map_marker_title );
-				const userInfo = userDetails( user, this.userData.fields );
-				const userCat = getPropByPath( user, catField );
-				markers.push(
-					L.marker(
-						{ lon, lat },
-						{
-							title,
-							icon: catIcons[ userCat ] ?? defaultIcon,
-						}
-					).bindPopup( userInfo, {
-						maxHeight: maxPopupW,
-						minWidth: maxPopupH,
-						className: cyclosUserObj.design,
-						autoPanPadding: [ 50, 50 ], // Open the popup always at least 50px from the left/top border to prevent the controls overlapping it.
-					} )
-				);
-			}
-		} );
+		// Create a marker for each user, showing a popup with user details when clicked.
+		this.markers = [];
+		this.maxPopupW = this.userMap.clientHeight - 50;
+		this.maxPopupH = Math.min( this.userMap.clientWidth - 100, 300 );
+		this.renderUsers();
 
 		// Either show the map so all markers are visible, or use the given home and zoom.
-		const group = L.featureGroup( markers );
+		const group = L.featureGroup( this.markers );
 		if ( this.props.fit ) {
 			const bounds = group.getBounds();
 			if ( Object.keys( bounds ).length > 0 ) {
@@ -166,12 +142,12 @@ export default class MapView extends View {
 				this.props.zoom
 			);
 		}
-		const clusters = L.markerClusterGroup().addLayer( group );
-		map.addLayer( clusters );
+		this.clusters = L.markerClusterGroup().addLayer( group );
+		map.addLayer( this.clusters );
 
 		// Add the search control.
 		const searchControl = new L.Control.Search( {
-			layer: clusters,
+			layer: this.clusters,
 			initial: false, // Also find letters in the middle of a word, not just from the beginning.
 			marker: false, // Hide the red circle around a hit.
 			textErr: cyclosUserObj.l10n?.noUsers,
@@ -181,7 +157,7 @@ export default class MapView extends View {
 		searchControl.on( 'search:locationfound', ( e ) => {
 			// When a user is found, close the search control and open the user popup.
 			searchControl.collapse();
-			clusters.zoomToShowLayer( e.layer, () => {
+			this.clusters.zoomToShowLayer( e.layer, () => {
 				e.layer.openPopup();
 			} );
 		} );
@@ -223,9 +199,59 @@ export default class MapView extends View {
 	}
 
 	/**
-	 * Re-render the view, used when the state has changed.
+	 * Empty the view, before rendering the users again.
+	 */
+	emptyView() {
+		this.clusters.clearLayers();
+		this.markers = [];
+	}
+
+	/**
+	 * Re-render the users.
 	 */
 	reRenderView() {
-		// @todo: implement re-render for the map.
+		super.reRenderView();
+		this.clusters.addLayers( this.markers );
+	}
+
+	/**
+	 * Creates a Marker object for the given user and adds it to the markers array for rendering.
+	 * @param { Object } user The user object.
+	 */
+	renderUser( user ) {
+		// If the user already has a marker, push it to the markers array.
+		if ( user.marker ) {
+			this.markers.push( user.marker );
+			return;
+		}
+
+		// The user does not have a marker already, so create it, if the user has lat/lon coordinates.
+		const lat = getPropByPath( user, 'address.location.latitude' );
+		const lon = getPropByPath( user, 'address.location.longitude' );
+		if ( lat && lon ) {
+			// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
+			// This way, users with multiple addresses turn up with their different addresses in the search control.
+			const title =
+				userNameValue( user ) +
+				getPropsByPath( user, cyclosUserObj.map_marker_title );
+			const userInfo = userDetails( user, this.userData.fields );
+			const userCat = getPropByPath( user, this.props.catField );
+			const marker = L.marker(
+				{ lon, lat },
+				{
+					title,
+					icon: this.catIcons[ userCat ] ?? this.defaultIcon,
+				}
+			).bindPopup( userInfo, {
+				maxHeight: this.maxPopupW,
+				minWidth: this.maxPopupH,
+				className: cyclosUserObj.design,
+				autoPanPadding: [ 50, 50 ], // Open the popup always at least 50px from the left/top border to prevent the controls overlapping it.
+			} );
+
+			// Store the marker in the user object and push it to the array of markers to show.
+			user.marker = marker;
+			this.markers.push( user.marker );
+		}
 	}
 }

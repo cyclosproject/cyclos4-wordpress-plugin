@@ -118,9 +118,7 @@ export default class View {
 		);
 
 		// Add a user element to the view for each user.
-		preparedUsers.forEach( ( user ) =>
-			this.renderUser( user, this.userData.fields )
-		);
+		preparedUsers.forEach( ( user ) => this.renderUser( user ) );
 	}
 
 	/**

@@ -28,10 +28,9 @@ export default class ListView extends View {
 
 	/**
 	 * Render one of the users.
-	 * @param { Object } user   The user object to render.
-	 * @param { Map }    fields A Map of fields to show for this user.
+	 * @param { Object } user The user object to render.
 	 */
-	renderUser( user, fields ) {
-		renderUser( this.userList, user, fields );
+	renderUser( user ) {
+		renderUser( this.userList, user, this.userData.fields );
 	}
 }
