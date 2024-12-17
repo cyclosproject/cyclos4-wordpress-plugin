@@ -145,24 +145,6 @@ export default class MapView extends View {
 		this.clusters = L.markerClusterGroup().addLayer( group );
 		map.addLayer( this.clusters );
 
-		// Add the search control.
-		const searchControl = new L.Control.Search( {
-			layer: this.clusters,
-			initial: false, // Also find letters in the middle of a word, not just from the beginning.
-			marker: false, // Hide the red circle around a hit.
-			textErr: cyclosUserObj.l10n?.noUsers,
-			textCancel: cyclosUserObj.l10n?.cancel,
-			textPlaceholder: cyclosUserObj.l10n?.search,
-		} );
-		searchControl.on( 'search:locationfound', ( e ) => {
-			// When a user is found, close the search control and open the user popup.
-			searchControl.collapse();
-			this.clusters.zoomToShowLayer( e.layer, () => {
-				e.layer.openPopup();
-			} );
-		} );
-		map.addControl( searchControl );
-
 		// We are done loading the map, so remove the loader.
 		const loader = this.container.querySelector( '.cyclos-loader' );
 		if ( loader ) {
@@ -230,7 +212,6 @@ export default class MapView extends View {
 		const lon = getPropByPath( user, 'address.location.longitude' );
 		if ( lat && lon ) {
 			// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
-			// This way, users with multiple addresses turn up with their different addresses in the search control.
 			const title =
 				userNameValue( user ) +
 				getPropsByPath( user, cyclosUserObj.map_marker_title );

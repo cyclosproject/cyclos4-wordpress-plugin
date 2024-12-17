@@ -32,13 +32,6 @@ class UserDirectory {
 	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js';
 
 	/**
-	 * Leaflet search plugin asset sources.
-	 */
-	const LEAFLET_SEARCH_VERSION = '2.9.9';
-	const LEAFLET_SEARCH_CSS     = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.css';
-	const LEAFLET_SEARCH_JS      = 'https://unpkg.com/leaflet-search@2.9.9/dist/leaflet-search.min.js';
-
-	/**
 	 * The Cyclos API.
 	 *
 	 * @var CyclosAPI $cyclos The Cyclos API.
@@ -287,10 +280,8 @@ class UserDirectory {
 		wp_register_style( 'leaflet-style', self::LEAFLET_CSS, array(), self::LEAFLET_VERSION );
 		wp_register_style( 'leaflet-cluster-style', self::LEAFLET_CLUSTER_CSS, array( 'leaflet-style' ), self::LEAFLET_CLUSTER_VERSION );
 		wp_register_style( 'leaflet-cluster-icon-style', self::LEAFLET_CLUSTER_ICON_CSS, array( 'leaflet-cluster-style' ), self::LEAFLET_CLUSTER_VERSION );
-		wp_register_style( 'leaflet-search-style', self::LEAFLET_SEARCH_CSS, array( 'leaflet-style' ), self::LEAFLET_SEARCH_VERSION );
 		wp_register_script( 'leaflet-script', self::LEAFLET_JS, array(), self::LEAFLET_VERSION, true );
 		wp_register_script( 'leaflet-cluster-script', self::LEAFLET_CLUSTER_JS, array( 'leaflet-script' ), self::LEAFLET_CLUSTER_VERSION, true );
-		wp_register_script( 'leaflet-search-script', self::LEAFLET_SEARCH_JS, array( 'leaflet-script' ), self::LEAFLET_SEARCH_VERSION, true );
 
 		// Register the userdirectory script variant for the list.
 		$file      = 'js/dist/userdirectory.js';
@@ -303,7 +294,7 @@ class UserDirectory {
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 		// Register the userdirectory script variant for the map (including leaflet deps).
 		$handle = 'cyclos-userdirectory-map';
-		$deps   = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script', 'leaflet-search-script' ) );
+		$deps   = array_merge( $asset['dependencies'], array( 'leaflet-script', 'leaflet-cluster-script' ) );
 		wp_register_script( $handle, $file_url, $deps, $version, $in_footer );
 
 		// Register the userdirectory style.
@@ -311,7 +302,7 @@ class UserDirectory {
 		$handle   = 'cyclos-userdirectory-style';
 		$version  = \Cyclos\PLUGIN_VERSION . '-' . filemtime( \Cyclos\PLUGIN_DIR . $file );
 		$file_url = \Cyclos\PLUGIN_URL . $file;
-		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style', 'leaflet-search-style' );
+		$deps     = array( 'leaflet-style', 'leaflet-cluster-icon-style' );
 		wp_register_style( $handle, $file_url, $deps, $version );
 	}
 
@@ -327,7 +318,6 @@ class UserDirectory {
 		if ( 'none' === $this->conf->get_user_style() ) {
 			// The webmaster choose to not include our userdirectory CSS. Still we should load the leaflet CSS which would otherwise load as a dependency of our CSS.
 			wp_enqueue_style( 'leaflet-cluster-icon-style' );
-			wp_enqueue_style( 'leaflet-search-style' );
 		} else {
 			// Load our userdirectory CSS, which includes a dependency to the leaflet CSS.
 			wp_enqueue_style( 'cyclos-userdirectory-style' );
