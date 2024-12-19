@@ -86,7 +86,7 @@ export default class MapView extends View {
 		// Initialize the map.
 		this.userMap.style.width = this.props.width;
 		this.userMap.style.height = this.props.height;
-		const map = L.map( this.userMap, {
+		this.map = L.map( this.userMap, {
 			zoomControl: false,
 			tap: false,
 		} );
@@ -96,12 +96,12 @@ export default class MapView extends View {
 				zoomInTitle: cyclosUserObj.l10n.zoomInTitle,
 				zoomOutTitle: cyclosUserObj.l10n.zoomOutTitle,
 			} )
-			.addTo( map );
+			.addTo( this.map );
 		// Add the tiles layer.
 		L.tileLayer( this.props.tilesURLTemplate, {
 			maxZoom: this.props.maxZoom,
 			attribution: this.props.copyright,
-		} ).addTo( map );
+		} ).addTo( this.map );
 
 		// Prepare the marker icons.
 		// As a fallback, setup a default leaflet icon with no specific className.
@@ -128,22 +128,16 @@ export default class MapView extends View {
 		this.renderUsers();
 
 		// Either show the map so all markers are visible, or use the given home and zoom.
-		const group = L.featureGroup( this.markers );
+		this.clusters = L.markerClusterGroup().addLayers( this.markers );
 		if ( this.props.fit ) {
-			const bounds = group.getBounds();
-			if ( Object.keys( bounds ).length > 0 ) {
-				setTimeout( function () {
-					map.fitBounds( bounds );
-				}, 1000 );
-			}
+			this.fitMap();
 		} else {
-			map.setView(
+			this.map.setView(
 				{ lon: this.props.lon, lat: this.props.lat },
 				this.props.zoom
 			);
 		}
-		this.clusters = L.markerClusterGroup().addLayer( group );
-		map.addLayer( this.clusters );
+		this.map.addLayer( this.clusters );
 
 		// We are done loading the map, so remove the loader.
 		const loader = this.container.querySelector( '.cyclos-loader' );
@@ -157,7 +151,7 @@ export default class MapView extends View {
 			'load',
 			( event ) => {
 				const tagName = event.target.tagName;
-				const popup = map._popup; // Last open Popup.
+				const popup = this.map._popup; // Last open Popup.
 
 				if ( tagName === 'IMG' && popup && ! popup._updated ) {
 					popup._updated = true; // Assumes only 1 image per Popup.
@@ -166,6 +160,24 @@ export default class MapView extends View {
 			},
 			true // Capture the load event, because it does not bubble.
 		);
+	}
+
+	/**
+	 * Adjust the zoom and bounds of the map so all markers fit on it.
+	 * @param { number } timeout The number of milliseconds to wait before fitting the map bounds.
+	 */
+	fitMap( timeout = 1000 ) {
+		const bounds = this.clusters.getBounds();
+		const map = this.map;
+		const space = this.iconOptions?.iconSize ?? [ 50, 50 ];
+		if ( Object.keys( bounds ).length > 0 ) {
+			setTimeout( function () {
+				map.fitBounds( bounds, {
+					paddingTopLeft: space,
+					paddingBottomRight: [ 50, 50 ],
+				} );
+			}, timeout );
+		}
 	}
 
 	/**
@@ -194,6 +206,7 @@ export default class MapView extends View {
 	reRenderView() {
 		super.reRenderView();
 		this.clusters.addLayers( this.markers );
+		this.fitMap( 100 );
 	}
 
 	/**
