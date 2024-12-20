@@ -123,13 +123,12 @@ export default class View {
 
 	/**
 	 * Render one of the users.
-	 * @param { Object } user   The user object to render.
-	 * @param { Map }    fields A Map of fields to show for this user.
+	 * @param { Object } user The user object to render.
 	 */
-	renderUser( user, fields ) {
+	renderUser( user ) {
 		// Implement in subclasses.
 		throw new Error(
-			`Called renderUser() with user ${ user } and fields ${ fields } on View class. Use subclass of View instead.`
+			`Called renderUser() with user ${ user } on View class. Use subclass of View instead.`
 		);
 	}
 
