@@ -359,7 +359,7 @@ class Modal {
 		}
 		.cyclos-modal-header {
 			margin-top: 2%;
-			padding: 1em;
+			padding: 1em 2em;
 		}
 		.cyclos-modal-content {
 			margin-bottom: 2%;
@@ -376,6 +376,7 @@ class Modal {
 			padding: 0;
 			margin: 0;
 			float: right;
+			cursor: pointer;
 		}
 		.cyclos-modal-close:hover {
 			color: #000;
