@@ -1,22 +1,22 @@
 /* global cyclosUserObj */
 /**
- * UserList class representing a frontend userlist.
+ * View class representing a frontend user view. Not used directly, but only via one of its subclasses (list or map).
  */
 import {
 	UserData,
-	prepareUsersForRender,
 	generateVisibleSortOptions,
+	prepareUsersForRender,
 } from '../data';
-import {
-	renderUser,
-	searchElement,
-	filterElement,
-	sortElement,
-} from './templates';
+import { searchElement, filterElement, sortElement } from './templates';
 
-export default class UserList {
+export default class View {
+	/**
+	 *
+	 * @param { Element }  container
+	 * @param { UserData } userData
+	 */
 	constructor( container, userData ) {
-		// If there are no users, show a message instead of a list.
+		// If there are no users, show a message instead of a user view.
 		if ( userData?.users.length <= 0 ) {
 			container.textContent = cyclosUserObj.l10n?.noUsers;
 			return;
@@ -27,8 +27,8 @@ export default class UserList {
 		this.userData = userData;
 		this.initProps();
 		this.initState();
-		this.renderList();
-		if ( this.props.visibleSortOptions.length > 0 ) {
+		this.setupView();
+		if ( this.props.showSort ) {
 			this.renderOptions();
 			this.renderSortElement();
 		}
@@ -60,6 +60,7 @@ export default class UserList {
 				'cyclosShowFilter' in props &&
 				'false' !== props.cyclosShowFilter,
 			visibleSortOptions: props.cyclosSortOptions ?? '',
+			showSort: props.cyclosSortOptions?.length > 0,
 		};
 	}
 
@@ -75,20 +76,39 @@ export default class UserList {
 	}
 
 	/**
-	 * Render the user list, using the current search, sort and filter.
+	 * Set up the view.
 	 */
-	renderList() {
-		// Make sure we have a list element.
-		if ( ! this.userList ) {
-			this.userList = document.createElement( 'div' );
-			this.userList.className = 'user-list';
-			this.container.textContent = '';
-			this.container.append( this.userList );
-		}
+	setupView() {
+		this.initializeView();
+		this.renderUsers();
+	}
 
-		// Empty the list element, in case this is a re-render.
-		this.userList.textContent = '';
+	/**
+	 * Re-render the view, used when the state has changed.
+	 */
+	reRenderView() {
+		this.emptyView();
+		this.renderUsers();
+	}
 
+	/**
+	 * Initialize the view, i.e. things we need to set up once.
+	 */
+	initializeView() {
+		// Implement in subclasses.
+	}
+
+	/**
+	 * Empty the view, before rendering the users again.
+	 */
+	emptyView() {
+		// Implement in subclasses.
+	}
+
+	/**
+	 * Render the users, i.e. things we need to do each time we (re-)render the users on the view.
+	 */
+	renderUsers() {
 		// Get the users we should show.
 		const preparedUsers = prepareUsersForRender(
 			this.userData,
@@ -97,9 +117,18 @@ export default class UserList {
 			this.state.currentFilter
 		);
 
-		// Add a user element to the list for each user.
-		preparedUsers.forEach( ( user ) =>
-			renderUser( this.userList, user, this.userData.fields )
+		// Add a user element to the view for each user.
+		preparedUsers.forEach( ( user ) => this.renderUser( user ) );
+	}
+
+	/**
+	 * Render one of the users.
+	 * @param { Object } user The user object to render.
+	 */
+	renderUser( user ) {
+		// Implement in subclasses.
+		throw new Error(
+			`Called renderUser() with user ${ user } on View class. Use subclass of View instead.`
 		);
 	}
 
@@ -122,14 +151,14 @@ export default class UserList {
 		const search = searchElement();
 		this.options.insertAdjacentHTML( 'afterbegin', search );
 
-		// Add the trigger to search the userlist whenever the visitor leaves the search field.
+		// Add the trigger to search the users whenever the visitor leaves the search field.
 		this.container.querySelector( '.search input' ).onchange = (
 			event
 		) => {
 			this.handleChangeSearch( event.target.value );
 		};
 
-		// Add the trigger to search the userlist whenever the visitor clicks the search button.
+		// Add the trigger to search the users whenever the visitor clicks the search button.
 		// Note: actually, this is not needed, because the search input onchange above already should have triggered the search.
 		this.container.querySelector( '.search button' ).onclick = () => {
 			const searchKeywords =
@@ -153,7 +182,7 @@ export default class UserList {
 		}
 		this.options.insertAdjacentHTML( 'afterbegin', filter );
 
-		// Add the trigger to filter the userlist whenever the filter option changes.
+		// Add the trigger to filter the users whenever the filter option changes.
 		this.container.querySelector( '.filter select' ).onchange = (
 			event
 		) => {
@@ -202,8 +231,8 @@ export default class UserList {
 	handleChangeSearch( newSearch ) {
 		// Set the currentSearch in our state to the chosen search value.
 		this.state.currentSearch = newSearch;
-		// Re-build the list of users.
-		this.renderList();
+		// Re-build the user view.
+		this.reRenderView();
 	}
 
 	/**
@@ -214,8 +243,8 @@ export default class UserList {
 	handleChangeFilter( newFilter ) {
 		// Set the currentFilter in our state to the chosen filter value.
 		this.state.currentFilter = newFilter;
-		// Re-build the list of users.
-		this.renderList();
+		// Re-build the user view.
+		this.reRenderView();
 	}
 
 	/**
@@ -226,7 +255,7 @@ export default class UserList {
 	handleChangeSort( newSort ) {
 		// Set the currentSort in our state to the chosen order value.
 		this.state.currentSort = newSort;
-		// Re-build the list of users.
-		this.renderList();
+		// Re-build the user view.
+		this.reRenderView();
 	}
 }

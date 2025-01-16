@@ -2,25 +2,11 @@
 /**
  * UserMap class representing a frontend usermap.
  */
-import { UserData } from '../data';
 import { userDetails, userNameValue } from './templates';
 import { getPropByPath, getPropsByPath } from '../utils';
+import View from './view';
 
-export default class UserMap {
-	constructor( container, userData ) {
-		// If there are no users, show a message instead of a map.
-		if ( userData?.users.length <= 0 ) {
-			container.textContent = cyclosUserObj.l10n?.noUsers;
-			return;
-		}
-
-		this.container = container;
-		/** @type { UserData} */
-		this.userData = userData;
-		this.initProps();
-		this.loadMap();
-	}
-
+export default class MapView extends View {
 	/**
 	 * Initialize the properties needed for the map.
 	 */
@@ -31,10 +17,11 @@ export default class UserMap {
 		defaults.lon = cyclosSettings.defaultMapLocation?.longitude ?? 0;
 		defaults.lat = cyclosSettings.defaultMapLocation?.latitude ?? 0;
 		defaults.zoom = cyclosSettings.defaultMapZoomWeb ?? 1;
+		defaults.catField = cyclosSettings.mapDirectoryField ?? '';
 
-		// Retrieve the properties we need from the container dataset.
+		// Retrieve the specific map properties we need from the container dataset.
 		const props = this.container.dataset;
-		this.props = {
+		const mapProps = {
 			width: props.cyclosWidth ?? '100%',
 			height: props.cyclosHeight ?? '500px',
 			// The boolean attributes might be put in without a value (indicating true) or with a value "true"/"false".
@@ -45,6 +32,16 @@ export default class UserMap {
 			zoom: props.cyclosZoom ?? defaults.zoom,
 			maxZoom: props.cyclosMaxZoom ?? 19,
 		};
+
+		// Add the specific map properties to the default properties from our parent View class.
+		super.initProps();
+		Object.assign( this.props, mapProps );
+
+		// Never show sort on maps.
+		this.props.showSort = false;
+
+		// Store some other props we need later on.
+		this.props.catField = 'customValues.' + defaults.catField;
 
 		// Add the tile provider and its copyright string. Maybe we will add other providers in the future, but for now just use openstreetmap.
 		this.props.tilesURLTemplate =
@@ -57,7 +54,10 @@ export default class UserMap {
 	 * Load the map: render the map in the load event of the marker image.
 	 * This way, we can adjust the marker options to the image dimensions (unless loading fails).
 	 */
-	loadMap() {
+	setupView() {
+		// Create the usermap element.
+		this.initializeView();
+
 		// Use the dimensions of the icon image to determine the iconSize, iconAnchor and popupAnchor.
 		const iconUrl = cyclosUserObj.map_icon;
 		this.iconOptions = { iconUrl };
@@ -84,9 +84,9 @@ export default class UserMap {
 	 */
 	renderMap() {
 		// Initialize the map.
-		this.container.style.width = this.props.width;
-		this.container.style.height = this.props.height;
-		const map = L.map( this.container, {
+		this.userMap.style.width = this.props.width;
+		this.userMap.style.height = this.props.height;
+		this.map = L.map( this.userMap, {
 			zoomControl: false,
 			tap: false,
 		} );
@@ -96,100 +96,48 @@ export default class UserMap {
 				zoomInTitle: cyclosUserObj.l10n.zoomInTitle,
 				zoomOutTitle: cyclosUserObj.l10n.zoomOutTitle,
 			} )
-			.addTo( map );
+			.addTo( this.map );
 		// Add the tiles layer.
 		L.tileLayer( this.props.tilesURLTemplate, {
 			maxZoom: this.props.maxZoom,
 			attribution: this.props.copyright,
-		} ).addTo( map );
+		} ).addTo( this.map );
 
 		// Prepare the marker icons.
 		// As a fallback, setup a default leaflet icon with no specific className.
-		let defaultIcon = new L.Icon.Default();
-		const catIcons = {};
+		this.defaultIcon = new L.Icon.Default();
+		this.catIcons = {};
 		// If the icon image is known, set up a custom icon as prepared in the load event of the icon image in loadMap().
 		if ( this.iconOptions ) {
 			// For users with no category, use the icon with no specific className.
-			defaultIcon = L.icon( this.iconOptions );
+			this.defaultIcon = L.icon( this.iconOptions );
 			// Prepare an icon for each category option with its internal name as the className.
 			const cats = this.userData.filterOptions;
 			cats.forEach( ( cat ) => {
 				if ( cat.value ) {
 					this.iconOptions.className = cat.value ?? '';
-					catIcons[ cat.value ] = L.icon( this.iconOptions );
+					this.catIcons[ cat.value ] = L.icon( this.iconOptions );
 				}
 			} );
 		}
 
-		// Add a marker to the map for each user, showing a popup with user details when clicked.
-		const markers = [];
-		const catField =
-			'customValues.' + this.userData.userMeta?.mapDirectoryField;
-		const maxPopupW = this.container.clientHeight - 50;
-		const maxPopupH = Math.min( this.container.clientWidth - 100, 300 );
-		this.userData.users.forEach( ( user ) => {
-			const lat = getPropByPath( user, 'address.location.latitude' );
-			const lon = getPropByPath( user, 'address.location.longitude' );
-			if ( lat && lon ) {
-				// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
-				// This way, users with multiple addresses turn up with their different addresses in the search control.
-				const title =
-					userNameValue( user ) +
-					getPropsByPath( user, cyclosUserObj.map_marker_title );
-				const userInfo = userDetails( user, this.userData.fields );
-				const userCat = getPropByPath( user, catField );
-				markers.push(
-					L.marker(
-						{ lon, lat },
-						{
-							title,
-							icon: catIcons[ userCat ] ?? defaultIcon,
-						}
-					).bindPopup( userInfo, {
-						maxHeight: maxPopupW,
-						minWidth: maxPopupH,
-						className: cyclosUserObj.design,
-						autoPanPadding: [ 50, 50 ], // Open the popup always at least 50px from the left/top border to prevent the controls overlapping it.
-					} )
-				);
-			}
-		} );
+		// Create a marker for each user, showing a popup with user details when clicked.
+		this.markers = [];
+		this.maxPopupW = this.userMap.clientHeight - 50;
+		this.maxPopupH = Math.min( this.userMap.clientWidth - 100, 300 );
+		this.renderUsers();
 
 		// Either show the map so all markers are visible, or use the given home and zoom.
-		const group = L.featureGroup( markers );
+		this.clusters = L.markerClusterGroup().addLayers( this.markers );
 		if ( this.props.fit ) {
-			const bounds = group.getBounds();
-			if ( Object.keys( bounds ).length > 0 ) {
-				setTimeout( function () {
-					map.fitBounds( bounds );
-				}, 1000 );
-			}
+			this.fitMap();
 		} else {
-			map.setView(
+			this.map.setView(
 				{ lon: this.props.lon, lat: this.props.lat },
 				this.props.zoom
 			);
 		}
-		const clusters = L.markerClusterGroup().addLayer( group );
-		map.addLayer( clusters );
-
-		// Add the search control.
-		const searchControl = new L.Control.Search( {
-			layer: clusters,
-			initial: false, // Also find letters in the middle of a word, not just from the beginning.
-			marker: false, // Hide the red circle around a hit.
-			textErr: cyclosUserObj.l10n?.noUsers,
-			textCancel: cyclosUserObj.l10n?.cancel,
-			textPlaceholder: cyclosUserObj.l10n?.search,
-		} );
-		searchControl.on( 'search:locationfound', ( e ) => {
-			// When a user is found, close the search control and open the user popup.
-			searchControl.collapse();
-			clusters.zoomToShowLayer( e.layer, () => {
-				e.layer.openPopup();
-			} );
-		} );
-		map.addControl( searchControl );
+		this.map.addLayer( this.clusters );
 
 		// We are done loading the map, so remove the loader.
 		const loader = this.container.querySelector( '.cyclos-loader' );
@@ -199,11 +147,11 @@ export default class UserMap {
 
 		// Let the popup update itself after the image it might contain is loaded, because we don't know the dimensions in advance.
 		// This corrects the popup dimensions so it does not go outside the map area the first time a new image is loaded.
-		this.container.querySelector( '.leaflet-popup-pane' ).addEventListener(
+		this.userMap.querySelector( '.leaflet-popup-pane' ).addEventListener(
 			'load',
 			( event ) => {
 				const tagName = event.target.tagName;
-				const popup = map._popup; // Last open Popup.
+				const popup = this.map._popup; // Last open Popup.
 
 				if ( tagName === 'IMG' && popup && ! popup._updated ) {
 					popup._updated = true; // Assumes only 1 image per Popup.
@@ -212,5 +160,92 @@ export default class UserMap {
 			},
 			true // Capture the load event, because it does not bubble.
 		);
+	}
+
+	/**
+	 * Adjust the zoom and bounds of the map so all markers fit on it.
+	 * @param { number } timeout The number of milliseconds to wait before fitting the map bounds.
+	 */
+	fitMap( timeout = 1000 ) {
+		const bounds = this.clusters.getBounds();
+		const map = this.map;
+		const space = this.iconOptions?.iconSize ?? [ 50, 50 ];
+		if ( Object.keys( bounds ).length > 0 ) {
+			setTimeout( function () {
+				map.fitBounds( bounds, {
+					paddingTopLeft: space,
+					paddingBottomRight: [ 50, 50 ],
+				} );
+			}, timeout );
+		}
+	}
+
+	/**
+	 * Initialize the user map.
+	 */
+	initializeView() {
+		// Make sure we have a map element.
+		if ( ! this.userMap ) {
+			this.userMap = document.createElement( 'div' );
+			this.userMap.className = 'user-map';
+			this.container.append( this.userMap );
+		}
+	}
+
+	/**
+	 * Empty the view, before rendering the users again.
+	 */
+	emptyView() {
+		this.clusters.clearLayers();
+		this.markers = [];
+	}
+
+	/**
+	 * Re-render the users.
+	 */
+	reRenderView() {
+		super.reRenderView();
+		this.clusters.addLayers( this.markers );
+		this.fitMap( 100 );
+	}
+
+	/**
+	 * Creates a Marker object for the given user and adds it to the markers array for rendering.
+	 * @param { Object } user The user object.
+	 */
+	renderUser( user ) {
+		// If the user already has a marker, push it to the markers array.
+		if ( user.marker ) {
+			this.markers.push( user.marker );
+			return;
+		}
+
+		// The user does not have a marker already, so create it, if the user has lat/lon coordinates.
+		const lat = getPropByPath( user, 'address.location.latitude' );
+		const lon = getPropByPath( user, 'address.location.longitude' );
+		if ( lat && lon ) {
+			// For the title we use the users' name plus some extra fields that can be changed by the webmaster.
+			const title =
+				userNameValue( user ) +
+				getPropsByPath( user, cyclosUserObj.map_marker_title );
+			const userInfo = userDetails( user, this.userData.fields );
+			const userCat = getPropByPath( user, this.props.catField );
+			const marker = L.marker(
+				{ lon, lat },
+				{
+					title,
+					icon: this.catIcons[ userCat ] ?? this.defaultIcon,
+				}
+			).bindPopup( userInfo, {
+				maxHeight: this.maxPopupW,
+				minWidth: this.maxPopupH,
+				className: cyclosUserObj.design,
+				autoPanPadding: [ 50, 50 ], // Open the popup always at least 50px from the left/top border to prevent the controls overlapping it.
+			} );
+
+			// Store the marker in the user object and push it to the array of markers to show.
+			user.marker = marker;
+			this.markers.push( user.marker );
+		}
 	}
 }

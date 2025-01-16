@@ -2,10 +2,16 @@
  * Ocean and material combined styles
 */
 
+.cyclos-user-map.ocean,
+.cyclos-user-map.ocean input,
+.cyclos-user-map.ocean select,
 .cyclos-user-list.ocean,
 .cyclos-user-list.ocean input,
 .cyclos-user-list.ocean select,
 .cyclos-user-info-modal.ocean,
+.cyclos-user-map.material,
+.cyclos-user-map.material input,
+.cyclos-user-map.material select,
 .cyclos-user-list.material,
 .cyclos-user-list.material input,
 .cyclos-user-list.material select,
@@ -14,6 +20,8 @@
 	font-size: 18px;
 }
 
+.cyclos-user-map.ocean,
+.cyclos-user-map.material,
 .cyclos-user-list.ocean,
 .cyclos-user-list.material {
 
@@ -22,42 +30,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-	}
-
-	// Remove the right margin from the orderby element.
-	.orderby {
-		margin-right: 0;
-	}
-
-	// Make sure the list itself spans the full width of the container.
-	.user-list {
-		width: 100%;
-	}
-
-	// When the user has no logo, show the first two letters
-	// of the username in a colored circle.
-	// Note: the material design overrides the color of the circle.
-	.cyclos-no-logo {
-		width: 125px;
-		height: 125px;
-		background-color: var(--orange);
-		border-radius: 50%;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		span {
-			padding: 0;
-			line-height: inherit;
-			font-family: monospace;
-			font-size: 4em;
-			color: var(--white);
-			width: 2ch;
-			overflow: hidden;
-			white-space: nowrap;
-			transform: rotate(-35deg);
-			text-transform: uppercase;
-		}
 	}
 
 	// Basic styles for the select elements.
@@ -105,6 +77,45 @@
 		cursor: pointer;
 		outline: none;
 		transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+	}
+}
+
+.cyclos-user-list.ocean,
+.cyclos-user-list.material {
+	// Remove the right margin from the orderby element.
+	.orderby {
+		margin-right: 0;
+	}
+
+	// Make sure the list itself spans the full width of the container.
+	.user-list {
+		width: 100%;
+	}
+
+	// When the user has no logo, show the first two letters
+	// of the username in a colored circle.
+	// Note: the material design overrides the color of the circle.
+	.cyclos-no-logo {
+		width: 125px;
+		height: 125px;
+		background-color: var(--orange);
+		border-radius: 50%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		span {
+			padding: 0;
+			line-height: inherit;
+			font-family: monospace;
+			font-size: 4em;
+			color: var(--white);
+			width: 2ch;
+			overflow: hidden;
+			white-space: nowrap;
+			transform: rotate(-35deg);
+			text-transform: uppercase;
+		}
 	}
 }
 

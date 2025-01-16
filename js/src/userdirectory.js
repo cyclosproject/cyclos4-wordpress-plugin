@@ -3,8 +3,8 @@
  * Internal dependencies
  */
 import { initUsers, aggregateUsers, UserData } from './userdirectory/data';
-import UserList from './userdirectory/frontend/userlist';
-import UserMap from './userdirectory/frontend/usermap';
+import ListView from './userdirectory/frontend/listview';
+import MapView from './userdirectory/frontend/mapview';
 
 const frontEnd = () => {
 	const userLists = document.querySelectorAll( '.cyclos-user-list' );
@@ -21,19 +21,19 @@ const frontEnd = () => {
 		.then( ( userData ) => {
 			// For each map div on the page, show a user map.
 			userMaps.forEach(
-				( mapElement ) => new UserMap( mapElement, userData )
+				( mapElement ) => new MapView( mapElement, userData )
 			);
 
 			// Before passing the userData to userLists, aggregate users with more than one address to be seen as one user.
 			if ( userLists.length > 0 ) {
-				// To avoid changing the data used in UserMap, we make a new UserData object.
+				// To avoid changing the data used in the userMap, we make a new UserData object.
 				const aggrData = new UserData(
 					aggregateUsers( userData.users ),
 					userData.userMeta
 				);
 				// For each list div on the page, show a user list.
 				userLists.forEach(
-					( listElement ) => new UserList( listElement, aggrData )
+					( listElement ) => new ListView( listElement, aggrData )
 				);
 			}
 		} )
