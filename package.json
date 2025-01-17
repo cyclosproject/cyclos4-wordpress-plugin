@@ -14,13 +14,13 @@
 	},
 	"bugs": "https://wordpress.org/plugins/cyclos/",
 	"private": true,
-	"dependencies": {},
-	"devDependencies": {
-		"@wordpress/scripts": "30.0.2",
-		"lodash.clonedeep": "4.5.0"
-	},
 	"engines": {
 		"node": ">=20"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@wordpress/scripts": "30.9.0",
+		"lodash.clonedeep": "4.5.0"
 	},
 	"scripts": {
 		"build": "npm run build:js && npm run build:css",
