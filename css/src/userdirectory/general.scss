@@ -138,6 +138,10 @@
 .entry .entry-content .leaflet-control-container a {
 	text-decoration: none;
 }
+// Smaller font size for attribution link.
+.entry .entry-content .leaflet-control-attribution a {
+	font-size: 11px;
+}
 
 /* Show a spinner while loading the userlist. */
 .cyclos-loader {

@@ -18,18 +18,18 @@ class UserDirectory {
 	/**
 	 * Leaflet map asset sources.
 	 */
-	const LEAFLET_VERSION = '1.7.1';
-	const LEAFLET_CSS     = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.css';
-	const LEAFLET_JS      = 'https://unpkg.com/leaflet@1.7.1/dist/leaflet.js';
-	const LEAFLET_ICON    = 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png';
+	const LEAFLET_VERSION = '1.9.4';
+	const LEAFLET_CSS     = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+	const LEAFLET_JS      = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+	const LEAFLET_ICON    = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
 
 	/**
 	 * Leaflet markercluster plugin asset sources.
 	 */
-	const LEAFLET_CLUSTER_VERSION  = '1.5.0';
-	const LEAFLET_CLUSTER_CSS      = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.css';
-	const LEAFLET_CLUSTER_ICON_CSS = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/MarkerCluster.Default.css';
-	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.0/dist/leaflet.markercluster.js';
+	const LEAFLET_CLUSTER_VERSION  = '1.5.3';
+	const LEAFLET_CLUSTER_CSS      = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css';
+	const LEAFLET_CLUSTER_ICON_CSS = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css';
+	const LEAFLET_CLUSTER_JS       = 'https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js';
 
 	/**
 	 * The Cyclos API.

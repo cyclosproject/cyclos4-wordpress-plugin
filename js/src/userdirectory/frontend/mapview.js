@@ -45,7 +45,7 @@ export default class MapView extends View {
 
 		// Add the tile provider and its copyright string. Maybe we will add other providers in the future, but for now just use openstreetmap.
 		this.props.tilesURLTemplate =
-			'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+			'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 		this.props.copyright =
 			'&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>';
 	}
