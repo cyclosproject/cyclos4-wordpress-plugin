@@ -67,8 +67,8 @@ spl_autoload_register(
 	}
 );
 
-// Load the necessary parts of the plugin in the proper action hook - so others can remove them if needed.
-add_action( 'plugins_loaded', __NAMESPACE__ . '\\load_plugin_parts' );
+// Load the necessary parts of the plugin.
+add_action( 'init', __NAMESPACE__ . '\\load_plugin_parts' );
 
 /**
  * Load the parts of the plugin.

@@ -67,7 +67,7 @@ class UserDirectory {
 	 * Init function to setup hooks.
 	 */
 	public function init() {
-		add_action( 'init', array( $this, 'register_stuff' ) );
+		$this->register_stuff();
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_style' ) );
 		add_action( 'wp_footer', array( $this, 'localize_script' ) );
 		add_shortcode( 'cyclosusers', array( $this, 'handle_users_shortcode' ) );
