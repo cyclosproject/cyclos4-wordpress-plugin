@@ -326,7 +326,8 @@ const doSearch = ( users, searchFields, keywords ) => {
 	}
 
 	// Return the users, filtered by containing the keyword(s) in one of the search fields.
-	const regExToFind = new RegExp( `.*${ keywords }.*`, 'gi' );
+	const escapedKeywords = keywords.replace( /[\\^$.*+?()[\]{}|]/g, '\\$&' );
+	const regExToFind = new RegExp( escapedKeywords, 'i' );
 	return users.filter( ( user ) => {
 		// Concatenate the user field values into one string to search.
 		const stringToSearch = searchFields.reduce(
