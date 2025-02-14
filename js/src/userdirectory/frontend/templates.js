@@ -92,8 +92,9 @@ export const userDetails = ( user, fields ) => {
  */
 export const searchElement = () => {
 	let searchElt = '<div class="search">';
-	searchElt += `<label for="cyclosSearch">${ cyclosUserObj.l10n?.searchLabel }</label>`;
-	searchElt += '<input type="text" name="search" id="cyclosSearch" />';
+	searchElt += `<label>${ cyclosUserObj.l10n?.searchLabel }`;
+	searchElt += '<input type="text" name="search" />';
+	searchElt += '</label>';
 	searchElt += `<button type="button">${ cyclosUserObj.l10n?.search }</button>`;
 	searchElt += '</div>';
 	return searchElt;

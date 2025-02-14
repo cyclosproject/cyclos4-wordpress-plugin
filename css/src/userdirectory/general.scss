@@ -30,16 +30,9 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1em;
-		align-items: center;
-		width: 100%;
-		max-width: 500px;
+		align-items: end;
+		max-width: 100%;
 		margin-bottom: 1em;
-
-		input[type="text"] {
-			font-family: inherit;
-			flex-grow: 1;
-			max-width: 100%;
-		}
 	}
 
 	.filter,
@@ -48,19 +41,21 @@
 		display: inline-block;
 		margin: 0 1em 0.5em 0;
 		max-width: 100%; // Needed for the max-width of the select tag below to work.
+	}
 
-		// Don't let the select tag flow over the screen width.
-		// And put the select under the label instead of next to it.
-		select {
-			max-width: 100%;
-			display: block;
-		}
+	// Don't let the input elements flow over the screen width.
+	// And put them under the label instead of next to it.
+	select,
+	input[type="text"] {
+		font-family: inherit;
+		max-width: 100%;
+		display: block;
+	}
 
-		// Try to avoid options flowing over the screen width on small screens.
-		// Unfortunately, the option tag can not be styled much with CSS.
-		option {
-			font-size: 90%;
-		}
+	// Try to avoid options flowing over the screen width on small screens.
+	// Unfortunately, the option tag can not be styled much with CSS.
+	option {
+		font-size: 90%;
 	}
 }
 
